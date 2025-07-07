@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:saver/constants/app_constants.dart';
+import 'package:provider/provider.dart';
+import '../providers/feature_flags_provider.dart';
 
 class InvestmentType {
   final String name;
@@ -56,21 +58,28 @@ class InvestmentConstants {
     'Other',
   ];
 
-  static List<InvestmentType> getTypesByCategory(String category) {
-    final showFD = AppConstants.featureFlags['enableFixedDepositInvestment'] ?? true;
-    final showRD = AppConstants.featureFlags['enableRecurringDepositInvestment'] ?? true;
+  // These methods now require BuildContext to access Provider
+  static List<InvestmentType> getTypesByCategory(BuildContext context, String category) {
+    final flags = Provider.of<FeatureFlagsProvider>(context, listen: false).flags;
+    final showFD = flags['enableFixedDepositInvestment'] ?? true;
+    final showRD = flags['enableRecurringDepositInvestment'] ?? true;
+    final showPPF = flags['enablePublicProvidentFundInvestment'] ?? true;
     return allTypes.where((type) {
       if (type.name == fixedDeposit.name && !showFD) return false;
       if (type.name == recurringDeposit.name && !showRD) return false;
+      if (type.name == ppf.name && !showPPF) return false;
       return type.category == category;
     }).toList();
   }
 
-  static InvestmentType? getTypeByName(String name) {
-    final showFD = AppConstants.featureFlags['enableFixedDepositInvestment'] ?? true;
-    final showRD = AppConstants.featureFlags['enableRecurringDepositInvestment'] ?? true;
+  static InvestmentType? getTypeByName(BuildContext context, String name) {
+    final flags = Provider.of<FeatureFlagsProvider>(context, listen: false).flags;
+    final showFD = flags['enableFixedDepositInvestment'] ?? true;
+    final showRD = flags['enableRecurringDepositInvestment'] ?? true;
+    final showPPF = flags['enablePublicProvidentFundInvestment'] ?? true;
     if (name == fixedDeposit.name && !showFD) return null;
     if (name == recurringDeposit.name && !showRD) return null;
+    if (name == ppf.name && !showPPF) return null;
     try {
       return allTypes.firstWhere((type) => type.name == name);
     } catch (e) {

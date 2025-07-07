@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'constants/app_constants.dart';
 import 'config/theme_config.dart';
 import 'config/route_config.dart';
@@ -7,6 +8,7 @@ import 'config/provider_config.dart';
 import 'services/navigation_service.dart';
 import 'services/service_locator.dart';
 import 'utils/logger.dart';
+import 'providers/feature_flags_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,7 +31,15 @@ void main() async {
   // Get navigation service from locator
   final navigationService = locator<NavigationService>();
 
-  runApp(SaverApp(navigationService: navigationService));
+  runApp(
+    MultiProvider(
+      providers: [
+        // ...existing providers...
+        ChangeNotifierProvider(create: (_) => FeatureFlagsProvider()),
+      ],
+      child: SaverApp(navigationService: navigationService),
+    ),
+  );
 }
 
 class SaverApp extends StatelessWidget {

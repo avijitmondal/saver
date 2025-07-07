@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:provider/provider.dart';
-import 'package:saver/constants/app_constants.dart';
+import 'package:saver/providers/feature_flags_provider.dart';
 import '../providers/portfolio_provider.dart';
 import '../constants/investment_constants.dart';
 
@@ -19,28 +19,56 @@ class _InvestmentDistributionCardState
 
   List<PieChartSectionData> _getSections(BuildContext context) {
     final portfolio = context.watch<PortfolioProvider>();
+    final flags = Provider.of<FeatureFlagsProvider>(context).flags;
 
     // Get unique investment types and their total current balances
     final Map<String, double> typeBalances = {};
     final Map<String, Color> typeColors = {};
 
     for (var investment in portfolio.investments) {
+      // Exclude Fixed Deposit if flag is false
+      if (investment.type == 'Fixed Deposit' &&
+          !(flags['enableFixedDepositInvestment'] ?? true)) {
+        continue;
+      }
       // Exclude Recurring Deposit if flag is false
       if (investment.type == 'Recurring Deposit' &&
-          !(AppConstants.featureFlags['enableRecurringDepositInvestment'] ?? true)) {
+          !(flags['enableRecurringDepositInvestment'] ?? true)) {
+        continue;
+      }
+      // Exclude EPF if flag is false
+      if (investment.type == 'EPF' &&
+          !(flags['enableEmployeeProvidentFundInvestment'] ?? true)) {
+        continue;
+      }
+      // Exclude PPF if flag is false
+      if (investment.type == 'PPF' &&
+          !(flags['enablePublicProvidentFundInvestment'] ?? true)) {
         continue;
       }
       typeBalances[investment.type] =
           (typeBalances[investment.type] ?? 0) + investment.currentBalance;
 
       // Use the color from InvestmentConstants
-      final investmentType = InvestmentConstants.getTypeByName(investment.type);
+      final investmentType = InvestmentConstants.getTypeByName(context, investment.type);
       typeColors[investment.type] = investmentType?.color ?? Colors.grey;
     }
 
     // Calculate total of all current balances
     final totalBalance =
         typeBalances.values.fold<double>(0.0, (sum, balance) => sum + balance);
+
+    if (totalBalance == 0) {
+      // Show a single inactive ring section if there is no investment
+      return [
+        PieChartSectionData(
+          color: Colors.grey[300]!,
+          value: 1,
+          title: '',
+          radius: 80.0,
+        ),
+      ];
+    }
 
     final entries = typeBalances.entries.toList();
     return entries.asMap().entries.map((mapEntry) {
@@ -66,15 +94,28 @@ class _InvestmentDistributionCardState
   }
 
   String _getLegendText(InvestmentType type) {
+    final flags = Provider.of<FeatureFlagsProvider>(context).flags;
     switch (type.name) {
       case 'Fixed Deposit':
+        if (!(flags['enableFixedDepositInvestment'] ?? true)) {
+          return '';
+        }
         return 'FD';
       case 'Recurring Deposit':
-        // Hide legend if recurring deposit is disabled
-        if (!(AppConstants.featureFlags['enableRecurringDepositInvestment'] ?? true)) {
+        if (!(flags['enableRecurringDepositInvestment'] ?? true)) {
           return '';
         }
         return 'RD';
+      case 'EPF':
+        if (!(flags['enableEmployeeProvidentFundInvestment'] ?? true)) {
+          return '';
+        }
+        return 'EPF';
+      case 'PPF':
+        if (!(flags['enablePublicProvidentFundInvestment'] ?? true)) {
+          return '';
+        }
+        return 'PPF';
       default:
         return type.name;
     }
@@ -128,33 +169,50 @@ class _InvestmentDistributionCardState
               spacing: 16,
               runSpacing: 8,
               children: [
-                ...InvestmentConstants.allTypes.map((type) {
-                  final portfolio = context.watch<PortfolioProvider>();
-                  final totalBalance =
-                      portfolio.getTotalAmountByType(type.name);
-                  final percentage = portfolio.totalInvestment > 0
-                      ? (totalBalance / portfolio.totalInvestment * 100)
-                      : 0.0;
+                ...InvestmentConstants.allTypes
+                  .where((type) {
+                    final flags = Provider.of<FeatureFlagsProvider>(context, listen: false).flags;
+                    if (type.name == 'Fixed Deposit' && !(flags['enableFixedDepositInvestment'] ?? true)) return false;
+                    if (type.name == 'Recurring Deposit' && !(flags['enableRecurringDepositInvestment'] ?? true)) return false;
+                    if (type.name == 'EPF' && !(flags['enableEmployeeProvidentFundInvestment'] ?? true)) return false;
+                    if (type.name == 'PPF' && !(flags['enablePublicProvidentFundInvestment'] ?? true)) return false;
+                    return true;
+                  })
+                  .map((type) {
+                    final flags = Provider.of<FeatureFlagsProvider>(context, listen: false).flags;
+                    final portfolio = context.watch<PortfolioProvider>();
+                    final totalBalance = portfolio.getTotalAmountByType(type.name);
+                    final percentage = portfolio.totalInvestment > 0
+                        ? (totalBalance / portfolio.totalInvestment * 100)
+                        : 0.0;
 
-                  return Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 12,
-                        height: 12,
-                        decoration: BoxDecoration(
-                          color: type.color,
-                          shape: BoxShape.circle,
+                    // Hide legend entry if flag is disabled
+                    if ((type.name == 'Fixed Deposit' && !(flags['enableFixedDepositInvestment'] ?? true)) ||
+                        (type.name == 'Recurring Deposit' && !(flags['enableRecurringDepositInvestment'] ?? true)) ||
+                        (type.name == 'EPF' && !(flags['enableEmployeeProvidentFundInvestment'] ?? true)) ||
+                        (type.name == 'PPF' && !(flags['enablePublicProvidentFundInvestment'] ?? true))) {
+                      return const SizedBox.shrink();
+                    }
+
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 12,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            color: type.color,
+                            shape: BoxShape.circle,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${_getLegendText(type)} (${percentage.toStringAsFixed(1)}%)',
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                    ],
-                  );
-                }).toList(),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${_getLegendText(type)}${_getLegendText(type).isNotEmpty ? ' (${percentage.toStringAsFixed(1)}%)' : ''}',
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ],
+                    );
+                  }).toList(),
               ],
             ),
           ],

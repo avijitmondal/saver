@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:saver/constants/app_constants.dart';
+import '../providers/feature_flags_provider.dart';
 import '../providers/portfolio_provider.dart';
 import '../widgets/investment_card.dart';
 import '../models/investment.dart';
@@ -25,6 +25,7 @@ class InvestmentsScreen extends StatelessWidget {
   }
 
   void _showAddInvestmentDialog(BuildContext context) {
+    final flags = Provider.of<FeatureFlagsProvider>(context, listen: false).flags;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -34,9 +35,11 @@ class InvestmentsScreen extends StatelessWidget {
           children: InvestmentConstants.allTypes
               .where((type) =>
                   (type.name != 'Fixed Deposit' ||
-                      (AppConstants.featureFlags['enableFixedDepositInvestment'] ?? true)) &&
+                      (flags['enableFixedDepositInvestment'] ?? true)) &&
                   (type.name != 'Recurring Deposit' ||
-                      (AppConstants.featureFlags['enableRecurringDepositInvestment'] ?? true)))
+                      (flags['enableRecurringDepositInvestment'] ?? true)) &&
+                  (type.name != 'PPF' ||
+                      (flags['enablePublicProvidentFundInvestment'] ?? true)))
               .map((type) {
             return ListTile(
               leading: Icon(
@@ -88,13 +91,18 @@ class InvestmentsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final flags = Provider.of<FeatureFlagsProvider>(context).flags;
     final portfolio = context.watch<PortfolioProvider>();
     final uniqueInvestments = _getUniqueInvestments(
       portfolio.investments.where((inv) =>
         (inv.type != 'Fixed Deposit' ||
-          (AppConstants.featureFlags['enableFixedDepositInvestment'] ?? true)) &&
+          (flags['enableFixedDepositInvestment'] ?? true)) &&
         (inv.type != 'Recurring Deposit' ||
-          (AppConstants.featureFlags['enableRecurringDepositInvestment'] ?? true))
+          (flags['enableRecurringDepositInvestment'] ?? true)) &&
+        (inv.type != 'PPF' ||
+          (flags['enablePublicProvidentFundInvestment'] ?? true)) &&
+        (inv.type != 'EPF' ||
+          (flags['enableEmployeeProvidentFundInvestment'] ?? true))
       ).toList(),
     );
 

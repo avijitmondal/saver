@@ -168,7 +168,7 @@ class ProfileController {
     // Implement password change logic
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Change password feature not implemented yet'),
+        content: Text('Coming soon!'),
         behavior: SnackBarBehavior.floating,
       ),
     );

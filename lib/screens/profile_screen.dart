@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:saver/constants/app_constants.dart';
 import '../providers/user_provider.dart';
 import '../controllers/profile_controller.dart';
 import '../widgets/profile/profile_header.dart';
@@ -8,6 +9,9 @@ import '../widgets/profile/security_section.dart';
 import '../widgets/profile/account_actions_section.dart';
 import '../widgets/common/app_scaffold.dart';
 import '../constants/ui_constants.dart';
+import 'developer_mode_screen.dart';
+import '../widgets/profile/about_section.dart';
+import '../widgets/profile/advanced_settings_section.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -18,6 +22,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late ProfileController _controller;
+  bool _developerMode = false;
 
   @override
   void initState() {
@@ -74,6 +79,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               // Account Actions Section
               AccountActionsSection(controller: _controller),
+
+              // Advanced Actions Section
+              if (AppConstants.enableDeveloperMode)
+                AdvancedSettingsSection(),
+              
+              // About Section
+              AboutSection(),
             ],
           ),
         );
@@ -81,3 +93,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 }
+

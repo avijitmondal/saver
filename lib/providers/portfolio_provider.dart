@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:saver/constants/app_constants.dart';
 import '../models/investment.dart';
 import '../data/sample_investments.dart';
 import '../services/investment_calculator.dart';
@@ -11,13 +12,21 @@ class PortfolioProvider extends ChangeNotifier {
 
   // Get only active (non-matured) investments
   List<Investment> get activeInvestments => _investments
-      .where((investment) => 
-          investment.maturityDate == null || 
-          investment.maturityDate!.isAfter(DateTime.now()))
+      .where((investment) =>
+          (investment.type != 'Fixed Deposit' ||
+              (AppConstants.featureFlags['enableFixedDepositInvestment'] ?? true)) &&
+          (investment.type != 'Recurring Deposit' ||
+              (AppConstants.featureFlags['enableRecurringDepositInvestment'] ?? true)) &&
+          (investment.type != 'PPF' ||
+              (AppConstants.featureFlags['enablePublicProvidentFundInvestment'] ?? true)) &&
+          (investment.type != 'EPF' ||
+              (AppConstants.featureFlags['enableEmployeeProvidentFundInvestment'] ?? true)) &&
+          (investment.maturityDate == null ||
+              investment.maturityDate!.isAfter(DateTime.now())))
       .toList();
 
   int getInvestmentCount(String type) {
-    return _investments.where((investment) => investment.type == type).length;
+    return activeInvestments.where((investment) => investment.type == type).length;
   }
 
   double getTotalAmountByType(String type) {

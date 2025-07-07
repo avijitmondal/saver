@@ -6,6 +6,7 @@ class NotificationModel {
   final DateTime timestamp;
   final NotificationType type;
   final bool isRead;
+  final String? category;
 
   const NotificationModel({
     required this.title,
@@ -13,6 +14,7 @@ class NotificationModel {
     required this.timestamp,
     required this.type,
     this.isRead = false,
+    this.category,
   });
 }
 

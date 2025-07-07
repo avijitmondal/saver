@@ -15,18 +15,44 @@ class SampleNotifications {
         message: 'Your monthly EPF contribution of ₹3,500 is due in 3 days.',
         timestamp: DateTime.now().subtract(const Duration(hours: 2)),
         type: NotificationType.payment,
+        category: 'EPF',
+      ),
+      NotificationModel(
+        title: 'EPF Interest Rate Update',
+        message: 'EPF interest rate for FY 2023-24 has been set at 8.15%',
+        timestamp: DateTime.now().subtract(const Duration(days: 5)),
+        type: NotificationType.interest,
+        isRead: true,
+        category: 'EPF',
       ),
       NotificationModel(
         title: 'PPF Payment Reminder',
         message: 'Don\'t forget to make your PPF payment for this quarter.',
         timestamp: DateTime.now().subtract(const Duration(days: 1)),
         type: NotificationType.payment,
+        category: 'PPF',
+      ),
+      NotificationModel(
+        title: 'PPF Interest Rate Change',
+        message: 'PPF interest rate remains unchanged at 7.1% for Q1 2024-25.',
+        timestamp: DateTime.now().subtract(const Duration(days: 6)),
+        type: NotificationType.interest,
+        category: 'PPF',
       ),
       NotificationModel(
         title: 'RD Auto-Payment Success',
         message: 'Your recurring deposit payment of ₹5,000 was successfully processed.',
         timestamp: DateTime.now().subtract(const Duration(hours: 12)),
         type: NotificationType.payment,
+        category: 'Recurring Deposit',
+      ),
+      NotificationModel(
+        title: 'RD Maturity',
+        message: 'Your SBI RD will mature next month. Consider renewal options.',
+        timestamp: DateTime.now().subtract(const Duration(days: 3)),
+        type: NotificationType.maturity,
+        isRead: true,
+        category: 'Recurring Deposit',
       ),
 
       // Maturity Notifications
@@ -35,23 +61,7 @@ class SampleNotifications {
         message: 'Your HDFC Bank FD of ₹40,000 will mature in 7 days.',
         timestamp: DateTime.now().subtract(const Duration(days: 2)),
         type: NotificationType.maturity,
-      ),
-      NotificationModel(
-        title: 'RD Maturity',
-        message:
-            'Your SBI RD will mature next month. Consider renewal options.',
-        timestamp: DateTime.now().subtract(const Duration(days: 3)),
-        type: NotificationType.maturity,
-        isRead: true,
-      ),
-
-      // Interest Rate Notifications
-      NotificationModel(
-        title: 'EPF Interest Rate Update',
-        message: 'EPF interest rate for FY 2023-24 has been set at 8.15%',
-        timestamp: DateTime.now().subtract(const Duration(days: 5)),
-        type: NotificationType.interest,
-        isRead: true,
+        category: 'Fixed Deposit',
       ),
       NotificationModel(
         title: 'FD Rate Alert',
@@ -59,12 +69,7 @@ class SampleNotifications {
         timestamp: DateTime.now().subtract(const Duration(days: 7)),
         type: NotificationType.interest,
         isRead: true,
-      ),
-      NotificationModel(
-        title: 'PPF Interest Rate Change',
-        message: 'PPF interest rate remains unchanged at 7.1% for Q1 2024-25.',
-        timestamp: DateTime.now().subtract(const Duration(days: 6)),
-        type: NotificationType.interest,
+        category: 'Fixed Deposit',
       ),
 
       // General Notifications
@@ -74,6 +79,7 @@ class SampleNotifications {
         timestamp: DateTime.now().subtract(const Duration(days: 10)),
         type: NotificationType.general,
         isRead: true,
+        category: 'General',
       ),
       NotificationModel(
         title: 'New Feature Available',
@@ -81,40 +87,46 @@ class SampleNotifications {
         timestamp: DateTime.now().subtract(const Duration(days: 15)),
         type: NotificationType.general,
         isRead: true,
+        category: 'General',
       ),
       NotificationModel(
         title: 'Tax Saving Reminder',
         message: 'Only 45 days left to make tax-saving investments for FY 2023-24.',
         timestamp: DateTime.now().subtract(const Duration(days: 3, hours: 14)),
         type: NotificationType.general,
+        category: 'General',
       ),
       NotificationModel(
         title: 'Investment Goal Update',
         message: 'You\'ve reached 75% of your retirement savings goal. Keep it up!',
         timestamp: DateTime.now().subtract(const Duration(days: 9)),
         type: NotificationType.general,
+        category: 'General',
       ),
-      
+
       // Market Updates
       NotificationModel(
         title: 'Market Update',
         message: 'Sensex up by 1.5% today. Your equity-linked investments may be affected positively.',
         timestamp: DateTime.now().subtract(const Duration(hours: 6)),
         type: NotificationType.market,
+        category: 'General',
       ),
       NotificationModel(
         title: 'Gold Price Alert',
         message: 'Gold prices have increased by 3% this month. Consider reviewing your gold investments.',
         timestamp: DateTime.now().subtract(const Duration(days: 2, hours: 8)),
         type: NotificationType.market,
+        category: 'General',
       ),
-      
+
       // Security Alerts
       NotificationModel(
         title: 'Security Alert',
         message: 'We detected a login to your account from a new device. Please verify if it was you.',
         timestamp: DateTime.now().subtract(const Duration(hours: 1)),
         type: NotificationType.security,
+        category: 'General',
       ),
       NotificationModel(
         title: 'Password Changed',
@@ -122,6 +134,7 @@ class SampleNotifications {
         timestamp: DateTime.now().subtract(const Duration(days: 1, hours: 3)),
         type: NotificationType.security,
         isRead: true,
+        category: 'General',
       ),
     ];
   }

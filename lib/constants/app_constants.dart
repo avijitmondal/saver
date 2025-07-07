@@ -16,20 +16,23 @@ class AppConstants {
   static const bool enableNotifications = true;
   static const bool enableAnalytics = true;
 
+  // Set to true to enable developer mode features
+  static const bool enableDeveloperMode = true; 
+
   // Feature Flags
   // Set this to false to disable sample user and go to welcome screen
-  static const Map<String, bool> featureFlags = {
+  static final Map<String, bool> featureFlags = {
     'enableSampleUser': true,
     // Set this to false to disable sample investment data
     'enableSampleInvestmentData': true,
     // Set this to false to disable fixed deposit investment
-    'enableFixedDepositInvestment': false,
+    'enableFixedDepositInvestment': true,
     // Set this to false to disable recurring deposit investment
-    'enableRecurringDepositInvestment': false,
+    'enableRecurringDepositInvestment': true,
     // Set this to false to disable public provident fund investment
-    'enablePublicProvidentFundInvestment': false,
+    'enablePublicProvidentFundInvestment': true,
     // Set this to false to disable employee provident fund investment
-    'enableEmployeeProvidentFundInvestment': false,
+    'enableEmployeeProvidentFundInvestment': true,
     // Set this to false to disable mutual fund investment
     'enableMutualFundInvestment': false,
     // Set this to false to disable stock investment
@@ -41,6 +44,6 @@ class AppConstants {
     // Set this to false to disable cryptocurrency investment
     'enableCryptocurrencyInvestment': false,
     // Set this to false to disable comming soon screen
-    'enableComingSoonScreen': true,
+    'enableComingSoonScreen': false,
   };
 }
