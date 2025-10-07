@@ -11,6 +11,13 @@ class AppConstants {
   // Default Values
   static const int defaultAnimationDuration = 300; // milliseconds
 
+  // Password validation constants
+  static const int minPasswordLength = 8;
+  static const String passwordUppercasePattern = r'[A-Z]';
+  static const String passwordLowercasePattern = r'[a-z]';
+  static const String passwordNumberPattern = r'[0-9]';
+  static const String passwordSpecialCharPattern = r'[!@#$%^&*(),.?":{}|<>]';
+
   // Feature Flags
   static const bool enableDarkMode = false;
   static const bool enableNotifications = false; // temporarily disabled

@@ -116,13 +116,58 @@ class InvestmentsScreen extends StatelessWidget {
           onPressed: () => _showAddInvestmentDialog(context),
         ),
       ],
-      body: ListView(
-        children: [
-          ...uniqueInvestments.map(
-            (investment) => InvestmentCard(investment: investment),
-          ),
-        ],
-      ),
+      body: uniqueInvestments.isEmpty
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.trending_up,
+                      size: 80,
+                      color: Colors.grey[400],
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'You haven\'t started investing yet',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[700],
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Investment is the key to building wealth for your future. Start your journey today and watch your money grow over time.',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Colors.grey[600],
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 32),
+                    ElevatedButton.icon(
+                      onPressed: () => _showAddInvestmentDialog(context),
+                      icon: const Icon(Icons.add),
+                      label: const Text('Start Investing'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          : ListView(
+              children: [
+                ...uniqueInvestments.map(
+                  (investment) => InvestmentCard(investment: investment),
+                ),
+              ],
+            ),
     );
   }
 }

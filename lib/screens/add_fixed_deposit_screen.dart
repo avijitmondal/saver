@@ -33,7 +33,7 @@ class _AddFixedDepositScreenState extends State<AddFixedDepositScreen> {
       context: context,
       initialDate: _startDate ?? DateTime.now(),
       firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
+      lastDate: DateTime.now(), // Prevent selecting future dates
       initialEntryMode: DatePickerEntryMode.calendarOnly,
       helpText: 'Select Start Date',
       cancelText: 'Cancel',
@@ -55,6 +55,18 @@ class _AddFixedDepositScreenState extends State<AddFixedDepositScreen> {
         _startDate != null &&
         _durationInMonths != null &&
         _selectedBank != null) {
+      
+      // Additional validation for start date
+      if (_startDate!.isAfter(DateTime.now())) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Start date cannot be in the future'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
       final portfolio = context.read<PortfolioProvider>();
 
       final newDeposit = Investment(
@@ -120,12 +132,22 @@ class _AddFixedDepositScreenState extends State<AddFixedDepositScreen> {
                   prefixText: '₹',
                 ),
                 keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+                ],
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the amount';
                   }
-                  if (double.tryParse(value) == null) {
+                  final amount = double.tryParse(value);
+                  if (amount == null) {
                     return 'Please enter a valid number';
+                  }
+                  if (amount <= 0) {
+                    return 'Amount must be greater than zero';
+                  }
+                  if (amount < 100) {
+                    return 'Minimum amount for FD is ₹100';
                   }
                   return null;
                 },
@@ -164,9 +186,12 @@ class _AddFixedDepositScreenState extends State<AddFixedDepositScreen> {
               InkWell(
                 onTap: () => _selectDate(context),
                 child: InputDecorator(
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Start Date',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
+                    errorText: _startDate != null && _startDate!.isAfter(DateTime.now())
+                        ? 'Start date cannot be in the future'
+                        : null,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -175,6 +200,11 @@ class _AddFixedDepositScreenState extends State<AddFixedDepositScreen> {
                         _startDate == null
                             ? 'Select Date'
                             : DateFormatter.formatDate(_startDate),
+                        style: TextStyle(
+                          color: _startDate != null && _startDate!.isAfter(DateTime.now())
+                              ? Colors.red
+                              : null,
+                        ),
                       ),
                       const Icon(Icons.calendar_today),
                     ],

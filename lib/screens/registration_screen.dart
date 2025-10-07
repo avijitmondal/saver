@@ -41,13 +41,32 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       // Only validate the current form fields based on the step
       bool isValid = true;
       if (_currentStep == 0) {
+        // More comprehensive email and phone validation
+        final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+        final phoneRegex = RegExp(r'^[6-9]\d{9}$'); // Indian mobile number format
+        
+        // Check if user is at least 18 years old
+        bool isValidAge = false;
+        if (_selectedDate != null) {
+          final now = DateTime.now();
+          final age = now.year - _selectedDate!.year;
+          final monthDiff = now.month - _selectedDate!.month;
+          final dayDiff = now.day - _selectedDate!.day;
+          
+          // Calculate exact age
+          final exactAge = age - ((monthDiff < 0 || (monthDiff == 0 && dayDiff < 0)) ? 1 : 0);
+          isValidAge = exactAge >= 18;
+        }
+        
         isValid = _firstNameController.text.isNotEmpty &&
             _lastNameController.text.isNotEmpty &&
             _emailController.text.isNotEmpty &&
-            _emailController.text.contains('@') &&
+            emailRegex.hasMatch(_emailController.text) &&
             _phoneController.text.isNotEmpty &&
-            _phoneController.text.length >= 10 &&
-            _addressController.text.isNotEmpty;
+            phoneRegex.hasMatch(_phoneController.text.replaceAll(RegExp(r'[\s\-\(\)]'), '')) &&
+            _addressController.text.isNotEmpty &&
+            _selectedDate != null &&
+            isValidAge;
       }
 
       if (isValid) {
@@ -56,9 +75,24 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         });
       } else {
         // Show error message
+        String errorMessage = 'Please fill all fields correctly';
+        if (_selectedDate != null) {
+          final now = DateTime.now();
+          final age = now.year - _selectedDate!.year;
+          final monthDiff = now.month - _selectedDate!.month;
+          final dayDiff = now.day - _selectedDate!.day;
+          final exactAge = age - ((monthDiff < 0 || (monthDiff == 0 && dayDiff < 0)) ? 1 : 0);
+          
+          if (exactAge < 18) {
+            errorMessage = 'You must be at least 18 years old to register';
+          }
+        } else if (_selectedDate == null) {
+          errorMessage = 'Please select your date of birth';
+        }
+        
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please fill all fields correctly'),
+          SnackBar(
+            content: Text(errorMessage),
             backgroundColor: Colors.red,
           ),
         );
@@ -80,6 +114,23 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Please select your date of birth'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+      
+      // Validate age again at submission
+      final now = DateTime.now();
+      final age = now.year - _selectedDate!.year;
+      final monthDiff = now.month - _selectedDate!.month;
+      final dayDiff = now.day - _selectedDate!.day;
+      final exactAge = age - ((monthDiff < 0 || (monthDiff == 0 && dayDiff < 0)) ? 1 : 0);
+      
+      if (exactAge < 18) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('You must be at least 18 years old to register'),
             backgroundColor: Colors.red,
           ),
         );
@@ -125,9 +176,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   Future<void> _selectDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: DateTime.now().subtract(const Duration(days: 365 * 18)), // Default to 18 years ago
       firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
+      lastDate: DateTime.now().subtract(const Duration(days: 365 * 18)), // Max date is 18 years ago
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -298,8 +349,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your email';
                           }
-                          if (!value.contains('@')) {
-                            return 'Please enter a valid email';
+                          final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+                          if (!emailRegex.hasMatch(value)) {
+                            return 'Please enter a valid email address';
                           }
                           return null;
                         },
@@ -319,8 +371,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your mobile number';
                           }
-                          if (value.length < 10) {
-                            return 'Please enter a valid mobile number';
+                          // Remove common phone formatting characters for validation
+                          final cleanedPhone = value.replaceAll(RegExp(r'[\s\-\(\)]'), '');
+                          final phoneRegex = RegExp(r'^[6-9]\d{9}$'); // Indian mobile number
+                          if (!phoneRegex.hasMatch(cleanedPhone)) {
+                            return 'Please enter a valid Indian mobile number';
                           }
                           return null;
                         },
