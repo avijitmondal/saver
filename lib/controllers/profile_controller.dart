@@ -165,13 +165,7 @@ class ProfileController {
 
   // Account actions
   void changePassword() {
-    // Implement password change logic
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Coming soon!'),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    Navigator.of(context).pushNamed(RouteConfig.changePassword);
   }
 
   void exportData() {
@@ -212,4 +206,4 @@ class ProfileController {
       ),
     );
   }
-} 
+}

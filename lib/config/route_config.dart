@@ -5,14 +5,17 @@ import '../screens/welcome_screen.dart';
 import '../screens/splash_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/signup_screen.dart';
+import '../screens/change_password_screen.dart';
 
 class RouteConfig {
-  static const String initialRoute = '/';
+  static const String initialRoute = '/splash';
   static const String welcome = '/welcome';
   static const String registration = '/registration';
   static const String home = '/home';
   static const String login = '/login';
   static const String signup = '/signup';
+  static const String changePassword = '/change-password';
+  static const String forgotPassword = '/forgot-password';
 
   static Map<String, Widget Function(BuildContext)> get routes => {
         initialRoute: (context) => const SplashScreen(),
@@ -21,6 +24,8 @@ class RouteConfig {
         home: (context) => const HomeScreen(),
         login: (context) => const LoginScreen(),
         signup: (context) => const SignupScreen(),
+        changePassword: (context) => const ChangePasswordScreen(),
+        forgotPassword: (context) => const ChangePasswordScreen(isForgotPassword: true),
       };
 
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {

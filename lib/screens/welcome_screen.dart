@@ -21,7 +21,15 @@ class WelcomeScreen extends StatelessWidget {
         children: [
           const Spacer(),
           // App Logo
-          const StyledAppLogo(size: 120),
+          Image.asset(
+            'assets/ic_launcher.png',
+            height: 120,
+            width: 120,
+            errorBuilder: (context, error, stackTrace) => const Icon(
+              Icons.account_balance_wallet_outlined,
+              size: 120,
+            ),
+          ),
           const SizedBox(height: UIConstants.spacing32),
           
           // Welcome Text
@@ -125,4 +133,4 @@ class WelcomeScreen extends StatelessWidget {
       ),
     );
   }
-} 
+}

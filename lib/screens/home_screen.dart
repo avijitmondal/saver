@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/common/bottom_nav_scaffold.dart';
 import '../constants/ui_constants.dart';
+import '../constants/app_constants.dart';
 import 'overview_screen.dart';
 import 'investments_screen.dart';
 import 'notifications_screen.dart';
@@ -30,17 +31,24 @@ class _HomeScreenState extends State<HomeScreen> {
         icon: Icons.trending_up,
         screen: InvestmentsScreen(),
       ),
-      const BottomNavItem(
-        label: 'Notifications',
-        icon: Icons.notifications_outlined,
-        screen: NotificationsScreen(),
-      ),
+      // Notifications item only when enabled
+      if (AppConstants.enableNotifications)
+        const BottomNavItem(
+          label: 'Notifications',
+          icon: Icons.notifications_outlined,
+          screen: NotificationsScreen(),
+        ),
       const BottomNavItem(
         label: 'Profile',
         icon: Icons.person_outline,
         screen: ProfileScreen(),
       ),
     ];
+
+    // Adjust selected index if notifications disabled and previously selected its slot
+    if (!AppConstants.enableNotifications && _selectedIndex >= navItems.length) {
+      _selectedIndex = 0;
+    }
 
     return BottomNavScaffold(
       items: navItems,

@@ -120,7 +120,7 @@ class RecurringDepositScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   const Text(
-                    'Matured Balance (Tracking)',
+                    'Matured Balance',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,

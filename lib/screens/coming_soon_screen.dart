@@ -130,7 +130,7 @@ class _ComingSoonScreenState extends State<ComingSoonScreen> {
             right: 0,
             bottom: 16,
             child: Text(
-              '© ${DateTime.now().year} Save₹. All rights reserved.',
+              '© ${DateTime.now().year} Saver. All rights reserved.',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Colors.grey[600],
                   ),

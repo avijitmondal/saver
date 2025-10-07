@@ -75,9 +75,9 @@ class AccountManager {
       if (!context.mounted) return;
       Navigator.of(context).pop(); // Close loading dialog
 
-      // Navigate to registration screen
-      _navigationService.navigator?.pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const SignupScreen()),
+      // Navigate to welcome screen
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        RouteConfig.welcome,
         (route) => false,
       );
     } catch (e) {

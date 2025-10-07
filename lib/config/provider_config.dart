@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/user_provider.dart';
 import '../providers/notifications_provider.dart';
 import '../providers/portfolio_provider.dart';
+import '../providers/feature_flags_provider.dart';
 
 class ProviderConfig {
   static List<ChangeNotifierProvider> get providers => [
@@ -14,6 +15,9 @@ class ProviderConfig {
         ),
         ChangeNotifierProvider<PortfolioProvider>(
           create: (_) => PortfolioProvider(),
+        ),
+        ChangeNotifierProvider<FeatureFlagsProvider>(
+          create: (_) => FeatureFlagsProvider(),
         ),
       ];
 

@@ -6,7 +6,7 @@ class SampleEPFPayments {
   /// Get a list of sample EPF payments for demonstration purposes
   static List<EPFPayment> getSamplePayments() {
     // Return empty list if sample data is disabled
-    if (!(AppConstants.featureFlags["enableSampleInvestmentData"] ?? false)) {
+    if (!(AppConstants.featureFlags["sampleInvestmentData"] ?? false)) {
       return [];
     }
     

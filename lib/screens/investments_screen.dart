@@ -35,11 +35,13 @@ class InvestmentsScreen extends StatelessWidget {
           children: InvestmentConstants.allTypes
               .where((type) =>
                   (type.name != 'Fixed Deposit' ||
-                      (flags['enableFixedDepositInvestment'] ?? true)) &&
+                      (flags['fixedDepositInvestment'] ?? true)) &&
                   (type.name != 'Recurring Deposit' ||
-                      (flags['enableRecurringDepositInvestment'] ?? true)) &&
+                      (flags['recurringDepositInvestment'] ?? true)) &&
                   (type.name != 'PPF' ||
-                      (flags['enablePublicProvidentFundInvestment'] ?? true)))
+                      (flags['publicProvidentFundInvestment'] ?? true)) &&
+                  (type.name != 'EPF' ||
+                      (flags['employeeProvidentFundInvestment'] ?? true)))
               .map((type) {
             return ListTile(
               leading: Icon(
@@ -96,13 +98,13 @@ class InvestmentsScreen extends StatelessWidget {
     final uniqueInvestments = _getUniqueInvestments(
       portfolio.investments.where((inv) =>
         (inv.type != 'Fixed Deposit' ||
-          (flags['enableFixedDepositInvestment'] ?? true)) &&
+          (flags['fixedDepositInvestment'] ?? true)) &&
         (inv.type != 'Recurring Deposit' ||
-          (flags['enableRecurringDepositInvestment'] ?? true)) &&
+          (flags['recurringDepositInvestment'] ?? true)) &&
         (inv.type != 'PPF' ||
-          (flags['enablePublicProvidentFundInvestment'] ?? true)) &&
+          (flags['publicProvidentFundInvestment'] ?? true)) &&
         (inv.type != 'EPF' ||
-          (flags['enableEmployeeProvidentFundInvestment'] ?? true))
+          (flags['employeeProvidentFundInvestment'] ?? true))
       ).toList(),
     );
 

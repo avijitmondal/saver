@@ -53,12 +53,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (context, userProvider, child) {
         return AppScaffold(
           title: 'Profile',
-          actions: [
+          /*actions: [
             IconButton(
               icon: const Icon(Icons.edit),
               onPressed: _controller.showEditNameDialog,
             ),
-          ],
+          ],*/
           body: ListView(
             children: [
               // Profile Header

@@ -23,7 +23,7 @@ class SecuritySection extends StatelessWidget {
           trailing: const Icon(Icons.chevron_right),
           onTap: controller.changePassword,
         ),
-        ListTile(
+        /*ListTile(
           leading: const Icon(Icons.security),
           title: const Text('Two-Factor Authentication'),
           subtitle: const Text('Enable additional security'),
@@ -31,7 +31,7 @@ class SecuritySection extends StatelessWidget {
             value: controller.isTwoFactorEnabled,
             onChanged: controller.updateTwoFactorAuth,
           ),
-        ),
+        ),*/
         const Divider(height: 1),
       ],
     );

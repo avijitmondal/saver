@@ -61,7 +61,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
         // Only show Coming Soon screen if enabled and NOT on Android/iOS
         final isMobile = defaultTargetPlatform == TargetPlatform.android || defaultTargetPlatform == TargetPlatform.iOS;
-        if ((AppConstants.featureFlags["enableComingSoonScreen"] ?? false) && !isMobile) {
+        if ((AppConstants.featureFlags["comingSoonScreen"] ?? false) && !isMobile) {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -85,7 +85,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   }
 
   void _initializeUserData() {
-    if (!(AppConstants.featureFlags["enableSampleUser"] ?? false)) return;
+    if (!(AppConstants.featureFlags["sampleUser"] ?? false)) return;
     // Use the SampleUser class to populate user data
     SampleUser.populateUserProvider(context);
   }
@@ -99,7 +99,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+      backgroundColor: Colors.white,
       body: AnimatedBuilder(
         animation: _controller,
         builder: (context, child) {
@@ -111,10 +111,15 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.account_balance_wallet_outlined,
-                      size: 100,
-                      color: Theme.of(context).colorScheme.primary,
+                    Image.asset(
+                      'assets/ic_launcher.png',
+                      height: 100,
+                      width: 100,
+                      errorBuilder: (context, error, stackTrace) => Icon(
+                        Icons.account_balance_wallet_outlined,
+                        size: 100,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
                     const SizedBox(height: 24),
                     Text(

@@ -37,7 +37,7 @@ class PortfolioSummaryCard extends StatelessWidget {
           children: <Widget>[
             Row(
               children: [
-                Container(
+                /*Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.2),
@@ -48,7 +48,7 @@ class PortfolioSummaryCard extends StatelessWidget {
                     size: 32,
                     color: Theme.of(context).colorScheme.primary,
                   ),
-                ),
+                ),*/
                 const SizedBox(width: 16),
                 const Text(
                   'Portfolio Summary',

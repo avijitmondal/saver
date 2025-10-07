@@ -11,36 +11,17 @@ class AboutSection extends StatelessWidget {
       title: 'About',
       children: [
         Text(
-            'developed by',
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.grey,
-              fontWeight: FontWeight.w400,
-              letterSpacing: 1.2,
-            ),
+          'Version: ${AppConstants.appVersion}',
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.grey,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 1.1,
           ),
-          SizedBox(height: 8),
-          Text(
-            'MatkaDada',
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-              letterSpacing: 2,
-            ),
-          ),
-          SizedBox(height: 16),
-          Text(
-            'App Version: ${AppConstants.appVersion}',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey,
-              fontWeight: FontWeight.w500,
-              letterSpacing: 1.1,
-            ),
-          ),
+        ),
         const Divider(height: 1),
       ],
     );
   }
 }
+

@@ -1,4 +1,4 @@
-package com.example.saver
+package com.avijitmondal.saver
 
 import io.flutter.embedding.android.FlutterActivity
 

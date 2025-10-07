@@ -28,22 +28,22 @@ class _InvestmentDistributionCardState
     for (var investment in portfolio.investments) {
       // Exclude Fixed Deposit if flag is false
       if (investment.type == 'Fixed Deposit' &&
-          !(flags['enableFixedDepositInvestment'] ?? true)) {
+          !(flags['fixedDepositInvestment'] ?? true)) {
         continue;
       }
       // Exclude Recurring Deposit if flag is false
       if (investment.type == 'Recurring Deposit' &&
-          !(flags['enableRecurringDepositInvestment'] ?? true)) {
+          !(flags['recurringDepositInvestment'] ?? true)) {
         continue;
       }
       // Exclude EPF if flag is false
       if (investment.type == 'EPF' &&
-          !(flags['enableEmployeeProvidentFundInvestment'] ?? true)) {
+          !(flags['employeeProvidentFundInvestment'] ?? true)) {
         continue;
       }
       // Exclude PPF if flag is false
       if (investment.type == 'PPF' &&
-          !(flags['enablePublicProvidentFundInvestment'] ?? true)) {
+          !(flags['publicProvidentFundInvestment'] ?? true)) {
         continue;
       }
       typeBalances[investment.type] =
@@ -97,22 +97,22 @@ class _InvestmentDistributionCardState
     final flags = Provider.of<FeatureFlagsProvider>(context).flags;
     switch (type.name) {
       case 'Fixed Deposit':
-        if (!(flags['enableFixedDepositInvestment'] ?? true)) {
+        if (!(flags['fixedDepositInvestment'] ?? true)) {
           return '';
         }
         return 'FD';
       case 'Recurring Deposit':
-        if (!(flags['enableRecurringDepositInvestment'] ?? true)) {
+        if (!(flags['recurringDepositInvestment'] ?? true)) {
           return '';
         }
         return 'RD';
       case 'EPF':
-        if (!(flags['enableEmployeeProvidentFundInvestment'] ?? true)) {
+        if (!(flags['employeeProvidentFundInvestment'] ?? true)) {
           return '';
         }
         return 'EPF';
       case 'PPF':
-        if (!(flags['enablePublicProvidentFundInvestment'] ?? true)) {
+        if (!(flags['publicProvidentFundInvestment'] ?? true)) {
           return '';
         }
         return 'PPF';
@@ -172,10 +172,10 @@ class _InvestmentDistributionCardState
                 ...InvestmentConstants.allTypes
                   .where((type) {
                     final flags = Provider.of<FeatureFlagsProvider>(context, listen: false).flags;
-                    if (type.name == 'Fixed Deposit' && !(flags['enableFixedDepositInvestment'] ?? true)) return false;
-                    if (type.name == 'Recurring Deposit' && !(flags['enableRecurringDepositInvestment'] ?? true)) return false;
-                    if (type.name == 'EPF' && !(flags['enableEmployeeProvidentFundInvestment'] ?? true)) return false;
-                    if (type.name == 'PPF' && !(flags['enablePublicProvidentFundInvestment'] ?? true)) return false;
+                    if (type.name == 'Fixed Deposit' && !(flags['fixedDepositInvestment'] ?? true)) return false;
+                    if (type.name == 'Recurring Deposit' && !(flags['recurringDepositInvestment'] ?? true)) return false;
+                    if (type.name == 'EPF' && !(flags['employeeProvidentFundInvestment'] ?? true)) return false;
+                    if (type.name == 'PPF' && !(flags['publicProvidentFundInvestment'] ?? true)) return false;
                     return true;
                   })
                   .map((type) {
@@ -187,10 +187,10 @@ class _InvestmentDistributionCardState
                         : 0.0;
 
                     // Hide legend entry if flag is disabled
-                    if ((type.name == 'Fixed Deposit' && !(flags['enableFixedDepositInvestment'] ?? true)) ||
-                        (type.name == 'Recurring Deposit' && !(flags['enableRecurringDepositInvestment'] ?? true)) ||
-                        (type.name == 'EPF' && !(flags['enableEmployeeProvidentFundInvestment'] ?? true)) ||
-                        (type.name == 'PPF' && !(flags['enablePublicProvidentFundInvestment'] ?? true))) {
+                    if ((type.name == 'Fixed Deposit' && !(flags['fixedDepositInvestment'] ?? true)) ||
+                        (type.name == 'Recurring Deposit' && !(flags['recurringDepositInvestment'] ?? true)) ||
+                        (type.name == 'EPF' && !(flags['employeeProvidentFundInvestment'] ?? true)) ||
+                        (type.name == 'PPF' && !(flags['publicProvidentFundInvestment'] ?? true))) {
                       return const SizedBox.shrink();
                     }
 

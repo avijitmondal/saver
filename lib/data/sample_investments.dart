@@ -5,7 +5,7 @@ import '../constants/app_constants.dart';
 class SampleInvestments {
   static List<Investment> getInitialInvestments() {
     // Return empty list if sample data is disabled
-    if (!(AppConstants.featureFlags["enableSampleInvestmentData"] ?? false)) {
+    if (!(AppConstants.featureFlags["sampleInvestmentData"] ?? false)) {
       return [];
     }
 

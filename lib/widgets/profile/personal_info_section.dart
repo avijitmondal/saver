@@ -26,28 +26,28 @@ class PersonalInfoSection extends StatelessWidget {
           icon: Icons.phone,
           title: 'Phone Number',
           subtitle: userProvider.phone,
-          trailing: IconButton(
+          /*trailing: IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () => controller.showEditPhoneDialog(),
-          ),
+          ),*/
         ),
         InfoListTile(
           icon: Icons.location_on,
           title: 'Address',
           subtitle: userProvider.address,
-          trailing: IconButton(
+          /*trailing: IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () => controller.showEditAddressDialog(),
-          ),
+          ),*/
         ),
         InfoListTile(
           icon: Icons.calendar_today,
           title: 'Date of Birth',
           subtitle: _formatDate(userProvider.dateOfBirth),
-          trailing: IconButton(
+          /*trailing: IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () => controller.showDatePickerDialog(),
-          ),
+          ),*/
         ),
       ],
     );

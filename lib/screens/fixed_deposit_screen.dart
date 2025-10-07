@@ -121,7 +121,7 @@ class FixedDepositScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   const Text(
-                    'Matured Balance (Tracking)',
+                    'Matured Balance',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -234,7 +234,7 @@ class FixedDepositScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Only show screen if FD is enabled
-    if (!(AppConstants.featureFlags['enableFixedDepositInvestment'] ?? true)) {
+    if (!(AppConstants.featureFlags['fixedDepositInvestment'] ?? true)) {
       return Scaffold(
         appBar: AppBar(
           title: const Text('Fixed Deposit'),

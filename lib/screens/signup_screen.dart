@@ -21,7 +21,15 @@ class SignupScreen extends StatelessWidget {
         children: [
           const Spacer(),
           // App Logo
-          const StyledAppLogo(size: 120),
+          Image.asset(
+            'assets/ic_launcher.png',
+            height: 120,
+            width: 120,
+            errorBuilder: (context, error, stackTrace) => const Icon(
+              Icons.account_balance_wallet_outlined,
+              size: 120,
+            ),
+          ),
           // const SizedBox(height: UIConstants.spacing32),
           
           // Signup Text
@@ -37,6 +45,7 @@ class SignupScreen extends StatelessWidget {
           const Spacer(),
 
           // Use ElevatedButton.icon for Google signup
+          /*
           ElevatedButton.icon(
             icon: Image.asset(
               'assets/google_logo.png',
@@ -84,6 +93,7 @@ class SignupScreen extends StatelessWidget {
             },
           ),
           const SizedBox(height: UIConstants.spacing16),
+          */
 
           // Proceed Button
           ElevatedButton(

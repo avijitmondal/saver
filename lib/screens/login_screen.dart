@@ -81,7 +81,15 @@ class _LoginScreenState extends State<LoginScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // App Logo
-            const StyledAppLogo(size: 80),
+            Image.asset(
+              'assets/ic_launcher.png',
+              height: 80,
+              width: 80,
+              errorBuilder: (context, error, stackTrace) => const Icon(
+                Icons.account_balance_wallet_outlined,
+                size: 80,
+              ),
+            ),
             const SizedBox(height: UIConstants.spacing24),
             
             // Welcome Text
@@ -138,24 +146,20 @@ class _LoginScreenState extends State<LoginScreen> {
             StyledTextButton(
               text: 'Forgot Password?',
               onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Forgot password feature not implemented yet'),
-                  ),
-                );
+                Navigator.pushNamed(context, RouteConfig.forgotPassword);
               },
             ),
             
             // Use Different Account
-            StyledTextButton(
+            /*StyledTextButton(
               text: 'Use Different Account',
               onPressed: () {
                 Navigator.pushReplacementNamed(context, RouteConfig.welcome);
               },
-            ),
+            ),*/
           ],
         ),
       ),
     );
   }
-} 
+}

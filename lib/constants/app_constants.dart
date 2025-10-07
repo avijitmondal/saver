@@ -1,6 +1,6 @@
 class AppConstants {
   // App Information
-  static const String appName = 'Save₹';
+  static const String appName = 'Saver';
   static const String appVersion = '0.0.1';
 
   // API Endpoints (if applicable)
@@ -12,38 +12,39 @@ class AppConstants {
   static const int defaultAnimationDuration = 300; // milliseconds
 
   // Feature Flags
-  static const bool enableDarkMode = true;
-  static const bool enableNotifications = true;
+  static const bool enableDarkMode = false;
+  static const bool enableNotifications = false; // temporarily disabled
   static const bool enableAnalytics = true;
 
   // Set to true to enable developer mode features
-  static const bool enableDeveloperMode = true; 
+  static const bool enableDeveloperMode = false; 
 
   // Feature Flags
   // Set this to false to disable sample user and go to welcome screen
   static final Map<String, bool> featureFlags = {
-    'enableSampleUser': true,
+    // Keys renamed (removed 'enable' prefix)
+    'sampleUser': false,
     // Set this to false to disable sample investment data
-    'enableSampleInvestmentData': true,
+    'sampleInvestmentData': false,
+    // Set this to false to disable coming soon screen
+    'comingSoonScreen': false,
     // Set this to false to disable fixed deposit investment
-    'enableFixedDepositInvestment': true,
+    'fixedDepositInvestment': true,
     // Set this to false to disable recurring deposit investment
-    'enableRecurringDepositInvestment': true,
+    'recurringDepositInvestment': true,
     // Set this to false to disable public provident fund investment
-    'enablePublicProvidentFundInvestment': true,
+    'publicProvidentFundInvestment': false,
     // Set this to false to disable employee provident fund investment
-    'enableEmployeeProvidentFundInvestment': true,
+    'employeeProvidentFundInvestment': false,
     // Set this to false to disable mutual fund investment
-    'enableMutualFundInvestment': false,
+    'mutualFundInvestment': false,
     // Set this to false to disable stock investment
-    'enableStockInvestment': false,
+    'stockInvestment': false,
     // Set this to false to disable gold investment
-    'enableGoldInvestment': false,
+    'goldInvestment': false,
     // Set this to false to disable real estate investment
-    'enableRealEstateInvestment': false,
+    'realEstateInvestment': false,
     // Set this to false to disable cryptocurrency investment
-    'enableCryptocurrencyInvestment': false,
-    // Set this to false to disable comming soon screen
-    'enableComingSoonScreen': false,
+    'cryptocurrencyInvestment': false,
   };
 }

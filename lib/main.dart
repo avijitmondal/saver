@@ -32,13 +32,7 @@ void main() async {
   final navigationService = locator<NavigationService>();
 
   runApp(
-    MultiProvider(
-      providers: [
-        // ...existing providers...
-        ChangeNotifierProvider(create: (_) => FeatureFlagsProvider()),
-      ],
-      child: SaverApp(navigationService: navigationService),
-    ),
+    SaverApp(navigationService: navigationService),
   );
 }
 

@@ -4,7 +4,7 @@ import '../constants/app_constants.dart';
 class SampleNotifications {
   static List<NotificationModel> getInitialNotifications() {
     // Return empty list if sample data is disabled
-    if (!(AppConstants.featureFlags["enableSampleInvestmentData"] ?? false)) {
+    if (!(AppConstants.featureFlags["sampleInvestmentData"] ?? false)) {
       return [];
     }
     
