@@ -6,6 +6,7 @@ import '../widgets/common/styled_components.dart';
 import '../widgets/common/app_scaffold.dart';
 import '../widgets/common/password_form_widget.dart';
 import '../config/route_config.dart';
+import '../utils/validators.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   final bool isForgotPassword;
@@ -110,8 +111,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
         if (!isValidUser) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('The provided information does not match our records'),
+            SnackBar(
+              content: const Text('The provided information does not match our records'),
               backgroundColor: UIConstants.errorColor,
             ),
           );
@@ -122,9 +123,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         userProvider.setPassword(_newPasswordController.text);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Password reset successful! Please login with your new password.'),
-            backgroundColor: Colors.green,
+          SnackBar(
+            content: const Text('Password reset successful! Please login with your new password.'),
+            backgroundColor: UIConstants.successColor,
           ),
         );
 
@@ -150,8 +151,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
         if (!isCurrentPasswordValid) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Current password is incorrect'),
+            SnackBar(
+              content: const Text('Current password is incorrect'),
               backgroundColor: UIConstants.errorColor,
             ),
           );
@@ -161,9 +162,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         userProvider.setPassword(_newPasswordController.text);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Password changed successfully! Please login again.'),
-            backgroundColor: Colors.green,
+          SnackBar(
+            content: const Text('Password changed successfully! Please login again.'),
+            backgroundColor: UIConstants.successColor,
           ),
         );
 
@@ -220,15 +221,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 labelText: 'Email Address',
                 prefixIcon: Icons.email_outlined,
                 keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
-                  }
-                  if (!value.contains('@')) {
-                    return 'Please enter a valid email';
-                  }
-                  return null;
-                },
+                validator: (value) => Validators.validateEmail(value),
               ),
               const SizedBox(height: UIConstants.spacing16),
               
@@ -237,15 +230,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 labelText: 'Phone Number',
                 prefixIcon: Icons.phone_outlined,
                 keyboardType: TextInputType.phone,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your phone number';
-                  }
-                  if (value.length < 10) {
-                    return 'Please enter a valid phone number';
-                  }
-                  return null;
-                },
+                validator: (value) => Validators.validateIndianPhone(value),
               ),
               const SizedBox(height: UIConstants.spacing16),
               
@@ -294,4 +279,3 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     );
   }
 }
-

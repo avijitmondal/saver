@@ -58,8 +58,8 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         // Show error message for invalid password
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Invalid password. Please try again.'),
+          SnackBar(
+            content: const Text('Invalid password. Please try again.'),
             backgroundColor: UIConstants.errorColor,
           ),
         );

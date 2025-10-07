@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../constants/ui_constants.dart';
+import '../../utils/validators.dart';
 import 'styled_components.dart';
 
 class PasswordFormWidget extends StatefulWidget {
@@ -55,12 +56,7 @@ class _PasswordFormWidgetState extends State<PasswordFormWidget> {
               },
             ),
             obscureText: _obscureCurrentPassword,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your current password';
-              }
-              return null;
-            },
+            validator: (value) => Validators.validateRequired(value, 'current password'),
           ),
           const SizedBox(height: UIConstants.spacing16),
         ],
@@ -84,32 +80,8 @@ class _PasswordFormWidgetState extends State<PasswordFormWidget> {
           ),
           obscureText: _obscureNewPassword,
           validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter a password';
-            }
-            if (value.length < 8) {
-              return 'Password must be at least 8 characters';
-            }
-            
-            // Check for uppercase letter
-            if (!RegExp(r'[A-Z]').hasMatch(value)) {
-              return 'Password must contain at least one uppercase letter';
-            }
-            
-            // Check for lowercase letter
-            if (!RegExp(r'[a-z]').hasMatch(value)) {
-              return 'Password must contain at least one lowercase letter';
-            }
-            
-            // Check for number
-            if (!RegExp(r'[0-9]').hasMatch(value)) {
-              return 'Password must contain at least one number';
-            }
-            
-            // Check for special character
-            if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
-              return 'Password must contain at least one special character';
-            }
+            final passwordError = Validators.validatePassword(value);
+            if (passwordError != null) return passwordError;
             
             if (widget.requireCurrentPassword && 
                 widget.currentPasswordController != null &&
@@ -139,15 +111,10 @@ class _PasswordFormWidgetState extends State<PasswordFormWidget> {
             },
           ),
           obscureText: _obscureConfirmPassword,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please confirm your password';
-            }
-            if (value != widget.newPasswordController.text) {
-              return 'Passwords do not match';
-            }
-            return null;
-          },
+          validator: (value) => Validators.validateConfirmPassword(
+            value, 
+            widget.newPasswordController.text,
+          ),
         ),
       ],
     );

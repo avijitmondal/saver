@@ -39,7 +39,7 @@ class NotificationsScreen extends StatelessWidget {
                 const SnackBar(
                   content: Text('All notifications marked as read'),
                   behavior: SnackBarBehavior.floating,
-                  duration: UIConstants.animationMedium,
+                  duration: UIConstants.animationDurationMedium,
                 ),
               );
             },
@@ -68,7 +68,7 @@ class NotificationsScreen extends StatelessWidget {
                           const SnackBar(
                             content: Text('All notifications cleared'),
                             behavior: SnackBarBehavior.floating,
-                            duration: UIConstants.animationMedium,
+                            duration: UIConstants.animationDurationMedium,
                           ),
                         );
                       },
@@ -125,7 +125,7 @@ class NotificationsScreen extends StatelessWidget {
                           const SnackBar(
                             content: Text('Notification removed'),
                             behavior: SnackBarBehavior.floating,
-                            duration: UIConstants.animationMedium,
+                            duration: UIConstants.animationDurationMedium,
                           ),
                         );
                       },

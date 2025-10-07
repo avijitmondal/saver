@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/user_provider.dart';
 import '../widgets/common/password_form_widget.dart';
+import '../constants/ui_constants.dart';
+import '../utils/validators.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -41,32 +43,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       // Only validate the current form fields based on the step
       bool isValid = true;
       if (_currentStep == 0) {
-        // More comprehensive email and phone validation
-        final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
-        final phoneRegex = RegExp(r'^[6-9]\d{9}$'); // Indian mobile number format
-        
-        // Check if user is at least 18 years old
-        bool isValidAge = false;
-        if (_selectedDate != null) {
-          final now = DateTime.now();
-          final age = now.year - _selectedDate!.year;
-          final monthDiff = now.month - _selectedDate!.month;
-          final dayDiff = now.day - _selectedDate!.day;
-          
-          // Calculate exact age
-          final exactAge = age - ((monthDiff < 0 || (monthDiff == 0 && dayDiff < 0)) ? 1 : 0);
-          isValidAge = exactAge >= 18;
-        }
-        
         isValid = _firstNameController.text.isNotEmpty &&
             _lastNameController.text.isNotEmpty &&
             _emailController.text.isNotEmpty &&
-            emailRegex.hasMatch(_emailController.text) &&
+            Validators.validateEmail(_emailController.text) == null &&
             _phoneController.text.isNotEmpty &&
-            phoneRegex.hasMatch(_phoneController.text.replaceAll(RegExp(r'[\s\-\(\)]'), '')) &&
+            Validators.validateIndianPhone(_phoneController.text) == null &&
             _addressController.text.isNotEmpty &&
             _selectedDate != null &&
-            isValidAge;
+            Validators.validateAge(_selectedDate) == null;
       }
 
       if (isValid) {
@@ -74,17 +59,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           _currentStep += 1;
         });
       } else {
-        // Show error message
         String errorMessage = 'Please fill all fields correctly';
         if (_selectedDate != null) {
-          final now = DateTime.now();
-          final age = now.year - _selectedDate!.year;
-          final monthDiff = now.month - _selectedDate!.month;
-          final dayDiff = now.day - _selectedDate!.day;
-          final exactAge = age - ((monthDiff < 0 || (monthDiff == 0 && dayDiff < 0)) ? 1 : 0);
-          
-          if (exactAge < 18) {
-            errorMessage = 'You must be at least 18 years old to register';
+          final ageError = Validators.validateAge(_selectedDate);
+          if (ageError != null) {
+            errorMessage = ageError;
           }
         } else if (_selectedDate == null) {
           errorMessage = 'Please select your date of birth';
@@ -93,7 +72,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(errorMessage),
-            backgroundColor: Colors.red,
+            backgroundColor: UIConstants.errorColor,
           ),
         );
       }
@@ -110,28 +89,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   Future<void> _submitRegistration() async {
     if (_formKey.currentState!.validate()) {
-      if (_selectedDate == null) {
+      final ageError = Validators.validateAge(_selectedDate);
+      if (ageError != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please select your date of birth'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-      
-      // Validate age again at submission
-      final now = DateTime.now();
-      final age = now.year - _selectedDate!.year;
-      final monthDiff = now.month - _selectedDate!.month;
-      final dayDiff = now.day - _selectedDate!.day;
-      final exactAge = age - ((monthDiff < 0 || (monthDiff == 0 && dayDiff < 0)) ? 1 : 0);
-      
-      if (exactAge < 18) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('You must be at least 18 years old to register'),
-            backgroundColor: Colors.red,
+          SnackBar(
+            content: Text(ageError),
+            backgroundColor: UIConstants.errorColor,
           ),
         );
         return;
@@ -310,12 +273,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           ),
                           prefixIcon: const Icon(Icons.person_outline),
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your first name';
-                          }
-                          return null;
-                        },
+                        validator: (value) => Validators.validateRequired(value, 'first name'),
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
@@ -327,12 +285,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           ),
                           prefixIcon: const Icon(Icons.person_outline),
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your last name';
-                          }
-                          return null;
-                        },
+                        validator: (value) => Validators.validateRequired(value, 'last name'),
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
@@ -345,16 +298,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           prefixIcon: const Icon(Icons.email_outlined),
                         ),
                         keyboardType: TextInputType.emailAddress,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your email';
-                          }
-                          final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
-                          if (!emailRegex.hasMatch(value)) {
-                            return 'Please enter a valid email address';
-                          }
-                          return null;
-                        },
+                        validator: (value) => Validators.validateEmail(value),
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
@@ -367,18 +311,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           prefixIcon: const Icon(Icons.phone_outlined),
                         ),
                         keyboardType: TextInputType.phone,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your mobile number';
-                          }
-                          // Remove common phone formatting characters for validation
-                          final cleanedPhone = value.replaceAll(RegExp(r'[\s\-\(\)]'), '');
-                          final phoneRegex = RegExp(r'^[6-9]\d{9}$'); // Indian mobile number
-                          if (!phoneRegex.hasMatch(cleanedPhone)) {
-                            return 'Please enter a valid Indian mobile number';
-                          }
-                          return null;
-                        },
+                        validator: (value) => Validators.validateIndianPhone(value),
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
@@ -391,12 +324,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           prefixIcon: const Icon(Icons.location_on_outlined),
                         ),
                         maxLines: 3,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your address';
-                          }
-                          return null;
-                        },
+                        validator: (value) => Validators.validateRequired(value, 'address'),
                       ),
                       const SizedBox(height: 16),
                       InkWell(

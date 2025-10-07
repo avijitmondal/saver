@@ -4,6 +4,8 @@ import '../providers/portfolio_provider.dart';
 import '../models/investment.dart';
 import '../utils/date_utils.dart';
 import '../constants/bank_constants.dart';
+import '../constants/ui_constants.dart';
+import '../utils/validators.dart';
 import 'package:flutter/services.dart';
 
 class AddFixedDepositScreen extends StatefulWidget {
@@ -59,9 +61,9 @@ class _AddFixedDepositScreenState extends State<AddFixedDepositScreen> {
       // Additional validation for start date
       if (_startDate!.isAfter(DateTime.now())) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Start date cannot be in the future'),
-            backgroundColor: Colors.red,
+          SnackBar(
+            content: const Text('Start date cannot be in the future'),
+            backgroundColor: UIConstants.errorColor,
           ),
         );
         return;
@@ -135,22 +137,7 @@ class _AddFixedDepositScreenState extends State<AddFixedDepositScreen> {
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
                 ],
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the amount';
-                  }
-                  final amount = double.tryParse(value);
-                  if (amount == null) {
-                    return 'Please enter a valid number';
-                  }
-                  if (amount <= 0) {
-                    return 'Amount must be greater than zero';
-                  }
-                  if (amount < 100) {
-                    return 'Minimum amount for FD is ₹100';
-                  }
-                  return null;
-                },
+                validator: (value) => Validators.validateAmount(value, minAmount: 100),
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -202,7 +189,7 @@ class _AddFixedDepositScreenState extends State<AddFixedDepositScreen> {
                             : DateFormatter.formatDate(_startDate),
                         style: TextStyle(
                           color: _startDate != null && _startDate!.isAfter(DateTime.now())
-                              ? Colors.red
+                              ? UIConstants.errorColor
                               : null,
                         ),
                       ),
@@ -240,9 +227,9 @@ class _AddFixedDepositScreenState extends State<AddFixedDepositScreen> {
               ElevatedButton(
                 onPressed: _submitForm,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
+                  backgroundColor: UIConstants.successColor,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: UIConstants.spacing16),
                 ),
                 child: const Text(
                   'Add Fixed Deposit',
