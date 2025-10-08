@@ -1,15 +1,12 @@
 class AppConstants {
   // App Information
   static const String appName = 'Saver';
-  static const String appVersion = '0.0.1';
+  static const String appVersion = '1.0.0';
 
   // API Endpoints (if applicable)
   static const String baseApiUrl = 'http://localhost:8881/api/v1';
 
   static const String waitlistFormUri = 'https://docs.google.com/forms/d/e/1FAIpQLSfrPUXRYbv6M79sc5Qe2aAYGchzmX8bUSI3gcN5MoIBaT5ZMA/viewform?usp=dialog';
-  
-  // Privacy Policy URL
-  static const String privacyPolicyUrl = 'https://sites.google.com/view/saverapp-privacy-policy/home';
 
   // Default Values
   static const int defaultAnimationDuration = 300; // milliseconds
@@ -33,9 +30,9 @@ class AppConstants {
   // Set this to false to disable sample user and go to welcome screen
   static final Map<String, bool> featureFlags = {
     // Keys renamed (removed 'enable' prefix)
-    'sampleUser': true,
+    'sampleUser': false,
     // Set this to false to disable sample investment data
-    'sampleInvestmentData': true,
+    'sampleInvestmentData': false,
     // Set this to false to disable coming soon screen
     'comingSoonScreen': true,
     // Set this to false to disable fixed deposit investment
