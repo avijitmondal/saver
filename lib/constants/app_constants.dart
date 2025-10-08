@@ -7,6 +7,9 @@ class AppConstants {
   static const String baseApiUrl = 'http://localhost:8881/api/v1';
 
   static const String waitlistFormUri = 'https://docs.google.com/forms/d/e/1FAIpQLSfrPUXRYbv6M79sc5Qe2aAYGchzmX8bUSI3gcN5MoIBaT5ZMA/viewform?usp=dialog';
+  
+  // Privacy Policy URL
+  static const String privacyPolicyUrl = 'https://sites.google.com/view/saverapp-privacy-policy/home';
 
   // Default Values
   static const int defaultAnimationDuration = 300; // milliseconds
