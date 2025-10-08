@@ -30,7 +30,7 @@ class AccountActionsSection extends StatelessWidget {
           trailing: const Icon(Icons.chevron_right),
           onTap: controller.logout,
         ),
-        /*InfoListTile(
+        InfoListTile(
           icon: Icons.delete_forever,
           title: 'Delete Account',
           subtitle: 'Permanently delete your account',
@@ -38,7 +38,7 @@ class AccountActionsSection extends StatelessWidget {
           titleColor: Colors.red,
           trailing: const Icon(Icons.chevron_right, color: Colors.red),
           onTap: controller.deleteAccount,
-        ),*/
+        ),
       ],
     );
   }

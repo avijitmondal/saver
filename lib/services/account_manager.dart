@@ -48,23 +48,22 @@ class AccountManager {
   Future<void> deleteAccount(BuildContext context) async {
     try {
       // Show loading dialog
-      await DialogService.showLoadingDialog(
+      DialogService.showLoadingDialog(
         context: context,
         message: 'Deleting account...',
       );
 
-      // Simulate some delay for data deletion
-      await Future.delayed(const Duration(milliseconds: 500));
-
-      // Clear data using locator
       if (!context.mounted) return;
 
       final userProvider = Provider.of<UserProvider>(context, listen: false);
-      final portfolioProvider =
-          Provider.of<PortfolioProvider>(context, listen: false);
+      final portfolioProvider = Provider.of<PortfolioProvider>(context, listen: false);
 
-      userProvider.clearUserData();
-      portfolioProvider.clearPortfolio();
+      // Wait for data clearing to complete
+      await userProvider.clearUserData();
+      await portfolioProvider.clearPortfolio();
+
+      // Additional delay to ensure storage operations complete
+      await Future.delayed(const Duration(milliseconds: 1000));
 
       // Close loading dialog and navigate
       if (!context.mounted) return;
@@ -82,8 +81,8 @@ class AccountManager {
 
         // Show error message
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Failed to delete account. Please try again.')),
+          SnackBar(
+              content: Text('Failed to delete account: ${e.toString()}')),
         );
       }
     }

@@ -3,14 +3,57 @@ import 'package:saver/constants/app_constants.dart';
 import '../models/investment.dart';
 import '../data/sample_investments.dart';
 import '../services/investment_calculator.dart';
+import '../services/local_storage_service.dart';
 import 'package:provider/provider.dart';
 import 'feature_flags_provider.dart';
 
 class PortfolioProvider extends ChangeNotifier {
-  final List<Investment> _investments =
-      SampleInvestments.getInitialInvestments();
+  List<Investment> _investments = [];
+  LocalStorageService? _storageService;
+  bool _isLoaded = false;
 
   List<Investment> get investments => List.unmodifiable(_investments);
+  bool get isLoaded => _isLoaded;
+
+  // Initialize the provider and load data
+  Future<void> initialize() async {
+    if (_isLoaded) return;
+
+    _storageService = await LocalStorageService.getInstance();
+    await _loadInvestments();
+    _isLoaded = true;
+    notifyListeners();
+  }
+
+  // Load investments from storage
+  Future<void> _loadInvestments() async {
+    try {
+      final hasData = await _storageService!.hasInvestmentData();
+
+      if (hasData) {
+        // Load existing data
+        _investments = await _storageService!.loadInvestments();
+      } else {
+        // First time user - load sample data if enabled
+        _investments = SampleInvestments.getInitialInvestments();
+        if (_investments.isNotEmpty) {
+          await _saveInvestments();
+        }
+      }
+    } catch (e) {
+      print('Error loading investments: $e');
+      _investments = [];
+    }
+  }
+
+  // Save investments to storage
+  Future<void> _saveInvestments() async {
+    try {
+      await _storageService?.saveInvestments(_investments);
+    } catch (e) {
+      print('Error saving investments: $e');
+    }
+  }
 
   // Get only active (non-matured) investments
   List<Investment> activeInvestmentsWithFlags(BuildContext context) {
@@ -142,19 +185,65 @@ class PortfolioProvider extends ChangeNotifier {
         totalReturns, totalInvestment);
   }
 
-  void addInvestment(Investment investment) {
+  Future<void> addInvestment(Investment investment) async {
+    // Ensure storage service is initialized
+    if (_storageService == null) {
+      await initialize();
+    }
+    
     _investments.add(investment);
+    await _saveInvestments();
     notifyListeners();
   }
 
-  void deleteInvestment(Investment investment) {
+  Future<void> deleteInvestment(Investment investment) async {
+    // Ensure storage service is initialized
+    if (_storageService == null) {
+      await initialize();
+    }
+    
     _investments.remove(investment);
+    await _saveInvestments();
     notifyListeners();
   }
 
-  // Clear all portfolio data
-  void clearPortfolio() {
+  // Clear all portfolio data (including storage)
+  Future<void> clearPortfolio() async {
     _investments.clear();
+    await _saveInvestments(); // This will save empty list to storage
     notifyListeners();
+  }
+
+  // Update an existing investment
+  Future<void> updateInvestment(Investment oldInvestment, Investment newInvestment) async {
+    final index = _investments.indexOf(oldInvestment);
+    if (index != -1) {
+      _investments[index] = newInvestment;
+      await _saveInvestments();
+      notifyListeners();
+    }
+  }
+
+  // Export data for backup
+  Future<Map<String, dynamic>> exportData() async {
+    return {
+      'investments': _investments.map((inv) => inv.toMap()).toList(),
+      'exportDate': DateTime.now().toIso8601String(),
+      'appVersion': AppConstants.appVersion,
+    };
+  }
+
+  // Import data from backup
+  Future<bool> importData(Map<String, dynamic> data) async {
+    try {
+      final List<dynamic> investmentMaps = data['investments'] ?? [];
+      _investments = investmentMaps.map((map) => Investment.fromMap(map)).toList();
+      await _saveInvestments();
+      notifyListeners();
+      return true;
+    } catch (e) {
+      print('Error importing data: $e');
+      return false;
+    }
   }
 }

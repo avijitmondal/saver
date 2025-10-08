@@ -8,6 +8,7 @@ import 'config/route_config.dart';
 import 'config/provider_config.dart';
 import 'services/navigation_service.dart';
 import 'services/service_locator.dart';
+import 'services/local_storage_service.dart';
 import 'utils/logger.dart';
 
 void main() async {
@@ -58,6 +59,19 @@ Future<void> _initializeApp() async {
 
   // Initialize service locator
   setupLocator();
+  
+  // Pre-initialize storage services
+  await _initializeStorageServices();
+}
+
+Future<void> _initializeStorageServices() async {
+  try {
+    // Pre-load storage service
+    await LocalStorageService.getInstance();
+    Logger.instance.debug('Storage services initialized');
+  } catch (e) {
+    Logger.instance.error('Failed to initialize storage services: $e');
+  }
 }
 
 class SaverApp extends StatelessWidget {

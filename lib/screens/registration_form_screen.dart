@@ -60,25 +60,34 @@ class _RegistrationFormScreenState extends State<RegistrationFormScreen> {
     setState(() {
       _isLoading = true;
     });
+
     try {
-      await Provider.of<UserProvider>(context, listen: false)
-          .registerUser(
-        _firstNameController.text,
-        _lastNameController.text,
-        _emailController.text,
-        _phoneController.text,
-        _addressController.text,
-        _passwordController.text,
-      )
-          .then((_) {
-        Navigator.of(context).pushReplacementNamed('/home');
-      });
+      await Provider.of<UserProvider>(context, listen: false).createUser(
+        firstName: _firstNameController.text,
+        lastName: _lastNameController.text,
+        email: _emailController.text,
+        phone: _phoneController.text,
+        address: _addressController.text,
+        dateOfBirth: _selectedDate!,
+        password: _passwordController.text,
+      );
+
+      if (!mounted) return;
+      Navigator.of(context).pushReplacementNamed('/home');
     } catch (error) {
-      // Handle error
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Registration failed: ${error.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 

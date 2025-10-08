@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import '../config/route_config.dart';
 import '../providers/user_provider.dart';
+import '../providers/portfolio_provider.dart';
 import '../constants/app_constants.dart';
 import '../data/sample_user.dart';
 import '../screens/coming_soon_screen.dart';
@@ -52,36 +53,55 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     );
 
     _controller.forward().then((_) {
-      // Initialize user data if needed
-      _initializeUserData();
+      // Initialize providers and user data
+      _initializeApp();
 
       // Navigate after animation
       Future.delayed(const Duration(milliseconds: 500), () {
-        final userProvider = Provider.of<UserProvider>(context, listen: false);
-
-        // Only show Coming Soon screen if enabled and NOT on Android/iOS
-        final isMobile = defaultTargetPlatform == TargetPlatform.android || defaultTargetPlatform == TargetPlatform.iOS;
-        if ((AppConstants.featureFlags["comingSoonScreen"] ?? false) && !isMobile) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              // Pass an exact DateTime instead of a duration
-              builder: (_) => ComingSoonScreen(targetTime: DateTime(2026, 01, 01, 00, 00, 00)),
-            ),
-          );
-          return;
-        }
-
-        // Check if user data exists
-        if (userProvider.fullName.isNotEmpty) {
-          // User data exists, navigate to login screen
-          Navigator.pushReplacementNamed(context, RouteConfig.login);
-        } else {
-          // No user data, navigate to welcome
-          Navigator.pushReplacementNamed(context, RouteConfig.welcome);
-        }
+        _navigateBasedOnUserData();
       });
     });
+  }
+
+  void _initializeApp() async {
+    // Initialize providers first
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final portfolioProvider = Provider.of<PortfolioProvider>(context, listen: false);
+
+    // Ensure both providers are initialized
+    await userProvider.initialize();
+    await portfolioProvider.initialize();
+
+    // Initialize user data if needed (for sample user)
+    _initializeUserData();
+  }
+
+  void _navigateBasedOnUserData() {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    // Check if running on supported platforms (iOS/Android only)
+    final isMobile = defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.iOS;
+
+    if ((AppConstants.featureFlags["comingSoonScreen"] ?? false) && !isMobile) {
+      // Show platform not supported screen for web/desktop
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ComingSoonScreen(targetTime: DateTime(2026, 01, 01, 00, 00, 00)),
+        ),
+      );
+      return;
+    }
+
+    // Check if user data exists
+    if (userProvider.fullName.isNotEmpty) {
+      // User data exists, navigate to login screen
+      Navigator.pushReplacementNamed(context, RouteConfig.login);
+    } else {
+      // No user data, navigate to welcome
+      Navigator.pushReplacementNamed(context, RouteConfig.welcome);
+    }
   }
 
   void _initializeUserData() {

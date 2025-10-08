@@ -104,35 +104,52 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         _isLoading = true;
       });
 
-      // Update user data in provider
-      final userProvider = Provider.of<UserProvider>(context, listen: false);
-      userProvider.updateUserData(
-        firstName: _firstNameController.text,
-        lastName: _lastNameController.text,
-        email: _emailController.text,
-        phone: _phoneController.text,
-        address: _addressController.text,
-      );
-      userProvider.updateDateOfBirth(_selectedDate!);
-      
-      // Save the password
-      userProvider.setPassword(_passwordController.text);
+      try {
+        // Create user data in provider (this will save to storage)
+        final userProvider = Provider.of<UserProvider>(context, listen: false);
+        await userProvider.createUser(
+          firstName: _firstNameController.text,
+          lastName: _lastNameController.text,
+          email: _emailController.text,
+          phone: _phoneController.text,
+          address: _addressController.text,
+          dateOfBirth: _selectedDate!,
+          password: _passwordController.text,
+        );
 
-      // Simulate registration delay
-      await Future.delayed(const Duration(seconds: 1));
+        // Simulate registration delay
+        await Future.delayed(const Duration(seconds: 1));
 
-      if (!mounted) return;
+        if (!mounted) return;
 
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Registration successful!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+        setState(() {
+          _isLoading = false;
+        });
 
-      // Navigate to home screen
-      Navigator.pushReplacementNamed(context, '/home');
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Registration successful!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Navigate to home screen
+        Navigator.pushReplacementNamed(context, '/home');
+      } catch (e) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Registration failed: ${e.toString()}'),
+            backgroundColor: UIConstants.errorColor,
+          ),
+        );
+      }
     }
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import '../services/investment_calculator.dart';
 
 class Investment {
@@ -99,5 +100,49 @@ class Investment {
     final percentComplete = ((totalDays - remainingDays) / totalDays * 100).round();
     
     return '$percentComplete% Complete';
+  }
+
+  // Serialization methods
+  Map<String, dynamic> toMap() {
+    return {
+      'type': type,
+      'amount': amount,
+      'interest': interest,
+      'iconCodePoint': icon?.codePoint,
+      'colorValue': color?.value,
+      'startDate': startDate?.millisecondsSinceEpoch,
+      'durationInMonths': durationInMonths,
+      'bank': bank,
+      'notes': notes,
+      'isRecurring': isRecurring,
+    };
+  }
+
+  static Investment fromMap(Map<String, dynamic> map) {
+    return Investment(
+      type: map['type'] ?? '',
+      amount: (map['amount'] ?? 0.0).toDouble(),
+      interest: (map['interest'] ?? 0.0).toDouble(),
+      icon: map['iconCodePoint'] != null 
+          ? IconData(map['iconCodePoint'], fontFamily: 'MaterialIcons')
+          : Icons.account_balance,
+      color: map['colorValue'] != null 
+          ? Color(map['colorValue'])
+          : Colors.blue,
+      startDate: map['startDate'] != null 
+          ? DateTime.fromMillisecondsSinceEpoch(map['startDate'])
+          : null,
+      durationInMonths: map['durationInMonths'],
+      bank: map['bank'],
+      notes: map['notes'],
+      isRecurring: map['isRecurring'] ?? false,
+    );
+  }
+
+  // JSON serialization
+  String toJson() => jsonEncode(toMap());
+  
+  static Investment fromJson(String jsonString) {
+    return fromMap(jsonDecode(jsonString));
   }
 }

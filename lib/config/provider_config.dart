@@ -23,7 +23,30 @@ class ProviderConfig {
 
   static Widget wrapWithProviders(Widget child) {
     return MultiProvider(
-      providers: providers,
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) {
+            final userProvider = UserProvider();
+            // Initialize the provider immediately
+            userProvider.initialize();
+            return userProvider;
+          },
+        ),
+        ChangeNotifierProvider(
+          create: (context) {
+            final portfolioProvider = PortfolioProvider();
+            // Initialize the provider immediately
+            portfolioProvider.initialize();
+            return portfolioProvider;
+          },
+        ),
+        ChangeNotifierProvider(
+          create: (context) => FeatureFlagsProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => NotificationsProvider(),
+        ),
+      ],
       child: child,
     );
   }

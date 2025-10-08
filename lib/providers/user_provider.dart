@@ -1,75 +1,170 @@
 import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
+import '../services/local_storage_service.dart';
+import '../constants/app_constants.dart';
 
 class UserProvider extends ChangeNotifier {
-  String _firstName = '';
-  String _lastName = '';
-  String _email = '';
-  String _phone = '';
-  String _address = '';
-  DateTime _dateOfBirth = DateTime.now();
-  String _password = ''; // This will store the hashed password
+  Map<String, dynamic> _userData = {};
+  LocalStorageService? _storageService;
+  bool _isLoaded = false;
 
   // Getters
-  String get firstName => _firstName;
-  String get lastName => _lastName;
-  String get fullName => '$_firstName $_lastName'.trim();
-  String get email => _email;
-  String get phone => _phone;
-  String get address => _address;
-  DateTime get dateOfBirth => _dateOfBirth;
-  bool get hasPassword => _password.isNotEmpty;
+  bool get isLoaded => _isLoaded;
+  bool get isLoggedIn => _userData.isNotEmpty;
+  String get firstName => _userData['firstName'] ?? '';
+  String get lastName => _userData['lastName'] ?? '';
+  String get fullName => '${firstName} ${lastName}'.trim();
+  String get email => _userData['email'] ?? '';
+  String get phone => _userData['phone'] ?? '';
+  String get address => _userData['address'] ?? '';
+  DateTime get dateOfBirth => _userData['dateOfBirth'] != null 
+      ? DateTime.fromMillisecondsSinceEpoch(_userData['dateOfBirth'])
+      : DateTime.now();
 
-  // Update user data with a more flexible approach
-  void updateUserData({
+  // Initialize and load user data
+  Future<void> initialize() async {
+    if (_isLoaded) return;
+    
+    _storageService = await LocalStorageService.getInstance();
+    await _loadUserData();
+    _isLoaded = true;
+    notifyListeners();
+  }
+
+  // Load user data from storage
+  Future<void> _loadUserData() async {
+    try {
+      final userData = await _storageService!.loadUserData();
+      if (userData != null) {
+        _userData = userData;
+      } else if (AppConstants.featureFlags['sampleUser'] ?? false) {
+        // Load sample user if enabled and no user data exists
+        _userData = {
+          'firstName': 'John',
+          'lastName': 'Doe',
+          'email': 'john.doe@example.com',
+          'phone': '9876543210',
+          'address': '123 Main Street, Mumbai, Maharashtra',
+          'dateOfBirth': DateTime(1990, 5, 15).millisecondsSinceEpoch,
+        };
+        await _saveUserData();
+      }
+    } catch (e) {
+      print('Error loading user data: $e');
+    }
+  }
+
+  // Save user data to storage
+  Future<void> _saveUserData() async {
+    try {
+      await _storageService?.saveUserData(_userData);
+    } catch (e) {
+      print('Error saving user data: $e');
+    }
+  }
+
+  // Create new user
+  Future<void> createUser({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String phone,
+    required String address,
+    required DateTime dateOfBirth,
+    required String password,
+  }) async {
+    // Ensure storage service is initialized
+    if (_storageService == null) {
+      await initialize();
+    }
+
+    _userData = {
+      'firstName': firstName,
+      'lastName': lastName,
+      'email': email,
+      'phone': phone,
+      'address': address,
+      'dateOfBirth': dateOfBirth.millisecondsSinceEpoch,
+      'passwordHash': _hashPassword(password),
+    };
+    
+    await _saveUserData();
+    notifyListeners();
+  }
+
+  // Update user data
+  Future<void> updateUserData({
     String? firstName,
     String? lastName,
     String? email,
     String? phone,
     String? address,
-  }) {
-    if (firstName != null) _firstName = firstName;
-    if (lastName != null) _lastName = lastName;
-    if (email != null) _email = email;
-    if (phone != null) _phone = phone;
-    if (address != null) _address = address;
+  }) async {
+    // Ensure storage service is initialized
+    if (_storageService == null) {
+      await initialize();
+    }
+
+    if (firstName != null) _userData['firstName'] = firstName;
+    if (lastName != null) _userData['lastName'] = lastName;
+    if (email != null) _userData['email'] = email;
+    if (phone != null) _userData['phone'] = phone;
+    if (address != null) _userData['address'] = address;
+    
+    await _saveUserData();
     notifyListeners();
   }
 
-  void updateDateOfBirth(DateTime date) {
-    _dateOfBirth = date;
+  // Update date of birth
+  Future<void> updateDateOfBirth(DateTime dateOfBirth) async {
+    // Ensure storage service is initialized
+    if (_storageService == null) {
+      await initialize();
+    }
+
+    _userData['dateOfBirth'] = dateOfBirth.millisecondsSinceEpoch;
+    await _saveUserData();
     notifyListeners();
   }
-  
-  // Hash password using SHA-256
-  String _hashPassword(String password) {
-    final bytes = utf8.encode(password); // Convert to bytes
-    final digest = sha256.convert(bytes); // Apply SHA-256 hashing
-    return digest.toString(); // Return the hash as a string
-  }
-  
-  // Set password - now encrypts the password before storing
-  void setPassword(String password) {
-    _password = _hashPassword(password);
+
+  // Set password
+  Future<void> setPassword(String password) async {
+    // Ensure storage service is initialized
+    if (_storageService == null) {
+      await initialize();
+    }
+
+    _userData['passwordHash'] = _hashPassword(password);
+    await _saveUserData();
     notifyListeners();
   }
-  
-  // Validate password - now hashes the input password before comparing
+
+  // Validate password
   bool validatePassword(String password) {
-    final hashedPassword = _hashPassword(password);
-    return _password == hashedPassword;
+    final storedHash = _userData['passwordHash'];
+    if (storedHash == null) return false;
+    return storedHash == _hashPassword(password);
   }
 
-  // Clear all user data
-  void clearUserData() {
-    _firstName = '';
-    _lastName = '';
-    _email = '';
-    _phone = '';
-    _address = '';
-    _dateOfBirth = DateTime.now();
-    _password = '';
+  // Clear user data (including storage)
+  Future<void> clearUserData() async {
+    _userData.clear();
+    await _storageService?.clearAllData();
     notifyListeners();
+  }
+
+  // Logout
+  Future<void> logout() async {
+    _userData.clear();
+    await _storageService?.clearAllData();
+    notifyListeners();
+  }
+
+  String _hashPassword(String password) {
+    final bytes = utf8.encode(password);
+    final digest = sha256.convert(bytes);
+    return digest.toString();
   }
 }
+
