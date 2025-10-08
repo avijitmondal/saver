@@ -188,7 +188,11 @@ class RecurringDepositCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        NumberFormatter.formatAmount(investment.currentBalance),
+                        NumberFormatter.formatAmount(
+                          investment.isRecurring == true && investment.durationInMonths != null
+                              ? investment.amount * investment.durationInMonths!
+                              : investment.amount
+                        ),
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

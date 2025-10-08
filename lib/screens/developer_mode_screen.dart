@@ -10,13 +10,11 @@ class DeveloperModeScreen extends StatefulWidget {
 }
 
 class _DeveloperModeScreenState extends State<DeveloperModeScreen> {
-  late Map<String, bool> _flags;
 
   @override
   void initState() {
     super.initState();
     // Will be initialized in build from provider
-    _flags = {};
   }
 
   void _updateFlag(BuildContext context, String key, bool value) {

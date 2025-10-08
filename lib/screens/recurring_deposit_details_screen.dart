@@ -68,7 +68,11 @@ class RecurringDepositDetailsScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         _buildInfoColumn('Monthly Deposit', NumberFormatter.formatAmount(recurringDeposit.amount)),
-                        _buildInfoColumn('Current Value', NumberFormatter.formatAmount(recurringDeposit.currentBalance)),
+                        _buildInfoColumn('Current Value', NumberFormatter.formatAmount(
+                          recurringDeposit.isRecurring == true && recurringDeposit.durationInMonths != null
+                              ? recurringDeposit.amount * recurringDeposit.durationInMonths!
+                              : recurringDeposit.amount
+                        )),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -298,4 +302,4 @@ class RecurringDepositDetailsScreen extends StatelessWidget {
       ),
     );
   }
-} 
+}

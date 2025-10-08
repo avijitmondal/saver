@@ -9,7 +9,6 @@ import '../widgets/profile/security_section.dart';
 import '../widgets/profile/account_actions_section.dart';
 import '../widgets/common/app_scaffold.dart';
 import '../constants/ui_constants.dart';
-import 'developer_mode_screen.dart';
 import '../widgets/profile/about_section.dart';
 import '../widgets/profile/advanced_settings_section.dart';
 
@@ -22,7 +21,6 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late ProfileController _controller;
-  bool _developerMode = false;
 
   @override
   void initState() {

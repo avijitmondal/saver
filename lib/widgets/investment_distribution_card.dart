@@ -21,10 +21,11 @@ class _InvestmentDistributionCardState
     final portfolio = context.watch<PortfolioProvider>();
     final flags = Provider.of<FeatureFlagsProvider>(context).flags;
 
-    // Get unique investment types and their total current balances
+    // Get unique investment types and their total balances
     final Map<String, double> typeBalances = {};
     final Map<String, Color> typeColors = {};
 
+    // Calculate balances by type using the same logic as portfolio.getTotalAmountByType
     for (var investment in portfolio.investments) {
       // Exclude Fixed Deposit if flag is false
       if (investment.type == 'Fixed Deposit' &&
@@ -46,8 +47,20 @@ class _InvestmentDistributionCardState
           !(flags['publicProvidentFundInvestment'] ?? true)) {
         continue;
       }
-      typeBalances[investment.type] =
-          (typeBalances[investment.type] ?? 0) + investment.currentBalance;
+
+      // Calculate the correct balance based on investment type
+      double balance;
+      if (investment.type == 'Recurring Deposit' && 
+          investment.isRecurring == true && 
+          investment.durationInMonths != null) {
+        // For recurring deposits, calculate total deposited amount
+        balance = investment.amount * investment.durationInMonths!;
+      } else {
+        // For other investment types, use the amount directly
+        balance = investment.amount;
+      }
+
+      typeBalances[investment.type] = (typeBalances[investment.type] ?? 0) + balance;
 
       // Use the color from InvestmentConstants
       final investmentType = InvestmentConstants.getTypeByName(context, investment.type);
@@ -172,27 +185,24 @@ class _InvestmentDistributionCardState
                 ...InvestmentConstants.allTypes
                   .where((type) {
                     final flags = Provider.of<FeatureFlagsProvider>(context, listen: false).flags;
-                    if (type.name == 'Fixed Deposit' && !(flags['fixedDepositInvestment'] ?? true)) return false;
-                    if (type.name == 'Recurring Deposit' && !(flags['recurringDepositInvestment'] ?? true)) return false;
-                    if (type.name == 'EPF' && !(flags['employeeProvidentFundInvestment'] ?? true)) return false;
-                    if (type.name == 'PPF' && !(flags['publicProvidentFundInvestment'] ?? true)) return false;
-                    return true;
+                    final portfolio = context.watch<PortfolioProvider>();
+                    final totalBalance = portfolio.getTotalAmountByType(type.name);
+                    
+                    // Only show if feature flag is enabled AND there are investments in this category
+                    if (type.name == 'Fixed Deposit' && (!(flags['fixedDepositInvestment'] ?? true) || totalBalance <= 0)) return false;
+                    if (type.name == 'Recurring Deposit' && (!(flags['recurringDepositInvestment'] ?? true) || totalBalance <= 0)) return false;
+                    if (type.name == 'EPF' && (!(flags['employeeProvidentFundInvestment'] ?? true) || totalBalance <= 0)) return false;
+                    if (type.name == 'PPF' && (!(flags['publicProvidentFundInvestment'] ?? true) || totalBalance <= 0)) return false;
+                    
+                    // For other investment types, only show if there are investments
+                    return totalBalance > 0;
                   })
                   .map((type) {
-                    final flags = Provider.of<FeatureFlagsProvider>(context, listen: false).flags;
                     final portfolio = context.watch<PortfolioProvider>();
                     final totalBalance = portfolio.getTotalAmountByType(type.name);
                     final percentage = portfolio.totalInvestment > 0
                         ? (totalBalance / portfolio.totalInvestment * 100)
                         : 0.0;
-
-                    // Hide legend entry if flag is disabled
-                    if ((type.name == 'Fixed Deposit' && !(flags['fixedDepositInvestment'] ?? true)) ||
-                        (type.name == 'Recurring Deposit' && !(flags['recurringDepositInvestment'] ?? true)) ||
-                        (type.name == 'EPF' && !(flags['employeeProvidentFundInvestment'] ?? true)) ||
-                        (type.name == 'PPF' && !(flags['publicProvidentFundInvestment'] ?? true))) {
-                      return const SizedBox.shrink();
-                    }
 
                     return Row(
                       mainAxisSize: MainAxisSize.min,
@@ -207,7 +217,7 @@ class _InvestmentDistributionCardState
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          '${_getLegendText(type)}${_getLegendText(type).isNotEmpty ? ' (${percentage.toStringAsFixed(1)}%)' : ''}',
+                          '${_getLegendText(type)} (${percentage.toStringAsFixed(1)}%)',
                           style: const TextStyle(fontSize: 14),
                         ),
                       ],

@@ -3,7 +3,6 @@ import 'package:saver/constants/app_constants.dart';
 import '../config/route_config.dart';
 import '../constants/ui_constants.dart';
 import '../widgets/common/app_scaffold.dart';
-import '../widgets/common/styled_components.dart';
 import '../utils/theme_helper.dart';
 
 class SignupScreen extends StatelessWidget {

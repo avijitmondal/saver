@@ -89,16 +89,38 @@ class PortfolioProvider extends ChangeNotifier {
   }
 
   double getTotalAmountByType(String type) {
-    return activeInvestments
-        .where((investment) => investment.type == type)
-        .fold(0.0, (sum, investment) => sum + investment.currentBalance);
+    double total = 0;
+    final investmentsOfType = _investments.where((inv) => inv.type == type);
+    
+    for (var investment in investmentsOfType) {
+      if (type == 'Recurring Deposit' && 
+          investment.isRecurring == true && 
+          investment.durationInMonths != null) {
+        // For recurring deposits, calculate total deposited amount
+        total += investment.amount * investment.durationInMonths!;
+      } else {
+        // For other investment types, use the amount directly
+        total += investment.amount;
+      }
+    }
+    
+    return total;
   }
 
   double get totalInvestment {
-    return activeInvestments.fold(
-      0.0,
-      (sum, investment) => sum + investment.currentBalance,
-    );
+    double total = 0;
+    for (var investment in _investments) {
+      if (investment.type == 'Recurring Deposit' && 
+          investment.isRecurring == true && 
+          investment.durationInMonths != null) {
+        // For recurring deposits, calculate total deposited amount
+        total += investment.amount * investment.durationInMonths!;
+      } else {
+        // For other investment types, use the amount directly
+        total += investment.amount;
+      }
+    }
+    return total;
   }
 
   double get totalReturns {

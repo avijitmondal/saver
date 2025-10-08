@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../models/investment.dart';
 import '../utils/date_utils.dart';
 import '../utils/number_formatter.dart';
-import 'bank_logo.dart';
 
 class EPFCard extends StatelessWidget {
   final Investment investment;

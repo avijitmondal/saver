@@ -110,12 +110,6 @@ class InvestmentsScreen extends StatelessWidget {
 
     return AppScaffold(
       title: 'Investments',
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.add),
-          onPressed: () => _showAddInvestmentDialog(context),
-        ),
-      ],
       body: uniqueInvestments.isEmpty
           ? Center(
               child: Padding(
@@ -168,6 +162,13 @@ class InvestmentsScreen extends StatelessWidget {
                 ),
               ],
             ),
+      floatingActionButton: uniqueInvestments.isNotEmpty
+          ? FloatingActionButton(
+              onPressed: () => _showAddInvestmentDialog(context),
+              backgroundColor: Colors.green,
+              child: const Icon(Icons.add, color: Colors.white),
+            )
+          : null,
     );
   }
 }

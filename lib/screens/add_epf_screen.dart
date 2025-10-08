@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../providers/portfolio_provider.dart';
 import '../models/investment.dart';
 import '../utils/date_utils.dart';
-import '../utils/number_formatter.dart';
 import '../constants/investment_constants.dart';
 import 'package:flutter/services.dart';
 

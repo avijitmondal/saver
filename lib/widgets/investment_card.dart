@@ -16,6 +16,25 @@ class InvestmentCard extends StatelessWidget {
     required this.investment,
   });
 
+  double _calculateTotalAmount(PortfolioProvider portfolio, String type) {
+    final investments = portfolio.investments.where((inv) => inv.type == type);
+    double total = 0;
+
+    for (var inv in investments) {
+      if (inv.type == 'Recurring Deposit' &&
+          inv.isRecurring == true &&
+          inv.durationInMonths != null) {
+        // For recurring deposits, calculate total deposited amount
+        total += inv.amount * inv.durationInMonths!;
+      } else {
+        // For other investment types, use the amount directly
+        total += inv.amount;
+      }
+    }
+
+    return total;
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isFixedDeposit = investment.type == 'Fixed Deposit';
@@ -24,7 +43,7 @@ class InvestmentCard extends StatelessWidget {
     final bool isEPF = investment.type == 'EPF';
     final portfolio = context.watch<PortfolioProvider>();
     final investmentCount = portfolio.getInvestmentCount(investment.type);
-    final totalAmount = portfolio.getTotalAmountByType(investment.type);
+    final totalAmount = _calculateTotalAmount(portfolio, investment.type);
 
     return Card(
       elevation: 4,
@@ -61,7 +80,7 @@ class InvestmentCard extends StatelessWidget {
                 ),
               ),
             );
-          } else {
+          } else if (isFixedDeposit) {
             Navigator.push(
               context,
               MaterialPageRoute(

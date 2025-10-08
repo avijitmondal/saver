@@ -30,11 +30,11 @@ class AppConstants {
   // Set this to false to disable sample user and go to welcome screen
   static final Map<String, bool> featureFlags = {
     // Keys renamed (removed 'enable' prefix)
-    'sampleUser': false,
+    'sampleUser': true,
     // Set this to false to disable sample investment data
-    'sampleInvestmentData': false,
+    'sampleInvestmentData': true,
     // Set this to false to disable coming soon screen
-    'comingSoonScreen': false,
+    'comingSoonScreen': true,
     // Set this to false to disable fixed deposit investment
     'fixedDepositInvestment': true,
     // Set this to false to disable recurring deposit investment

@@ -2,15 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/user_provider.dart';
 import '../providers/portfolio_provider.dart';
-import '../screens/registration_screen.dart';
-import '../screens/signup_screen.dart';
 import '../config/route_config.dart';
 import 'dialog_service.dart';
-import 'navigation_service.dart';
-import 'service_locator.dart';
 
 class AccountManager {
-  final NavigationService _navigationService = locator<NavigationService>();
 
   /// Logs out the user and navigates to login screen
   Future<void> logout(BuildContext context) async {

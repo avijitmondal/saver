@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:provider/provider.dart';
+import 'package:saver/constants/app_constants.dart';
 import '../providers/portfolio_provider.dart';
 import '../models/investment.dart';
 import 'add_recurring_deposit_screen.dart';
@@ -25,55 +26,113 @@ class RecurringDepositScreen extends StatelessWidget {
 
     // Separate active and matured investments
     for (var investment in investments) {
-      if (investment.maturityDate == null) continue;
+      // Skip investments without maturity date to avoid crashes
+      if (investment.maturityDate == null) {
+        // Add to active if no maturity date
+        active.add(investment);
+        continue;
+      }
 
-      if (now.isAfter(investment.maturityDate!)) {
-        matured.add(investment);
-      } else {
+      try {
+        if (now.isAfter(investment.maturityDate!)) {
+          matured.add(investment);
+        } else {
+          active.add(investment);
+        }
+      } catch (e) {
+        // If there's any error with date comparison, add to active as fallback
         active.add(investment);
       }
     }
 
     // Sort active investments by earliest maturity first
     active.sort((a, b) {
-      final aMaturity = a.maturityDate ?? DateTime(3000);
-      final bMaturity = b.maturityDate ?? DateTime(3000);
-      return aMaturity.compareTo(bMaturity); // Earlier dates first
+      try {
+        final aMaturity = a.maturityDate ?? DateTime(3000);
+        final bMaturity = b.maturityDate ?? DateTime(3000);
+        return aMaturity.compareTo(bMaturity);
+      } catch (e) {
+        return 0; // Keep original order if comparison fails
+      }
     });
 
     // Sort matured investments by most recently matured first
     matured.sort((a, b) {
-      final aMaturity = a.maturityDate ?? DateTime(1900);
-      final bMaturity = b.maturityDate ?? DateTime(1900);
-      return bMaturity.compareTo(aMaturity); // Recent dates first
+      try {
+        final aMaturity = a.maturityDate ?? DateTime(1900);
+        final bMaturity = b.maturityDate ?? DateTime(1900);
+        return bMaturity.compareTo(aMaturity);
+      } catch (e) {
+        return 0; // Keep original order if comparison fails
+      }
     });
 
     return [...active, ...matured];
   }
 
   Widget _buildSummaryCard(List<Investment> investments) {
-    // Filter active and matured investments
-    final activeInvestments = investments.where((investment) => 
-      investment.maturityDate == null || 
-      investment.maturityDate!.isAfter(DateTime.now())
-    ).toList();
+    // Filter active and matured investments with null safety
+    final activeInvestments = investments.where((investment) {
+      try {
+        return investment.maturityDate == null || 
+               investment.maturityDate!.isAfter(DateTime.now());
+      } catch (e) {
+        // If there's an error, consider it active
+        return true;
+      }
+    }).toList();
     
-    final maturedInvestments = investments.where((investment) => 
-      investment.maturityDate != null && 
-      investment.maturityDate!.isBefore(DateTime.now())
-    ).toList();
+    final maturedInvestments = investments.where((investment) {
+      try {
+        return investment.maturityDate != null && 
+               investment.maturityDate!.isBefore(DateTime.now());
+      } catch (e) {
+        // If there's an error, consider it not matured
+        return false;
+      }
+    }).toList();
     
-    // Calculate active balance
-    double activeBalance = activeInvestments.fold(
-      0,
-      (sum, investment) => sum + investment.currentBalance,
-    );
+    // Calculate active balance with null safety - for RD, calculate total deposited amount
+    double activeBalance = 0;
+    try {
+      activeBalance = activeInvestments.fold(
+        0,
+        (sum, investment) {
+          try {
+            if (investment.isRecurring == true && investment.durationInMonths != null) {
+              // For recurring deposits, calculate total amount deposited
+              return sum + (investment.amount * investment.durationInMonths!);
+            }
+            return sum + (investment.amount ?? 0);
+          } catch (e) {
+            return sum; // Skip this investment if amount is invalid
+          }
+        },
+      );
+    } catch (e) {
+      activeBalance = 0;
+    }
     
-    // Calculate matured balance (for tracking only)
-    double maturedBalance = maturedInvestments.fold(
-      0,
-      (sum, investment) => sum + investment.currentBalance,
-    );
+    // Calculate matured balance with null safety
+    double maturedBalance = 0;
+    try {
+      maturedBalance = maturedInvestments.fold(
+        0,
+        (sum, investment) {
+          try {
+            if (investment.isRecurring == true && investment.durationInMonths != null) {
+              // For recurring deposits, calculate total amount deposited
+              return sum + (investment.amount * investment.durationInMonths!);
+            }
+            return sum + (investment.amount ?? 0);
+          } catch (e) {
+            return sum; // Skip this investment if amount is invalid
+          }
+        },
+      );
+    } catch (e) {
+      maturedBalance = 0;
+    }
 
     return Card(
       elevation: 4,
@@ -171,7 +230,7 @@ class RecurringDepositScreen extends StatelessWidget {
             textColor: Colors.white,
           ),
         Dismissible(
-          key: Key(investment.hashCode.toString()),
+          key: Key('${investment.hashCode}_${investment.startDate?.millisecondsSinceEpoch ?? 0}'),
           direction: DismissDirection.endToStart,
           confirmDismiss: (direction) async {
             return await showDialog(
@@ -199,15 +258,25 @@ class RecurringDepositScreen extends StatelessWidget {
             );
           },
           onDismissed: (direction) {
-            final portfolio = context.read<PortfolioProvider>();
-            portfolio.deleteInvestment(investment);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Recurring deposit deleted'),
-                backgroundColor: Colors.red,
-                duration: Duration(seconds: 2),
-              ),
-            );
+            try {
+              final portfolio = context.read<PortfolioProvider>();
+              portfolio.deleteInvestment(investment);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Recurring deposit deleted'),
+                  backgroundColor: Colors.red,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Error deleting investment'),
+                  backgroundColor: Colors.red,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            }
           },
           background: Container(
             color: Colors.red,
@@ -232,57 +301,114 @@ class RecurringDepositScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final portfolio = context.watch<PortfolioProvider>();
-    final investments = _sortInvestments(portfolio.investments
-        .where((investment) => investment.type == investmentType)
-        .toList());
+    // Only show screen if RD is enabled
+    if (!(AppConstants.featureFlags['recurringDepositInvestment'] ?? true)) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Recurring Deposit'),
+        ),
+        body: const Center(
+          child: Text('Recurring Deposit feature is disabled.'),
+        ),
+      );
+    }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(investmentType),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _buildSummaryCard(investments),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: investments.length,
-            itemBuilder: (context, index) {
-              final investment = investments[index];
-              final isMatured = DateTime.now()
-                  .isAfter(investment.maturityDate ?? DateTime(3000));
-              final isFirstItem = index == 0;
-              final previousIsMatured = index > 0 &&
-                  DateTime.now().isAfter(
-                      investments[index - 1].maturityDate ?? DateTime(3000));
+    try {
+      final portfolio = context.watch<PortfolioProvider>();
+      final investments = _sortInvestments(portfolio.investments
+          .where((investment) => investment.type == investmentType)
+          .toList());
 
-              return _buildInvestmentCard(
-                context,
-                investment,
-                index,
-                isMatured,
-                isFirstItem,
-                previousIsMatured,
-              );
-            },
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const AddRecurringDepositScreen(),
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(investmentType),
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        ),
+        body: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            _buildSummaryCard(investments),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: investments.length,
+              itemBuilder: (context, index) {
+                final investment = investments[index];
+                bool isMatured = false;
+                bool previousIsMatured = false;
+                
+                try {
+                  isMatured = investment.maturityDate != null &&
+                      DateTime.now().isAfter(investment.maturityDate!);
+                  
+                  if (index > 0) {
+                    final prevInvestment = investments[index - 1];
+                    previousIsMatured = prevInvestment.maturityDate != null &&
+                        DateTime.now().isAfter(prevInvestment.maturityDate!);
+                  }
+                } catch (e) {
+                  // If there's an error with date comparison, assume not matured
+                  isMatured = false;
+                  previousIsMatured = false;
+                }
+                
+                final isFirstItem = index == 0;
+
+                return _buildInvestmentCard(
+                  context,
+                  investment,
+                  index,
+                  isMatured,
+                  isFirstItem,
+                  previousIsMatured,
+                );
+              },
             ),
-          );
-        },
-        backgroundColor: Colors.green,
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
-    );
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AddRecurringDepositScreen(),
+              ),
+            );
+          },
+          backgroundColor: Colors.green,
+          child: const Icon(Icons.add, color: Colors.white),
+        ),
+      );
+    } catch (e) {
+      // If there's any error building the screen, show error message
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(investmentType),
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.error_outline,
+                size: 64,
+                color: Colors.red,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Error loading investments',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Please try again or contact support',
+                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
   }
 }
