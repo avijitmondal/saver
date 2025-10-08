@@ -1,7 +1,7 @@
 class AppConstants {
   // App Information
   static const String appName = 'Saver';
-  static const String appVersion = '1.0.0';
+  static const String appVersion = '1.0.1';
 
   // API Endpoints (if applicable)
   static const String baseApiUrl = 'http://localhost:8881/api/v1';
