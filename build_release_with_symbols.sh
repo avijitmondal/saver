@@ -113,8 +113,8 @@ print_status "This may take several minutes..."
 flutter build appbundle \
     --release \
     --verbose \
-    --build-name=1.0.1 \
-    --build-number=2 \
+    --build-name=1.0.2 \
+    --build-number=3 \
     --split-debug-info=build/app/outputs/symbols \
     --obfuscate \
     --dart-define=FLUTTER_WEB_CANVASKIT_URL=https://unpkg.com/canvaskit-wasm@0.33.0/bin/
@@ -195,7 +195,7 @@ Files Generated:
 - Debug Symbols: $SYMBOLS_PATH
 
 Build Command Used:
-flutter build appbundle --release --verbose --build-name=1.0.1 --build-number=2 --split-debug-info=build/app/outputs/symbols --obfuscate
+flutter build appbundle --release --verbose --build-name=1.0.2 --build-number=3 --split-debug-info=build/app/outputs/symbols --obfuscate
 
 Next Steps:
 1. Upload app bundle to Google Play Console
