@@ -67,20 +67,46 @@ class RecurringDepositDetailsScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildInfoColumn('Monthly Deposit', NumberFormatter.formatAmount(recurringDeposit.amount)),
-                        _buildInfoColumn('Current Value', NumberFormatter.formatAmount(
-                          recurringDeposit.isRecurring == true && recurringDeposit.durationInMonths != null
-                              ? recurringDeposit.amount * recurringDeposit.durationInMonths!
-                              : recurringDeposit.amount
-                        )),
+                        Expanded(
+                          child: _buildInfoColumn(
+                            'Monthly Deposit',
+                            NumberFormatter.formatAmount(recurringDeposit.amount),
+                            alignment: CrossAxisAlignment.start,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildInfoColumn(
+                            'Current Value',
+                            NumberFormatter.formatAmount(
+                              recurringDeposit.isRecurring == true && recurringDeposit.durationInMonths != null
+                                  ? recurringDeposit.amount * recurringDeposit.durationInMonths!
+                                  : recurringDeposit.amount,
+                            ),
+                            alignment: CrossAxisAlignment.end,
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildInfoColumn('Interest Rate', '${recurringDeposit.interest.toStringAsFixed(2)}%'),
-                        _buildInfoColumn('Expected Returns', NumberFormatter.formatAmount(recurringDeposit.returns)),
+                        Expanded(
+                          child: _buildInfoColumn(
+                            'Interest Rate',
+                            '${recurringDeposit.interest.toStringAsFixed(2)}%',
+                            alignment: CrossAxisAlignment.start,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildInfoColumn(
+                            'Expected Returns',
+                            NumberFormatter.formatAmount(recurringDeposit.returns),
+                            alignment: CrossAxisAlignment.end,
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -242,9 +268,9 @@ class RecurringDepositDetailsScreen extends StatelessWidget {
     return NumberFormatter.formatAmount(totalDeposits + recurringDeposit.returns);
   }
   
-  Widget _buildInfoColumn(String title, String value) {
+  Widget _buildInfoColumn(String title, String value, {CrossAxisAlignment alignment = CrossAxisAlignment.start}) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: alignment,
       children: [
         Text(
           title,
@@ -260,6 +286,7 @@ class RecurringDepositDetailsScreen extends StatelessWidget {
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
+          textAlign: alignment == CrossAxisAlignment.end ? TextAlign.right : TextAlign.left,
         ),
       ],
     );

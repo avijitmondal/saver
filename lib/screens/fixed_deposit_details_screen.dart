@@ -66,16 +66,26 @@ class FixedDepositDetailsScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildInfoColumn('Principal', NumberFormatter.formatAmount(fixedDeposit.amount ?? 0)),
-                        _buildInfoColumn('Current Value', NumberFormatter.formatAmount(_getCurrentValue())),
+                        Expanded(
+                          child: _buildInfoColumn('Principal', NumberFormatter.formatAmount(fixedDeposit.amount ?? 0), alignment: CrossAxisAlignment.start),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildInfoColumn('Current Value', NumberFormatter.formatAmount(_getCurrentValue()), alignment: CrossAxisAlignment.end),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildInfoColumn('Interest Rate', '${(fixedDeposit.interest ?? 0).toStringAsFixed(2)}%'),
-                        _buildInfoColumn('Expected Returns', NumberFormatter.formatAmount(fixedDeposit.returns ?? 0)),
+                        Expanded(
+                          child: _buildInfoColumn('Interest Rate', '${(fixedDeposit.interest ?? 0).toStringAsFixed(2)}%', alignment: CrossAxisAlignment.start),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildInfoColumn('Expected Returns', NumberFormatter.formatAmount(fixedDeposit.returns ?? 0), alignment: CrossAxisAlignment.end),
+                        ),
                       ],
                     ),
                   ],
@@ -296,9 +306,9 @@ class FixedDepositDetailsScreen extends StatelessWidget {
     }
   }
   
-  Widget _buildInfoColumn(String title, String value) {
+  Widget _buildInfoColumn(String title, String value, {CrossAxisAlignment alignment = CrossAxisAlignment.start}) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: alignment,
       children: [
         Text(
           title,
