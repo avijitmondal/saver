@@ -16,11 +16,10 @@ class SecuritySection extends StatelessWidget {
     return InfoSection(
       title: 'Security',
       children: [
-        InfoListTile(
+        _buildSecurityTile(
           icon: Icons.lock,
           title: 'Change Password',
           subtitle: 'Update your password',
-          trailing: const Icon(Icons.chevron_right),
           onTap: controller.changePassword,
         ),
         /*ListTile(
@@ -32,8 +31,22 @@ class SecuritySection extends StatelessWidget {
             onChanged: controller.updateTwoFactorAuth,
           ),
         ),*/
-        const Divider(height: 1),
       ],
+    );
+  }
+
+  Widget _buildSecurityTile({
+    required IconData icon,
+    required String title,
+    String? subtitle,
+    VoidCallback? onTap,
+  }) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      subtitle: subtitle != null ? Text(subtitle) : null,
+      trailing: const Icon(Icons.chevron_right),
+      onTap: onTap,
     );
   }
 }

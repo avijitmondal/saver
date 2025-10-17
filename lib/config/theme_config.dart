@@ -34,9 +34,9 @@ class ThemeConfig {
           minVerticalPadding: UIConstants.spacing12,
         ),
         dividerTheme: const DividerThemeData(
-          color: UIConstants.dividerColor,
-          thickness: 1.0,
-          space: 1.0,
+          color: Colors.transparent,  // Changed from UIConstants.dividerColor
+          thickness: 0,  // Changed from 1.0
+          space: 0,  // Changed from 1.0
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(

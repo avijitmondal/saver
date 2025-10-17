@@ -23,23 +23,38 @@ class AccountActionsSection extends StatelessWidget {
           trailing: const Icon(Icons.chevron_right),
           onTap: controller.exportData,
         ),*/
-        InfoListTile(
+        _buildActionTile(
           icon: Icons.logout,
           title: 'Logout',
           subtitle: 'Sign out of your account',
-          trailing: const Icon(Icons.chevron_right),
           onTap: controller.logout,
         ),
-        InfoListTile(
+        _buildActionTile(
           icon: Icons.delete_forever,
           title: 'Delete Account',
           subtitle: 'Permanently delete your account',
           iconColor: Colors.red,
-          titleColor: Colors.red,
-          trailing: const Icon(Icons.chevron_right, color: Colors.red),
+          textColor: Colors.red,
           onTap: controller.deleteAccount,
         ),
       ],
+    );
+  }
+
+  Widget _buildActionTile({
+    required IconData icon,
+    required String title,
+    String? subtitle,
+    VoidCallback? onTap,
+    Color? iconColor,
+    Color? textColor,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: iconColor),
+      title: Text(title, style: TextStyle(color: textColor)),
+      subtitle: subtitle != null ? Text(subtitle) : null,
+      trailing: const Icon(Icons.chevron_right),
+      onTap: onTap,
     );
   }
 }

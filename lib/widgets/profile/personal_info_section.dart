@@ -15,39 +15,45 @@ class PersonalInfoSection extends StatelessWidget {
     return '${date.day}/${date.month}/${date.year}';
   }
 
+  Widget _buildInfoTile({
+    required IconData icon,
+    required String title,
+    required String value,
+    VoidCallback? onTap,
+  }) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      subtitle: Text(value),
+      trailing: onTap != null ? const Icon(Icons.chevron_right) : null,
+      onTap: onTap,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final userProvider = controller.userProvider;
-    
+
     return InfoSection(
       title: 'Personal Information',
       children: [
-        InfoListTile(
+        _buildInfoTile(
           icon: Icons.phone,
           title: 'Phone Number',
-          subtitle: userProvider.phone,
-          /*trailing: IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () => controller.showEditPhoneDialog(),
-          ),*/
+          value: userProvider.phone,
+          onTap: () => controller.showEditPhoneDialog(),
         ),
-        InfoListTile(
+        _buildInfoTile(
           icon: Icons.location_on,
           title: 'Address',
-          subtitle: userProvider.address,
-          /*trailing: IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () => controller.showEditAddressDialog(),
-          ),*/
+          value: userProvider.address,
+          onTap: () => controller.showEditAddressDialog(),
         ),
-        InfoListTile(
+        _buildInfoTile(
           icon: Icons.calendar_today,
           title: 'Date of Birth',
-          subtitle: _formatDate(userProvider.dateOfBirth),
-          /*trailing: IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () => controller.showDatePickerDialog(),
-          ),*/
+          value: _formatDate(userProvider.dateOfBirth),
+          onTap: () => controller.showDatePickerDialog(),
         ),
       ],
     );
