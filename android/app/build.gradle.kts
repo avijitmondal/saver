@@ -35,11 +35,22 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            val keystorePath = System.getenv("SAVER_UPLOAD_STORE_FILE") ?: ""
+            val keystorePassword = System.getenv("SAVER_UPLOAD_STORE_PASSWORD") ?: ""
+            val keystoreAlias = System.getenv("SAVER_UPLOAD_KEY_ALIAS") ?: ""
+            val keystoreKeyPassword = System.getenv("SAVER_UPLOAD_KEY_PASSWORD") ?: ""
+            storeFile = file(keystorePath)
+            storePassword = keystorePassword
+            keyAlias = keystoreAlias
+            keyPassword = keystoreKeyPassword
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
 
             // Enable debug symbols in release build
             ndk {
