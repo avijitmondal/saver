@@ -20,7 +20,7 @@ class ThemeConfig {
           foregroundColor: UIConstants.textPrimaryColor,
           titleTextStyle: UIConstants.headingSmall,
         ),
-        cardTheme: CardTheme(
+        cardTheme: CardThemeData(
           elevation: UIConstants.cardElevation,
           margin: const EdgeInsets.symmetric(
               vertical: UIConstants.spacing4, horizontal: UIConstants.spacing8),
@@ -130,7 +130,7 @@ class ThemeConfig {
           titleTextStyle:
               UIConstants.headingSmall.copyWith(color: Colors.white),
         ),
-        cardTheme: CardTheme(
+        cardTheme: CardThemeData(
           elevation: UIConstants.cardElevation,
           margin: const EdgeInsets.symmetric(
               vertical: UIConstants.spacing4, horizontal: UIConstants.spacing8),
