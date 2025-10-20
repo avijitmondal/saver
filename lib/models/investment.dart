@@ -108,8 +108,8 @@ class Investment {
       'type': type,
       'amount': amount,
       'interest': interest,
-      'iconCodePoint': icon?.codePoint,
-      'colorValue': color?.value,
+  'iconCodePoint': icon.codePoint,
+  'colorValue': color.value,
       'startDate': startDate?.millisecondsSinceEpoch,
       'durationInMonths': durationInMonths,
       'bank': bank,
@@ -123,8 +123,8 @@ class Investment {
       type: map['type'] ?? '',
       amount: (map['amount'] ?? 0.0).toDouble(),
       interest: (map['interest'] ?? 0.0).toDouble(),
-      icon: map['iconCodePoint'] != null 
-          ? IconData(map['iconCodePoint'], fontFamily: 'MaterialIcons')
+      icon: map['iconCodePoint'] != null
+          ? _iconFromCodePoint(map['iconCodePoint'])
           : Icons.account_balance,
       color: map['colorValue'] != null 
           ? Color(map['colorValue'])
@@ -144,5 +144,18 @@ class Investment {
   
   static Investment fromJson(String jsonString) {
     return fromMap(jsonDecode(jsonString));
+  }
+  // Helper to map codePoint to constant icons for web compatibility
+  static IconData _iconFromCodePoint(int codePoint) {
+    switch (codePoint) {
+      case 0xe84f:
+        return Icons.account_balance;
+      case 0xe850:
+        return Icons.account_balance_wallet;
+      case 0xe8b0:
+        return Icons.attach_money;
+      default:
+        return Icons.account_balance;
+    }
   }
 }
