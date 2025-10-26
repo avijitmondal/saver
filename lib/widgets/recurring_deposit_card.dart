@@ -6,6 +6,7 @@ import '../utils/number_formatter.dart';
 import 'bank_logo.dart';
 import '../screens/recurring_deposit_details_screen.dart';
 
+// Card shows a snapshot of the RD. We now use the computed currentBalance via a safe wrapper.
 class RecurringDepositCard extends StatelessWidget {
   final Investment investment;
   final int index;
@@ -166,8 +167,7 @@ class RecurringDepositCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        NumberFormatter.formatPercentage(
-                            investment.returnsPercentage),
+                        NumberFormatter.formatPercentage(investment.returnsPercentage),
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -188,11 +188,7 @@ class RecurringDepositCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        NumberFormatter.formatAmount(
-                          investment.isRecurring == true && investment.durationInMonths != null
-                              ? investment.amount * investment.durationInMonths!
-                              : investment.amount
-                        ),
+                        _safeAmount(() => investment.currentBalance),
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -243,6 +239,17 @@ class RecurringDepositCard extends StatelessWidget {
         },
         child: _buildCardContent(context),
       );
+    }
+  }
+
+  String _safeAmount(double Function() fn) {
+    try {
+      final v = fn();
+      if (v.isNaN || v.isInfinite) return 'N/A';
+      return NumberFormatter.formatAmount(v);
+    } catch (e, st) {
+      debugPrint('[RDCard] currentBalance error: $e\n$st');
+      return 'N/A';
     }
   }
 }

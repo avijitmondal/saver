@@ -92,18 +92,17 @@ class RecurringDepositScreen extends StatelessWidget {
       }
     }).toList();
     
-    // Calculate active balance with null safety - for RD, calculate total deposited amount
+    // Calculate active balance with null safety - for RD, use currentBalance (paid so far + interest)
     double activeBalance = 0;
     try {
       activeBalance = activeInvestments.fold(
         0,
         (sum, investment) {
           try {
-            if (investment.isRecurring == true && investment.durationInMonths != null) {
-              // For recurring deposits, calculate total amount deposited
-              return sum + (investment.amount * investment.durationInMonths!);
+            if (investment.isRecurring == true) {
+              return sum + investment.currentBalance;
             }
-            return sum + (investment.amount ?? 0);
+            return sum + investment.amount;
           } catch (e) {
             return sum; // Skip this investment if amount is invalid
           }
@@ -113,20 +112,21 @@ class RecurringDepositScreen extends StatelessWidget {
       activeBalance = 0;
     }
     
-    // Calculate matured balance with null safety
+    // Calculate matured balance with null safety - for matured RD, show maturity amount (principal + expected interest)
     double maturedBalance = 0;
     try {
       maturedBalance = maturedInvestments.fold(
         0,
         (sum, investment) {
           try {
-            if (investment.isRecurring == true && investment.durationInMonths != null) {
-              // For recurring deposits, calculate total amount deposited
-              return sum + (investment.amount * investment.durationInMonths!);
+            if (investment.isRecurring == true) {
+              // At maturity, approximate maturity amount: total deposits + expected interest (returns)
+              return sum + (investment.amount * (investment.durationInMonths ?? 0)) + investment.returns;
             }
-            return sum + (investment.amount ?? 0);
+            // For non-recurring, just show amount (you could add returns similarly if needed)
+            return sum + investment.amount;
           } catch (e) {
-            return sum; // Skip this investment if amount is invalid
+            return sum; // Skip this investment if invalid
           }
         },
       );

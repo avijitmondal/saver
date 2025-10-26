@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import 'package:provider/provider.dart';
 import 'package:saver/constants/app_constants.dart';
 import '../providers/portfolio_provider.dart';
@@ -99,7 +98,7 @@ class FixedDepositScreen extends StatelessWidget {
         0,
         (sum, investment) {
           try {
-            return sum + (investment.amount ?? 0);
+            return sum + (investment.amount);
           } catch (e) {
             return sum; // Skip this investment if amount is invalid
           }
@@ -116,7 +115,7 @@ class FixedDepositScreen extends StatelessWidget {
         0,
         (sum, investment) {
           try {
-            return sum + (investment.amount ?? 0);
+            return sum + (investment.amount);
           } catch (e) {
             return sum; // Skip this investment if amount is invalid
           }

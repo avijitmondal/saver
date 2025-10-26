@@ -1,12 +1,6 @@
 class AppConstants {
   // App Information
   static const String appName = 'Saver';
-  static const String appVersion = '1.0.2';
-
-  // API Endpoints (if applicable)
-  static const String baseApiUrl = 'http://localhost:8881/api/v1';
-
-  static const String waitlistFormUri = 'https://docs.google.com/forms/d/e/1FAIpQLSfrPUXRYbv6M79sc5Qe2aAYGchzmX8bUSI3gcN5MoIBaT5ZMA/viewform?usp=dialog';
 
   // Default Values
   static const int defaultAnimationDuration = 300; // milliseconds

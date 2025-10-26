@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../controllers/profile_controller.dart';
-import 'info_list_tile.dart';
 import 'info_section.dart';
 
 class SecuritySection extends StatelessWidget {

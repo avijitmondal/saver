@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:saver/constants/app_constants.dart';
 import '../models/investment.dart';
-import '../data/sample_investments.dart';
 import '../services/investment_calculator.dart';
-import '../services/local_storage_service.dart';
+import '../services/investment_storage_service.dart';
+import '../services/investment_storage_factory.dart';
 import 'package:provider/provider.dart';
 import 'feature_flags_provider.dart';
 
 class PortfolioProvider extends ChangeNotifier {
   List<Investment> _investments = [];
-  LocalStorageService? _storageService;
+  InvestmentStorageService? _storageService;
   bool _isLoaded = false;
 
   List<Investment> get investments => List.unmodifiable(_investments);
@@ -19,7 +20,8 @@ class PortfolioProvider extends ChangeNotifier {
   Future<void> initialize() async {
     if (_isLoaded) return;
 
-    _storageService = await LocalStorageService.getInstance();
+    // Factory creates the appropriate storage implementation based on feature flag
+    _storageService = await InvestmentStorageFactory.create();
     await _loadInvestments();
     _isLoaded = true;
     notifyListeners();
@@ -31,14 +33,11 @@ class PortfolioProvider extends ChangeNotifier {
       final hasData = await _storageService!.hasInvestmentData();
 
       if (hasData) {
-        // Load existing data
+        // Load data from storage (sample or SharedPreferences based on flag)
         _investments = await _storageService!.loadInvestments();
       } else {
-        // First time user - load sample data if enabled
-        _investments = SampleInvestments.getInitialInvestments();
-        if (_investments.isNotEmpty) {
-          await _saveInvestments();
-        }
+        // No data available - start with empty list
+        _investments = [];
       }
     } catch (e) {
       print('Error loading investments: $e');
@@ -108,8 +107,24 @@ class PortfolioProvider extends ChangeNotifier {
   }
 
   double absoluteReturnsWithFlags(BuildContext context) {
-    return InvestmentCalculator.calculateAbsoluteReturns(
-        totalReturnsWithFlags(context), totalInvestmentWithFlags(context));
+  final currentValue = activeInvestmentsWithFlags(context)
+    .fold(0.0, (sum, investment) => sum + investment.currentBalance);
+  // Invested baseline: use only actual capital paid so far for RD instead of full planned deposits
+  final invested = activeInvestmentsWithFlags(context)
+    .fold(0.0, (sum, investment) {
+      if (investment.isRecurring && investment.startDate != null && investment.durationInMonths != null) {
+        final now = DateTime.now();
+        final monthsElapsed = now.difference(investment.startDate!).inDays / 30;
+        final actualMonths = monthsElapsed.floor();
+        // Deposits made include first deposit on start date (+1), capped at duration
+        int depositsMade = actualMonths + 1;
+        if (depositsMade > investment.durationInMonths!) depositsMade = investment.durationInMonths!;
+        return sum + (investment.amount * depositsMade);
+      } else {
+        return sum + investment.amount;
+      }
+    });
+  return InvestmentCalculator.calculateAbsoluteReturns(currentValue, invested);
   }
 
   // Legacy getters for backward compatibility (if needed)
@@ -136,13 +151,10 @@ class PortfolioProvider extends ChangeNotifier {
     final investmentsOfType = _investments.where((inv) => inv.type == type);
     
     for (var investment in investmentsOfType) {
-      if (type == 'Recurring Deposit' && 
-          investment.isRecurring == true && 
-          investment.durationInMonths != null) {
-        // For recurring deposits, calculate total deposited amount
-        total += investment.amount * investment.durationInMonths!;
+      if (type == 'Recurring Deposit' && investment.isRecurring == true) {
+        // Use current balance (paid so far + interest accrued)
+        total += investment.currentBalance;
       } else {
-        // For other investment types, use the amount directly
         total += investment.amount;
       }
     }
@@ -153,13 +165,9 @@ class PortfolioProvider extends ChangeNotifier {
   double get totalInvestment {
     double total = 0;
     for (var investment in _investments) {
-      if (investment.type == 'Recurring Deposit' && 
-          investment.isRecurring == true && 
-          investment.durationInMonths != null) {
-        // For recurring deposits, calculate total deposited amount
-        total += investment.amount * investment.durationInMonths!;
+      if (investment.type == 'Recurring Deposit' && investment.isRecurring == true) {
+        total += investment.currentBalance;
       } else {
-        // For other investment types, use the amount directly
         total += investment.amount;
       }
     }
@@ -181,8 +189,21 @@ class PortfolioProvider extends ChangeNotifier {
   }
 
   double get absoluteReturns {
-    return InvestmentCalculator.calculateAbsoluteReturns(
-        totalReturns, totalInvestment);
+  final currentValue = activeInvestments.fold(0.0, (sum, investment) => sum + investment.currentBalance);
+  // Invested baseline: use only actual capital paid so far for RD instead of full planned deposits
+  final invested = activeInvestments.fold(0.0, (sum, investment) {
+    if (investment.isRecurring && investment.startDate != null && investment.durationInMonths != null) {
+      final now = DateTime.now();
+      final monthsElapsed = now.difference(investment.startDate!).inDays / 30;
+      final actualMonths = monthsElapsed.floor();
+      int depositsMade = actualMonths + 1;
+      if (depositsMade > investment.durationInMonths!) depositsMade = investment.durationInMonths!;
+      return sum + (investment.amount * depositsMade);
+    } else {
+      return sum + investment.amount;
+    }
+  });
+  return InvestmentCalculator.calculateAbsoluteReturns(currentValue, invested);
   }
 
   Future<void> addInvestment(Investment investment) async {
@@ -210,7 +231,7 @@ class PortfolioProvider extends ChangeNotifier {
   // Clear all portfolio data (including storage)
   Future<void> clearPortfolio() async {
     _investments.clear();
-    await _saveInvestments(); // This will save empty list to storage
+    await _storageService?.clearInvestments();
     notifyListeners();
   }
 
@@ -226,10 +247,20 @@ class PortfolioProvider extends ChangeNotifier {
 
   // Export data for backup
   Future<Map<String, dynamic>> exportData() async {
+    // Get version from package info at runtime
+    String version = 'unknown';
+    try {
+      final packageInfo = await PackageInfo.fromPlatform();
+      version = '${packageInfo.version}+${packageInfo.buildNumber}';
+    } catch (e) {
+      // Fallback if package info fails
+      version = 'unknown';
+    }
+    
     return {
       'investments': _investments.map((inv) => inv.toMap()).toList(),
       'exportDate': DateTime.now().toIso8601String(),
-      'appVersion': AppConstants.appVersion,
+      'appVersion': version,
     };
   }
 

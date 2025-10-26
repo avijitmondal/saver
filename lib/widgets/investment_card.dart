@@ -21,13 +21,10 @@ class InvestmentCard extends StatelessWidget {
     double total = 0;
 
     for (var inv in investments) {
-      if (inv.type == 'Recurring Deposit' &&
-          inv.isRecurring == true &&
-          inv.durationInMonths != null) {
-        // For recurring deposits, calculate total deposited amount
-        total += inv.amount * inv.durationInMonths!;
+      if (inv.type == 'Recurring Deposit' && inv.isRecurring == true) {
+        // Use current balance (paid so far + accrued interest)
+        total += inv.currentBalance;
       } else {
-        // For other investment types, use the amount directly
         total += inv.amount;
       }
     }
@@ -139,7 +136,7 @@ class InvestmentCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Total Amount',
+                        'Balance',
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[600],

@@ -21,7 +21,6 @@ class _RegistrationFormScreenState extends State<RegistrationFormScreen> {
   DateTime? _selectedDate;
 
   int _currentStep = 0;
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -58,7 +57,6 @@ class _RegistrationFormScreenState extends State<RegistrationFormScreen> {
       return;
     }
     setState(() {
-      _isLoading = true;
     });
 
     try {
@@ -85,7 +83,6 @@ class _RegistrationFormScreenState extends State<RegistrationFormScreen> {
     } finally {
       if (mounted) {
         setState(() {
-          _isLoading = false;
         });
       }
     }

@@ -14,7 +14,7 @@ class UserProvider extends ChangeNotifier {
   bool get isLoggedIn => _userData.isNotEmpty;
   String get firstName => _userData['firstName'] ?? '';
   String get lastName => _userData['lastName'] ?? '';
-  String get fullName => '${firstName} ${lastName}'.trim();
+  String get fullName => '$firstName $lastName'.trim();
   String get email => _userData['email'] ?? '';
   String get phone => _userData['phone'] ?? '';
   String get address => _userData['address'] ?? '';

@@ -222,7 +222,7 @@ class _InvestmentDistributionCardState
                         ),
                       ],
                     );
-                  }).toList(),
+                  }),
               ],
             ),
           ],

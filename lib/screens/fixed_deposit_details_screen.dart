@@ -34,8 +34,8 @@ class FixedDepositDetailsScreen extends StatelessWidget {
                     Row(
                       children: [
                         Icon(
-                          fixedDeposit.icon ?? Icons.account_balance,
-                          color: fixedDeposit.color ?? Colors.blue,
+                          fixedDeposit.icon,
+                          color: fixedDeposit.color,
                           size: 36,
                         ),
                         const SizedBox(width: 16),
@@ -67,7 +67,7 @@ class FixedDepositDetailsScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
-                          child: _buildInfoColumn('Principal', NumberFormatter.formatAmount(fixedDeposit.amount ?? 0), alignment: CrossAxisAlignment.start),
+                          child: _buildInfoColumn('Principal', NumberFormatter.formatAmount(fixedDeposit.amount), alignment: CrossAxisAlignment.start),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
@@ -80,11 +80,11 @@ class FixedDepositDetailsScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
-                          child: _buildInfoColumn('Interest Rate', '${(fixedDeposit.interest ?? 0).toStringAsFixed(2)}%', alignment: CrossAxisAlignment.start),
+                          child: _buildInfoColumn('Interest Rate', '${(fixedDeposit.interest).toStringAsFixed(2)}%', alignment: CrossAxisAlignment.start),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
-                          child: _buildInfoColumn('Expected Returns', NumberFormatter.formatAmount(fixedDeposit.returns ?? 0), alignment: CrossAxisAlignment.end),
+                          child: _buildInfoColumn('Expected Returns', NumberFormatter.formatAmount(fixedDeposit.returns), alignment: CrossAxisAlignment.end),
                         ),
                       ],
                     ),
@@ -124,11 +124,11 @@ class FixedDepositDetailsScreen extends StatelessWidget {
             const SizedBox(height: 16),
             
             _buildDetailCard([
-              _buildDetailRow('Principal Amount', NumberFormatter.formatAmount(fixedDeposit.amount ?? 0)),
-              _buildDetailRow('Interest Rate', '${(fixedDeposit.interest ?? 0).toStringAsFixed(2)}% p.a.'),
-              _buildDetailRow('Expected Interest', NumberFormatter.formatAmount(fixedDeposit.returns ?? 0)),
+              _buildDetailRow('Principal Amount', NumberFormatter.formatAmount(fixedDeposit.amount)),
+              _buildDetailRow('Interest Rate', '${(fixedDeposit.interest).toStringAsFixed(2)}% p.a.'),
+              _buildDetailRow('Expected Interest', NumberFormatter.formatAmount(fixedDeposit.returns)),
               _buildDetailRow('Maturity Amount', NumberFormatter.formatAmount(_getMaturityAmount())),
-              _buildDetailRow('Returns Percentage', '${(fixedDeposit.returnsPercentage ?? 0).toStringAsFixed(2)}%'),
+              _buildDetailRow('Returns Percentage', '${(fixedDeposit.returnsPercentage).toStringAsFixed(2)}%'),
             ]),
             
             if (fixedDeposit.notes != null && fixedDeposit.notes!.isNotEmpty) ...[
@@ -164,12 +164,12 @@ class FixedDepositDetailsScreen extends StatelessWidget {
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Premature withdrawal feature coming soon'),
+                            content: Text('Premature Closure feature coming soon'),
                           ),
                         );
                       },
                       icon: const Icon(Icons.money_off),
-                      label: const Text('Premature Withdrawal'),
+                      label: const Text('Premature Closure'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red[100],
                         foregroundColor: Colors.red[800],
@@ -244,17 +244,17 @@ class FixedDepositDetailsScreen extends StatelessWidget {
 
   double _getCurrentValue() {
     try {
-      return fixedDeposit.currentBalance ?? fixedDeposit.amount ?? 0;
+      return fixedDeposit.currentBalance;
     } catch (e) {
-      return fixedDeposit.amount ?? 0;
+      return fixedDeposit.amount;
     }
   }
 
   double _getMaturityAmount() {
     try {
-      return (fixedDeposit.amount ?? 0) + (fixedDeposit.returns ?? 0);
+      return (fixedDeposit.amount) + (fixedDeposit.returns);
     } catch (e) {
-      return fixedDeposit.amount ?? 0;
+      return fixedDeposit.amount;
     }
   }
 
@@ -280,7 +280,7 @@ class FixedDepositDetailsScreen extends StatelessWidget {
 
   String _getDuration() {
     try {
-      return fixedDeposit.duration ?? 'N/A';
+      return fixedDeposit.duration;
     } catch (e) {
       return 'N/A';
     }
@@ -291,7 +291,7 @@ class FixedDepositDetailsScreen extends StatelessWidget {
       if (_isMatured()) {
         return 'Matured';
       }
-      return fixedDeposit.remainingDuration ?? 'Active';
+      return fixedDeposit.remainingDuration;
     } catch (e) {
       return 'Unknown';
     }

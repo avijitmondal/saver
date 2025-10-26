@@ -1,10 +1,41 @@
+import 'dart:math';
+
 class InvestmentCalculator {
-  static double calculateReturns(double amount, double interest) {
-    return amount * interest / 100;
+  // Fixed Deposit: Compound Interest
+  static double calculateReturns(double amount, double interest, {int? durationInMonths, int compoundingPerYear = 4}) {
+    if (durationInMonths == null || durationInMonths <= 0) {
+      return amount * interest / 100;
+    }
+    
+    try {
+      double years = durationInMonths / 12.0;
+      double rate = interest / 100.0;
+      double n = compoundingPerYear.toDouble();
+      double maturity = amount * (pow(1 + rate / n, n * years));
+      
+      // Check for invalid values
+      if (maturity.isNaN || maturity.isInfinite) {
+        return amount * interest / 100; // Fallback to simple interest
+      }
+      
+      return maturity - amount;
+    } catch (e) {
+      print('Error in calculateReturns: $e');
+      return amount * interest / 100; // Fallback to simple interest
+    }
   }
 
-  static double calculateReturnsPercentage(double returns, double amount) {
+  static double calculateReturnsPercentage(double returns, double amount, {bool isRecurring = false, int? durationInMonths}) {
     if (amount == 0) return 0;
+    
+    // For recurring deposits, calculate percentage based on total deposits
+    if (isRecurring && durationInMonths != null) {
+      double totalDeposits = amount * durationInMonths;
+      if (totalDeposits == 0) return 0;
+      return (returns / totalDeposits) * 100;
+    }
+    
+    // For fixed deposits, calculate percentage based on principal
     return (returns / amount) * 100;
   }
 
@@ -14,50 +45,91 @@ class InvestmentCalculator {
     DateTime? startDate,
     int? durationInMonths,
     bool isRecurring = false,
+    int compoundingPerYear = 4,
   }) {
-    if (startDate == null || durationInMonths == null) return amount;
-
-    final now = DateTime.now();
-    final monthsElapsed = now.difference(startDate).inDays / 30;
-    final actualMonths = monthsElapsed.floor();
-
-    if (isRecurring) {
-      // For recurring deposits
-      final monthlyDeposit = amount;
-      double balance = 0;
-
-      // Calculate balance with compound interest for each monthly deposit
-      for (int i = 0; i < actualMonths; i++) {
-        final remainingMonths = actualMonths - i;
-        final deposit = monthlyDeposit;
-        final interestAmount =
-            (deposit * interest * remainingMonths) / (12 * 100);
-        balance += deposit + interestAmount;
+    // Return principal if essential data is missing
+    if (startDate == null || durationInMonths == null || durationInMonths <= 0) {
+      return amount;
+    }
+    
+    try {
+      final now = DateTime.now();
+      final monthsElapsed = now.difference(startDate).inDays / 30;
+      final actualMonths = monthsElapsed.floor();
+      
+      // If investment hasn't started yet, return 0 or principal
+      if (actualMonths < 0) {
+        return isRecurring ? 0 : amount;
       }
+      
+      double rate = interest / 100.0;
+      double n = compoundingPerYear.toDouble();
+      
+      if (isRecurring) {
+        // Recurring Deposit: include first deposit immediately on start date
+        int depositsMade = (actualMonths + 1);
+        if (depositsMade > durationInMonths) depositsMade = durationInMonths;
+        if (depositsMade <= 0) return 0;
+        
+        double balance = 0;
 
-      return balance;
-    } else {
-      // For fixed deposits
-      final interestAmount = (amount * interest * actualMonths) / (12 * 100);
-      return amount + interestAmount;
+        for (int i = 0; i < depositsMade; i++) {
+          // Deposit i was made i months ago; interest accrues for (actualMonths - i) months
+          int monthsSinceDeposit = actualMonths - i;
+          // Cap the accrual period at the deposit's duration
+          if (monthsSinceDeposit > durationInMonths - i) {
+            monthsSinceDeposit = durationInMonths - i;
+          }
+          if (monthsSinceDeposit < 0) monthsSinceDeposit = 0;
+          
+          double yearsSince = monthsSinceDeposit / 12.0;
+          double deposit = amount;
+          double accrued = deposit * pow(1 + rate / n, n * yearsSince);
+          
+          // Check for invalid values
+          if (accrued.isNaN || accrued.isInfinite) {
+            accrued = deposit;
+          }
+          
+          balance += accrued;
+        }
+
+        return balance.isNaN || balance.isInfinite ? amount * depositsMade : balance;
+      } else {
+        // Fixed Deposit: Accrued value up to today, but capped at maturity
+        // Don't calculate interest beyond the maturity date
+        final effectiveMonths = actualMonths > durationInMonths ? durationInMonths : actualMonths;
+        if (effectiveMonths < 0) return amount;
+        
+        double yearsElapsed = effectiveMonths / 12.0;
+        double accrued = amount * pow(1 + rate / n, n * yearsElapsed);
+        
+        // Check for invalid values
+        if (accrued.isNaN || accrued.isInfinite) {
+          return amount;
+        }
+        
+        return accrued;
+      }
+    } catch (e) {
+      // If any error occurs, return a safe fallback value
+      print('Error in calculateCurrentBalance: $e');
+      return amount;
     }
   }
 
-  static double calculateXIRR(
-      List<double> amounts, List<double> interests, double totalInvestment) {
+  // XIRR: Improved weighted average (cash flows and dates needed for true XIRR)
+  static double calculateXIRR(List<double> amounts, List<double> interests, double totalInvestment) {
     if (totalInvestment == 0) return 0;
-
     double weightedSum = 0;
     for (int i = 0; i < amounts.length; i++) {
-      weightedSum += (amounts[i] / totalInvestment * interests[i]);
+      weightedSum += (amounts[i] * interests[i]);
     }
-
-    return weightedSum;
+    return weightedSum / totalInvestment;
   }
 
-  static double calculateAbsoluteReturns(
-      double totalReturns, double totalInvestment) {
+  static double calculateAbsoluteReturns(double currentValue, double totalInvestment) {
     if (totalInvestment == 0) return 0;
-    return (totalReturns / totalInvestment) * 100;
+    return ((currentValue - totalInvestment) / totalInvestment) * 100;
   }
 }

@@ -3,7 +3,6 @@ import '../models/investment.dart';
 import '../models/rd_payment.dart';
 import '../utils/number_formatter.dart';
 import '../utils/date_utils.dart';
-import '../data/sample_rd_payments.dart';
 
 class RDPaymentHistoryScreen extends StatelessWidget {
   final Investment recurringDeposit;
@@ -13,11 +12,49 @@ class RDPaymentHistoryScreen extends StatelessWidget {
     required this.recurringDeposit,
   });
 
+  List<RDPayment> _generatePaymentHistory() {
+    if (recurringDeposit.startDate == null || recurringDeposit.durationInMonths == null) {
+      return [];
+    }
+
+    final List<RDPayment> payments = [];
+    final now = DateTime.now();
+    final startDate = recurringDeposit.startDate!;
+    
+  // Calculate how many months have elapsed since start date
+  // Add 1 because the first payment is made on the start date itself
+  final monthsElapsed = ((now.difference(startDate).inDays / 30).floor()) + 1;
+    
+    // Generate payments only for elapsed months (payments that should have been made)
+    final paymentsToGenerate = monthsElapsed < recurringDeposit.durationInMonths! 
+        ? monthsElapsed 
+        : recurringDeposit.durationInMonths!;
+    
+    for (int i = 0; i < paymentsToGenerate; i++) {
+      // Each payment is made at the start of each month
+      final paymentDate = DateTime(
+        startDate.year,
+        startDate.month + i,
+        startDate.day,
+      );
+      
+      payments.add(RDPayment(
+        date: paymentDate,
+        amount: recurringDeposit.amount,
+        isCompleted: true,
+        referenceNumber: 'RD${recurringDeposit.bank ?? 'XXX'}${i + 1}'.replaceAll(' ', ''),
+        status: PaymentStatus.completed,
+        notes: 'Monthly deposit #${i + 1}',
+      ));
+    }
+    
+    return payments;
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Get payments from the sample data
-    final List<RDPayment> payments = SampleRDPayments.getPaymentsForAccount(
-        recurringDeposit.bank ?? '');
+    // Generate payments based on actual elapsed time
+    final List<RDPayment> payments = _generatePaymentHistory();
 
     return Scaffold(
       appBar: AppBar(
@@ -94,21 +131,21 @@ class RDPaymentHistoryScreen extends StatelessWidget {
                   children: [
                     _buildStatColumn(
                       context,
-                      'Total Payments',
-                      payments.where((p) => p.isCompleted).length.toString(),
+                      'Payments Made',
+                      payments.length.toString(),
+                      Colors.green,
+                    ),
+                    _buildStatColumn(
+                      context,
+                      'Total Deposited',
+                      NumberFormatter.formatAmount(payments.length * recurringDeposit.amount),
                       Colors.blue,
                     ),
                     _buildStatColumn(
                       context,
-                      'Pending',
-                      payments.where((p) => p.status == PaymentStatus.pending).length.toString(),
+                      'Remaining',
+                      '${(recurringDeposit.durationInMonths ?? 0) - payments.length}',
                       Colors.orange,
-                    ),
-                    _buildStatColumn(
-                      context,
-                      'Upcoming',
-                      payments.where((p) => p.status == PaymentStatus.scheduled).length.toString(),
-                      Colors.green,
                     ),
                   ],
                 ),
@@ -147,39 +184,52 @@ class RDPaymentHistoryScreen extends StatelessWidget {
           // Payments list
           Expanded(
             child: payments.isEmpty
-                ? const Center(
-                    child: Text(
-                      'No payment history available',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
-                      ),
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.receipt_long,
+                          size: 64,
+                          color: Colors.grey[400],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No payments made yet',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Payments will appear here as they are made',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[500],
+                          ),
+                        ),
+                      ],
                     ),
                   )
                 : ListView.builder(
                     itemCount: payments.length,
                     itemBuilder: (context, index) {
                       final payment = payments[index];
-                      final isCompleted = payment.isCompleted;
 
                       return Card(
                         margin: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 4),
                         child: ListTile(
                           leading: CircleAvatar(
-                            backgroundColor:
-                                payment.status.color.withOpacity(0.1),
-                            child: Icon(
-                              payment.status.icon,
-                              color: payment.status.color,
+                            backgroundColor: Colors.green.withOpacity(0.1),
+                            child: const Icon(
+                              Icons.check_circle,
+                              color: Colors.green,
                             ),
                           ),
                           title: Text(
-                            isCompleted
-                                ? NumberFormatter.formatAmount(payment.amount)
-                                : payment.status == PaymentStatus.pending
-                                    ? 'Pending Payment'
-                                    : 'Upcoming Payment',
+                            NumberFormatter.formatAmount(payment.amount),
                             style: const TextStyle(
                               fontWeight: FontWeight.w500,
                             ),
@@ -206,25 +256,13 @@ class RDPaymentHistoryScreen extends StatelessWidget {
                                 ),
                             ],
                           ),
-                          trailing: isCompleted
-                              ? IconButton(
-                                  icon: const Icon(Icons.receipt_long,
-                                      color: Colors.grey),
-                                  onPressed: () {
-                                    // Show receipt details
-                                    _showReceiptDetails(context, payment);
-                                  },
-                                )
-                              : TextButton(
-                                  onPressed: () {
-                                    // Show dialog to make payment
-                                    _showMakePaymentDialog(context, payment);
-                                  },
-                                  child: const Text('Make Payment'),
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: Colors.green,
-                                  ),
-                                ),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.receipt_long,
+                                color: Colors.grey),
+                            onPressed: () {
+                              _showReceiptDetails(context, payment);
+                            },
+                          ),
                         ),
                       );
                     },
@@ -237,25 +275,29 @@ class RDPaymentHistoryScreen extends StatelessWidget {
 
   Widget _buildStatColumn(
       BuildContext context, String label, String value, Color color) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: color,
+    return Expanded(
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+            overflow: TextOverflow.ellipsis,
           ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey[600],
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[600],
+            ),
+            textAlign: TextAlign.center,
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -335,61 +377,6 @@ class RDPaymentHistoryScreen extends StatelessWidget {
     );
   }
 
-  void _showMakePaymentDialog(BuildContext context, RDPayment payment) {
-    final amountController = TextEditingController();
-    amountController.text = payment.amount.toString();
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Make Payment'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Payment Date: ${DateFormatter.formatDate(payment.date)}',
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: amountController,
-              decoration: const InputDecoration(
-                labelText: 'Amount',
-                prefixText: '₹',
-                border: OutlineInputBorder(),
-              ),
-              keyboardType: TextInputType.number,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('CANCEL'),
-          ),
-          TextButton(
-            onPressed: () {
-              // Make payment logic would go here
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Payment successful'),
-                  backgroundColor: Colors.green,
-                ),
-              );
-            },
-            child: const Text('PAY NOW'),
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.green,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _showReceiptDetails(BuildContext context, RDPayment payment) {
     showDialog(
       context: context,
@@ -414,11 +401,10 @@ class RDPaymentHistoryScreen extends StatelessWidget {
           ),
           TextButton(
             onPressed: () {
-              // Download receipt logic would go here
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Receipt downloaded'),
+                  content: Text('Download feature coming soon'),
                   backgroundColor: Colors.blue,
                 ),
               );

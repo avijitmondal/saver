@@ -27,22 +27,47 @@ class Investment {
     this.notes,
   });
 
-  double get returns => InvestmentCalculator.calculateReturns(amount, interest);
+  double get returns {
+    try {
+      return InvestmentCalculator.calculateReturns(amount, interest, durationInMonths: durationInMonths);
+    } catch (e) {
+      print('Error calculating returns: $e');
+      return 0.0;
+    }
+  }
 
-  double get returnsPercentage =>
-      InvestmentCalculator.calculateReturnsPercentage(returns, amount);
+  double get returnsPercentage {
+    try {
+      return InvestmentCalculator.calculateReturnsPercentage(returns, amount, isRecurring: isRecurring, durationInMonths: durationInMonths);
+    } catch (e) {
+      print('Error calculating returns percentage: $e');
+      return 0.0;
+    }
+  }
 
-  double get currentBalance => InvestmentCalculator.calculateCurrentBalance(
+  double get currentBalance {
+    try {
+      return InvestmentCalculator.calculateCurrentBalance(
         amount: amount,
         interest: interest,
         startDate: startDate,
         durationInMonths: durationInMonths,
         isRecurring: isRecurring,
       );
+    } catch (e) {
+      print('Error calculating current balance: $e');
+      return amount;
+    }
+  }
 
   DateTime? get maturityDate {
-    if (startDate == null || durationInMonths == null) return null;
-    return startDate!.add(Duration(days: durationInMonths! * 30));
+    try {
+      if (startDate == null || durationInMonths == null) return null;
+      return startDate!.add(Duration(days: durationInMonths! * 30));
+    } catch (e) {
+      print('Error calculating maturity date: $e');
+      return null;
+    }
   }
 
   String get duration {
@@ -63,43 +88,64 @@ class Investment {
   }
 
   String get remainingDuration {
-    if (startDate == null || durationInMonths == null) return 'N/A';
-    final now = DateTime.now();
-    if (now.isAfter(maturityDate!)) {
-      return 'Matured';
-    }
-    final remainingDays = maturityDate!.difference(now).inDays;
-    final remainingMonths = (remainingDays / 30).floor();
-    final years = remainingMonths ~/ 12;
-    final months = remainingMonths % 12;
-    String duration = '';
-    if (years > 0) {
-      duration += '$years year${years > 1 ? 's' : ''}';
-      if (months > 0) {
-        duration += ' ';
+    try {
+      if (startDate == null || durationInMonths == null) return 'N/A';
+      final maturity = maturityDate;  // Get maturity date safely
+      if (maturity == null) return 'N/A';
+      
+      final now = DateTime.now();
+      if (now.isAfter(maturity)) {
+        return 'Matured';
       }
+      
+      final remainingDays = maturity.difference(now).inDays;
+      if (remainingDays < 0) return 'Matured';
+      
+      final remainingMonths = (remainingDays / 30).floor();
+      final years = remainingMonths ~/ 12;
+      final months = remainingMonths % 12;
+      String duration = '';
+      if (years > 0) {
+        duration += '$years year${years > 1 ? 's' : ''}';
+        if (months > 0) {
+          duration += ' ';
+        }
+      }
+      if (months > 0) {
+        duration += '$months month${months > 1 ? 's' : ''}';
+      }
+      if (duration.isEmpty) {
+        duration = '$remainingDays day${remainingDays > 1 ? 's' : ''}';
+      }
+      return 'Matures in $duration';
+    } catch (e) {
+      print('Error calculating remaining duration: $e');
+      return 'N/A';
     }
-    if (months > 0) {
-      duration += '$months month${months > 1 ? 's' : ''}';
-    }
-    if (duration.isEmpty) {
-      duration = '$remainingDays day${remainingDays > 1 ? 's' : ''}';
-    }
-    return 'Matures in $duration';
   }
   
   String get maturityStatus {
-    if (startDate == null || durationInMonths == null) return 'N/A';
-    final now = DateTime.now();
-    if (now.isAfter(maturityDate!)) {
-      return 'Matured';
+    try {
+      if (startDate == null || durationInMonths == null) return 'N/A';
+      final maturity = maturityDate;  // Get maturity date safely
+      if (maturity == null) return 'N/A';
+      
+      final now = DateTime.now();
+      if (now.isAfter(maturity)) {
+        return 'Matured';
+      }
+    
+      final remainingDays = maturity.difference(now).inDays;
+      if (remainingDays < 0) return 'Matured';
+      
+      final totalDays = durationInMonths! * 30;
+      final percentComplete = ((totalDays - remainingDays) / totalDays * 100).round();
+      
+      return '$percentComplete% Complete';
+    } catch (e) {
+      print('Error calculating maturity status: $e');
+      return 'N/A';
     }
-    
-    final remainingDays = maturityDate!.difference(now).inDays;
-    final totalDays = durationInMonths! * 30;
-    final percentComplete = ((totalDays - remainingDays) / totalDays * 100).round();
-    
-    return '$percentComplete% Complete';
   }
 
   // Serialization methods

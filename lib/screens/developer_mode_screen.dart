@@ -48,7 +48,7 @@ class _DeveloperModeScreenState extends State<DeveloperModeScreen> {
                     _updateFlag(context, entry.key, val);
                   },
                 );
-              }).toList(),
+              }),
             ],
           ),
         );
