@@ -22,6 +22,7 @@ class _AddFixedDepositScreenState extends State<AddFixedDepositScreen> {
   String? _selectedBank;
   DateTime? _startDate;
   int? _durationInMonths;
+  String _compoundingFrequency = 'quarterly';
 
   @override
   void dispose() {
@@ -80,6 +81,7 @@ class _AddFixedDepositScreenState extends State<AddFixedDepositScreen> {
         startDate: _startDate,
         durationInMonths: _durationInMonths,
         bank: _selectedBank,
+        compoundingFrequency: _compoundingFrequency,
       );
 
       portfolio.addInvestment(newDeposit);
@@ -221,6 +223,33 @@ class _AddFixedDepositScreenState extends State<AddFixedDepositScreen> {
                     return 'Please select duration';
                   }
                   return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: _compoundingFrequency,
+                decoration: const InputDecoration(
+                  labelText: 'Compounding Frequency',
+                  border: OutlineInputBorder(),
+                ),
+                items: const [
+                  DropdownMenuItem(
+                    value: 'quarterly',
+                    child: Text('Quarterly'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'half-yearly',
+                    child: Text('Half-Yearly'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'yearly',
+                    child: Text('Yearly'),
+                  ),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    _compoundingFrequency = value!;
+                  });
                 },
               ),
               const SizedBox(height: 32),

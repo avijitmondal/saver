@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
         screen: InvestmentsScreen(),
       ),
       // Notifications item only when enabled
-      if (AppConstants.enableNotifications)
+      if (AppConstants.featureFlags['notifications'] ?? false)
         const BottomNavItem(
           label: 'Notifications',
           icon: Icons.notifications_outlined,
@@ -46,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
 
     // Adjust selected index if notifications disabled and previously selected its slot
-    if (!AppConstants.enableNotifications && _selectedIndex >= navItems.length) {
+    if (!(AppConstants.featureFlags['notifications'] ?? false) && _selectedIndex >= navItems.length) {
       _selectedIndex = 0;
     }
 

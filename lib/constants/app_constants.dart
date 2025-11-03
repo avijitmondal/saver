@@ -12,21 +12,19 @@ class AppConstants {
   static const String passwordNumberPattern = r'[0-9]';
   static const String passwordSpecialCharPattern = r'[!@#$%^&*(),.?":{}|<>]';
 
-  // Feature Flags
-  static const bool enableDarkMode = false;
-  static const bool enableNotifications = false; // temporarily disabled
-  static const bool enableAnalytics = true;
-
-  // Set to true to enable developer mode features
-  static const bool enableDeveloperMode = false; 
+  // Environment-configurable switches (use --dart-define on build/run)
+  // Examples:
+  //   flutter run --dart-define=SAMPLE_DATA=true --dart-define=DEVELOPER_MODE=true
+  //   flutter build appbundle --release --dart-define=SAMPLE_DATA=false --dart-define=DEVELOPER_MODE=false
+  // Defaults: SAMPLE_DATA=true (for local convenience), DEVELOPER_MODE=false (hidden advanced UI)
+  static const bool developerMode = bool.fromEnvironment('DEVELOPER_MODE', defaultValue: false);
+  static const bool sampleData = bool.fromEnvironment('SAMPLE_DATA', defaultValue: true);
 
   // Feature Flags
   // Set this to false to disable sample user and go to welcome screen
   static final Map<String, bool> featureFlags = {
-    // Keys renamed (removed 'enable' prefix)
-    'sampleUser': false,
-    // Set this to false to disable sample investment data
-    'sampleInvestmentData': false,
+    // Toggle in-app notifications
+    'notifications': false,
     // Set this to false to disable coming soon screen
     'comingSoonScreen': true,
     // Set this to false to disable fixed deposit investment

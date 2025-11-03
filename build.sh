@@ -54,8 +54,10 @@ if [[ "$PLATFORM" == "android" ]]; then
   fi
   echo "🧹 Cleaning project..."
   flutter clean
-  echo "🚀 Building signed Android AAB..."
-  flutter build appbundle --release --no-tree-shake-icons
+  echo "🚀 Building signed Android AAB (sampleData & developerMode disabled)..."
+  flutter build appbundle --release --no-tree-shake-icons \
+    --dart-define=SAMPLE_DATA=false \
+    --dart-define=DEVELOPER_MODE=false
   OUTPUT_PATH="$APP_DIR/build/app/outputs/bundle/release/app-release.aab"
   echo "✅ Android AAB generated!"
   echo "📁 Location: $OUTPUT_PATH"
@@ -94,15 +96,19 @@ elif [[ "$PLATFORM" == "ios" ]]; then
   pod install || pod repo update && pod install
   cd ..
   if [[ "$IOS_BUILD_TYPE" == "release" ]]; then
-    echo "🚀 Building iOS App Store/TestFlight IPA..."
-    flutter build ipa --release --no-tree-shake-icons
+    echo "🚀 Building iOS App Store/TestFlight IPA (sampleData & developerMode disabled)..."
+    flutter build ipa --release --no-tree-shake-icons \
+      --dart-define=SAMPLE_DATA=false \
+      --dart-define=DEVELOPER_MODE=false
     OUTPUT_PATH="$APP_DIR/build/ios/ipa"
     echo "✅ iOS IPA generated!"
     echo "📁 Location: $OUTPUT_PATH"
     echo "🎯 App version: $NEW_VERSION"
   elif [[ "$IOS_BUILD_TYPE" == "dev" ]]; then
-    echo "🚀 Building iOS development build (no codesign)..."
-    flutter build ios --release --no-tree-shake-icons --no-codesign
+    echo "🚀 Building iOS development build (no codesign, sampleData & developerMode disabled by default)..."
+    flutter build ios --release --no-tree-shake-icons --no-codesign \
+      --dart-define=SAMPLE_DATA=false \
+      --dart-define=DEVELOPER_MODE=false
     OUTPUT_PATH="$APP_DIR/build/ios/Release-iphoneos/Runner.app"
     echo "✅ iOS development build generated!"
     echo "📁 Location: $OUTPUT_PATH"
@@ -115,8 +121,10 @@ elif [[ "$PLATFORM" == "web" ]]; then
   # ===== Web Build =====
   echo "🧹 Cleaning project..."
   flutter clean
-  echo "🚀 Building Flutter Web release..."
-  flutter build web --release --no-tree-shake-icons
+  echo "🚀 Building Flutter Web release (sampleData & developerMode disabled)..."
+  flutter build web --release --no-tree-shake-icons \
+    --dart-define=SAMPLE_DATA=false \
+    --dart-define=DEVELOPER_MODE=false
   OUTPUT_PATH="$APP_DIR/build/web"
   echo "✅ Web build generated!"
   echo "📁 Location: $OUTPUT_PATH"

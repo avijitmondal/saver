@@ -13,6 +13,7 @@ class Investment {
   final String? bank;
   final bool isRecurring;
   final String? notes;
+  final String compoundingFrequency; // 'quarterly', 'half-yearly', 'yearly'
 
   const Investment({
     required this.type,
@@ -25,11 +26,17 @@ class Investment {
     this.bank,
     this.isRecurring = false,
     this.notes,
+    this.compoundingFrequency = 'quarterly',
   });
 
   double get returns {
     try {
-      return InvestmentCalculator.calculateReturns(amount, interest, durationInMonths: durationInMonths);
+      return InvestmentCalculator.calculateReturns(
+        amount,
+        interest,
+        durationInMonths: durationInMonths,
+        compoundingPerYear: _compoundingPerYear,
+      );
     } catch (e) {
       print('Error calculating returns: $e');
       return 0.0;
@@ -53,6 +60,7 @@ class Investment {
         startDate: startDate,
         durationInMonths: durationInMonths,
         isRecurring: isRecurring,
+        compoundingPerYear: _compoundingPerYear,
       );
     } catch (e) {
       print('Error calculating current balance: $e');
@@ -161,6 +169,7 @@ class Investment {
       'bank': bank,
       'notes': notes,
       'isRecurring': isRecurring,
+      'compoundingFrequency': compoundingFrequency,
     };
   }
 
@@ -182,6 +191,7 @@ class Investment {
       bank: map['bank'],
       notes: map['notes'],
       isRecurring: map['isRecurring'] ?? false,
+      compoundingFrequency: map['compoundingFrequency'] ?? 'quarterly',
     );
   }
 
@@ -202,6 +212,24 @@ class Investment {
         return Icons.attach_money;
       default:
         return Icons.account_balance;
+    }
+  }
+
+  // Internal helper: map frequency string to periods per year
+  int get _compoundingPerYear {
+    switch (compoundingFrequency.toLowerCase()) {
+      case 'quarterly':
+        return 4;
+      case 'half-yearly':
+      case 'semi-annually':
+        return 2;
+      case 'yearly':
+      case 'annual':
+        return 1;
+      case 'monthly': // future-proofing if added later
+        return 12;
+      default:
+        return 4; // sensible default
     }
   }
 }

@@ -3,7 +3,7 @@ import '../data/sample_investments.dart';
 import 'investment_storage_service.dart';
 
 /// Implementation of InvestmentStorageService using in-memory sample data
-/// Used when sampleInvestmentData flag is true (demo/testing mode)
+/// Used when sampleData flag is true (demo/testing mode)
 /// All changes are transient and not persisted
 class SampleDataInvestmentStorage implements InvestmentStorageService {
   List<Investment>? _cachedInvestments;

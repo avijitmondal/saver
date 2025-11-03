@@ -3,6 +3,7 @@ import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import '../services/local_storage_service.dart';
 import '../constants/app_constants.dart';
+import '../constants/sample_user_data.dart';
 
 class UserProvider extends ChangeNotifier {
   Map<String, dynamic> _userData = {};
@@ -21,6 +22,21 @@ class UserProvider extends ChangeNotifier {
   DateTime get dateOfBirth => _userData['dateOfBirth'] != null 
       ? DateTime.fromMillisecondsSinceEpoch(_userData['dateOfBirth'])
       : DateTime.now();
+  
+  // Theme mode getter - returns string representation
+  String get themeMode => _userData['themeMode'] ?? 'system';
+  
+  // Convert string to ThemeMode enum
+  ThemeMode get themeModeEnum {
+    switch (themeMode) {
+      case 'light':
+        return ThemeMode.light;
+      case 'dark':
+        return ThemeMode.dark;
+      default:
+        return ThemeMode.system;
+    }
+  }
 
   // Initialize and load user data
   Future<void> initialize() async {
@@ -38,16 +54,9 @@ class UserProvider extends ChangeNotifier {
       final userData = await _storageService!.loadUserData();
       if (userData != null) {
         _userData = userData;
-      } else if (AppConstants.featureFlags['sampleUser'] ?? false) {
-        // Load sample user if enabled and no user data exists
-        _userData = {
-          'firstName': 'John',
-          'lastName': 'Doe',
-          'email': 'john.doe@example.com',
-          'phone': '9876543210',
-          'address': '123 Main Street, Mumbai, Maharashtra',
-          'dateOfBirth': DateTime(1990, 5, 15).millisecondsSinceEpoch,
-        };
+  } else if (AppConstants.sampleData) {
+        // Load sample user if sampleData enabled and no user data exists
+        _userData = Map<String, dynamic>.from(SampleUserData.sampleUser);
         await _saveUserData();
       }
     } catch (e) {
@@ -136,6 +145,23 @@ class UserProvider extends ChangeNotifier {
     }
 
     _userData['passwordHash'] = _hashPassword(password);
+    await _saveUserData();
+    notifyListeners();
+  }
+
+  // Update theme mode
+  Future<void> updateThemeMode(String mode) async {
+    // Ensure storage service is initialized
+    if (_storageService == null) {
+      await initialize();
+    }
+
+    // Validate mode is one of: 'system', 'light', 'dark'
+    if (!['system', 'light', 'dark'].contains(mode)) {
+      mode = 'system';
+    }
+
+    _userData['themeMode'] = mode;
     await _saveUserData();
     notifyListeners();
   }

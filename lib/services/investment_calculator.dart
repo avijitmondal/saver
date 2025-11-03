@@ -2,6 +2,9 @@ import 'dart:math';
 
 class InvestmentCalculator {
   // Fixed Deposit: Compound Interest
+  // compoundingPerYear is derived from Investment.compoundingFrequency:
+  // quarterly => 4, half-yearly/semi-annually => 2, yearly/annual => 1, monthly => 12 (future support)
+  // Unknown values fall back to 4 (quarterly) for a sensible default.
   static double calculateReturns(double amount, double interest, {int? durationInMonths, int compoundingPerYear = 4}) {
     if (durationInMonths == null || durationInMonths <= 0) {
       return amount * interest / 100;

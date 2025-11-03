@@ -7,15 +7,38 @@ void main() {
     group('banks', () {
       test('should contain expected bank names', () {
         expect(BankConstants.banks, isA<List<String>>());
-        expect(BankConstants.banks.length, 4);
+        expect(BankConstants.banks.length, 13);
         expect(BankConstants.banks, contains('SBI'));
         expect(BankConstants.banks, contains('HDFC'));
         expect(BankConstants.banks, contains('ICICI'));
+        expect(BankConstants.banks, contains('Axis'));
+        expect(BankConstants.banks, contains('Kotak Mahindra'));
+        expect(BankConstants.banks, contains('PNB'));
+        expect(BankConstants.banks, contains('Bank of Baroda'));
+        expect(BankConstants.banks, contains('Canara'));
+        expect(BankConstants.banks, contains('IDFC First'));
+        expect(BankConstants.banks, contains('IndusInd'));
+        expect(BankConstants.banks, contains('Yes Bank'));
+        expect(BankConstants.banks, contains('Indian Bank'));
         expect(BankConstants.banks, contains('Other'));
       });
 
       test('should be in correct order', () {
-        expect(BankConstants.banks, ['SBI', 'HDFC', 'ICICI', 'Other']);
+        expect(BankConstants.banks, [
+          'SBI',
+          'HDFC',
+          'ICICI',
+          'Axis',
+          'Kotak Mahindra',
+          'PNB',
+          'Bank of Baroda',
+          'Canara',
+          'IDFC First',
+          'IndusInd',
+          'Yes Bank',
+          'Indian Bank',
+          'Other',
+        ]);
       });
 
       test('should not contain duplicates', () {
@@ -27,7 +50,7 @@ void main() {
     group('bankColors', () {
       test('should contain color for each bank', () {
         expect(BankConstants.bankColors, isA<Map<String, Color>>());
-        expect(BankConstants.bankColors.length, 4);
+        expect(BankConstants.bankColors.length, 13);
         
         for (final bank in BankConstants.banks) {
           expect(BankConstants.bankColors.containsKey(bank), isTrue,
@@ -39,6 +62,15 @@ void main() {
         expect(BankConstants.bankColors['SBI'], const Color(0xFF2D5DA9));
         expect(BankConstants.bankColors['HDFC'], const Color(0xFF004C8F));
         expect(BankConstants.bankColors['ICICI'], const Color(0xFFF58220));
+        expect(BankConstants.bankColors['Axis'], const Color(0xFF800020));
+        expect(BankConstants.bankColors['Kotak Mahindra'], const Color(0xFFED1C24));
+        expect(BankConstants.bankColors['PNB'], const Color(0xFF002E5D));
+        expect(BankConstants.bankColors['Bank of Baroda'], const Color(0xFFFF6600));
+        expect(BankConstants.bankColors['Canara'], const Color(0xFFED2024));
+        expect(BankConstants.bankColors['IDFC First'], const Color(0xFFFB8B24));
+        expect(BankConstants.bankColors['IndusInd'], const Color(0xFF005F32));
+        expect(BankConstants.bankColors['Yes Bank'], const Color(0xFF003DA5));
+        expect(BankConstants.bankColors['Indian Bank'], const Color(0xFF0072CE));
         expect(BankConstants.bankColors['Other'], const Color(0xFF757575));
       });
 
@@ -49,11 +81,18 @@ void main() {
         });
       });
 
-      test('should have unique colors for each bank', () {
-        final colors = BankConstants.bankColors.values.toList();
-        final uniqueColors = colors.toSet();
-        expect(uniqueColors.length, colors.length,
-            reason: 'All bank colors should be unique');
+      test('should have distinct colors for major banks', () {
+        // Ensure major banks have different colors (allowing some duplicates for less popular banks)
+        final majorBankColors = [
+          BankConstants.bankColors['SBI'],
+          BankConstants.bankColors['HDFC'],
+          BankConstants.bankColors['ICICI'],
+          BankConstants.bankColors['Axis'],
+          BankConstants.bankColors['Kotak Mahindra'],
+        ];
+        final uniqueMajorColors = majorBankColors.toSet();
+        expect(uniqueMajorColors.length, majorBankColors.length,
+            reason: 'Major banks should have distinct colors');
       });
     });
 

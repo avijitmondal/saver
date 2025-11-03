@@ -6,7 +6,7 @@ class SamplePPFPayments {
   /// Get a list of sample PPF payments for demonstration purposes
   static List<PPFPayment> getSamplePayments() {
     // Return empty list if sample data is disabled
-    if (!(AppConstants.featureFlags["sampleInvestmentData"] ?? false)) {
+  if (!AppConstants.sampleData) {
       return [];
     }
     

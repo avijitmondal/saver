@@ -1,11 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 import 'constants/app_constants.dart';
 import 'config/theme_config.dart';
 import 'config/route_config.dart';
 import 'config/provider_config.dart';
+import 'providers/user_provider.dart';
 import 'services/navigation_service.dart';
 import 'services/service_locator.dart';
 import 'services/local_storage_service.dart';
@@ -80,25 +82,29 @@ class SaverApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ProviderConfig.wrapWithProviders(
-      MaterialApp(
-        navigatorKey: locator<NavigationService>().navigatorKey,
-        title: AppConstants.appName,
-        theme: ThemeConfig.lightTheme,
-        darkTheme: AppConstants.enableDarkMode ? ThemeConfig.darkTheme : null,
-        themeMode: ThemeMode.system,
-        initialRoute: RouteConfig.initialRoute,
-        routes: RouteConfig.routes,
-        onGenerateRoute: RouteConfig.onGenerateRoute,
-        onUnknownRoute: RouteConfig.onUnknownRoute,
-        debugShowCheckedModeBanner: false,
-        builder: (context, child) {
-          return MediaQuery(
-            data: MediaQuery.of(context).copyWith(
-              textScaler: TextScaler.linear(
-                MediaQuery.of(context).textScaleFactor.clamp(0.8, 1.2),
-              ),
-            ),
-            child: child!,
+      Consumer<UserProvider>(
+        builder: (context, userProvider, child) {
+          return MaterialApp(
+            navigatorKey: locator<NavigationService>().navigatorKey,
+            title: AppConstants.appName,
+            theme: ThemeConfig.lightTheme,
+            darkTheme: ThemeConfig.darkTheme,
+            themeMode: userProvider.themeModeEnum,
+            initialRoute: RouteConfig.initialRoute,
+            routes: RouteConfig.routes,
+            onGenerateRoute: RouteConfig.onGenerateRoute,
+            onUnknownRoute: RouteConfig.onUnknownRoute,
+            debugShowCheckedModeBanner: false,
+            builder: (context, child) {
+              return MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: TextScaler.linear(
+                    MediaQuery.of(context).textScaleFactor.clamp(0.8, 1.2),
+                  ),
+                ),
+                child: child!,
+              );
+            },
           );
         },
       ),

@@ -30,16 +30,11 @@ class _AboutSectionState extends State<AboutSection> {
     return InfoSection(
       title: 'About',
       children: [
-        Text(
-          'Version: $_version',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.grey,
-            fontWeight: FontWeight.w500,
-            letterSpacing: 1.1,
-          ),
+        ListTile(
+          leading: Icon(Icons.info_outline),
+          title: Text('Version'),
+          subtitle: Text(_version),
         ),
-        const Divider(height: 1),
       ],
     );
   }

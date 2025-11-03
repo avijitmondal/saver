@@ -6,6 +6,7 @@ import '../controllers/profile_controller.dart';
 import '../widgets/profile/profile_header.dart';
 import '../widgets/profile/personal_info_section.dart';
 import '../widgets/profile/security_section.dart';
+import '../widgets/profile/theme_section.dart';
 import '../widgets/profile/account_actions_section.dart';
 import '../widgets/common/app_scaffold.dart';
 import '../constants/ui_constants.dart';
@@ -75,11 +76,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // Security Section
               SecuritySection(controller: _controller),
 
+              // Appearance Section
+              ThemeSection(),
+
               // Account Actions Section
               AccountActionsSection(controller: _controller),
 
               // Advanced Actions Section
-              if (AppConstants.enableDeveloperMode)
+              if (AppConstants.developerMode)
                 AdvancedSettingsSection(),
               
               // About Section

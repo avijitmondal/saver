@@ -5,7 +5,7 @@ import '../constants/app_constants.dart';
 class SampleInvestments {
   static List<Investment> getInitialInvestments() {
     // Return empty list if sample data is disabled
-    if (!(AppConstants.featureFlags["sampleInvestmentData"] ?? false)) {
+  if (!AppConstants.sampleData) {
       return [];
     }
 
@@ -49,7 +49,7 @@ class SampleInvestments {
         color: InvestmentConstants.fixedDeposit.color,
         startDate: DateTime(2024, 3, 15),
         durationInMonths: 60, // 5 years for tax-saving FD
-        bank: 'Axis Bank',
+        bank: 'Axis',
         notes: 'Tax-saving FD under Section 80C',
       ),
       Investment(
@@ -165,7 +165,7 @@ class SampleInvestments {
         color: InvestmentConstants.recurringDeposit.color,
         startDate: DateTime(2024, 3, 10),
         durationInMonths: 60, // 5 years
-        bank: 'Punjab National Bank',
+        bank: 'PNB',
         isRecurring: true,
         notes: 'Senior Citizen Special RD with higher interest',
       ),
@@ -252,7 +252,7 @@ class SampleInvestments {
         color: InvestmentConstants.ppf.color,
         startDate: DateTime(2022, 4, 1),
         durationInMonths: 180, // 15 years
-        bank: 'Post Office',
+        bank: 'Indian Bank',
         notes: 'PPF account for tax benefits',
       ),
       // EPF Contributions

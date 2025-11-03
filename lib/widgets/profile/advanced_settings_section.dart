@@ -11,10 +11,10 @@ class AdvancedSettingsSection extends StatelessWidget {
       title: 'Advanced Actions',
       children: [
         ListTile(
+            leading: const Icon(Icons.developer_mode),
             title: const Text('Developer Mode'),
             trailing: const Icon(Icons.chevron_right),
             subtitle: const Text('View and toggle developer flags'),
-            contentPadding: EdgeInsets.zero,
             onTap: () {
               Navigator.push(
                 context,

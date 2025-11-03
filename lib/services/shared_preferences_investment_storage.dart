@@ -3,7 +3,7 @@ import '../services/local_storage_service.dart';
 import 'investment_storage_service.dart';
 
 /// Implementation of InvestmentStorageService using SharedPreferences
-/// Used when sampleInvestmentData flag is false (production mode)
+/// Used when sampleData flag is false (production mode)
 class SharedPreferencesInvestmentStorage implements InvestmentStorageService {
   final LocalStorageService _localStorageService;
   

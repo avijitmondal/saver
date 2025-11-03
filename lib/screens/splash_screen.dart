@@ -6,7 +6,6 @@ import '../config/route_config.dart';
 import '../providers/user_provider.dart';
 import '../providers/portfolio_provider.dart';
 import '../constants/app_constants.dart';
-import '../data/sample_user.dart';
 import '../screens/coming_soon_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -71,9 +70,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     // Ensure both providers are initialized
     await userProvider.initialize();
     await portfolioProvider.initialize();
-
-    // Initialize user data if needed (for sample user)
-    _initializeUserData();
   }
 
   void _navigateBasedOnUserData() {
@@ -102,12 +98,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       // No user data, navigate to welcome
       Navigator.pushReplacementNamed(context, RouteConfig.welcome);
     }
-  }
-
-  void _initializeUserData() {
-    if (!(AppConstants.featureFlags["sampleUser"] ?? false)) return;
-    // Use the SampleUser class to populate user data
-    SampleUser.populateUserProvider(context);
   }
 
   @override
