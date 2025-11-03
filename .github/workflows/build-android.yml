@@ -41,9 +41,10 @@ jobs:
           SAVER_UPLOAD_KEY_ALIAS: ${{ secrets.SAVER_UPLOAD_KEY_ALIAS }}
           SAVER_UPLOAD_STORE_PASSWORD: ${{ secrets.SAVER_UPLOAD_STORE_PASSWORD }}
           SAVER_UPLOAD_KEY_PASSWORD: ${{ secrets.SAVER_UPLOAD_KEY_PASSWORD }}
-        run: flutter build appbundle --release --no-tree-shake-icons \
-          --dart-define=SAMPLE_DATA=false \
-          --dart-define=DEVELOPER_MODE=false
+        run: |
+          flutter build appbundle --release --no-tree-shake-icons \
+            --dart-define=SAMPLE_DATA=false \
+            --dart-define=DEVELOPER_MODE=false
 
       - name: Upload AAB artifact
         uses: actions/upload-artifact@v4
