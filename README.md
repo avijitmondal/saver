@@ -29,7 +29,7 @@ A modern, cross-platform personal finance and investment tracking app built with
 ### User Experience
 - **Dark Mode**: System-aware theme switching with persistent user preference
 - **Profile Management**: Secure password-protected profiles with customizable settings
-- **Responsive Design**: Optimized for mobile, tablet, and desktop
+- **Responsive Design**: Optimized for mobile (Android, iOS) and web
 - **Sample Data**: Built-in demo mode for exploring features (can be disabled for production)
 
 ### Developer Features
@@ -50,7 +50,7 @@ _Coming soon_
 ### Prerequisites
 - Flutter SDK `>=3.10.0`
 - Dart SDK `>=3.0.0`
-- iOS, Android, Web, or Desktop development environment
+- Android, iOS, or Web development environment
 
 ### Installation
 
