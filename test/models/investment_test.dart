@@ -12,7 +12,7 @@ void main() {
       double interest = 8.0,
       DateTime? startDate,
     }) {
-      return Investment(
+      return Investment.create(
         type: isRecurring ? 'RD' : 'FD',
         amount: amount,
         interest: interest,
@@ -67,7 +67,7 @@ void main() {
       final inv = buildInvestment(frequency: 'quarterly', months: 12);
       final balanceNow = inv.currentBalance;
       // Simulate matured investment by using past start date
-      final matured = Investment(
+      final matured = Investment.create(
         type: 'FD',
         amount: 10000,
         interest: 8.0,
@@ -106,7 +106,7 @@ void main() {
     });
 
     test('maturityDate returns null when startDate or duration missing', () {
-      final invNoStart = Investment(
+      final invNoStart = Investment.create(
         type: 'FD',
         amount: 1000,
         interest: 5,
@@ -117,7 +117,7 @@ void main() {
       );
       expect(invNoStart.maturityDate, isNull);
 
-      final invNoDuration = Investment(
+      final invNoDuration = Investment.create(
         type: 'FD',
         amount: 1000,
         interest: 5,
@@ -130,7 +130,7 @@ void main() {
     });
 
     test('remainingDuration returns N/A when incomplete data', () {
-      final inv = Investment(
+      final inv = Investment.create(
         type: 'FD',
         amount: 1000,
         interest: 5,
@@ -228,7 +228,7 @@ void main() {
 
     test('Remaining duration days path', () {
       final startDate = DateTime.now().subtract(const Duration(days: 15));
-      final inv = Investment(
+      final inv = Investment.create(
         type: 'FD', amount: 1000, interest: 5, icon: Icons.account_balance, color: Colors.blue,
         startDate: startDate, durationInMonths: 1, compoundingFrequency: 'quarterly'
       );
@@ -239,7 +239,7 @@ void main() {
 
     test('Remaining duration matured path', () {
       final startDate = DateTime.now().subtract(const Duration(days: 400));
-      final inv = Investment(
+      final inv = Investment.create(
         type: 'FD', amount: 1000, interest: 5, icon: Icons.account_balance, color: Colors.blue,
         startDate: startDate, durationInMonths: 12, compoundingFrequency: 'quarterly'
       );
@@ -247,7 +247,7 @@ void main() {
     });
 
     test('Maturity status N/A when missing data', () {
-      final inv = Investment(
+      final inv = Investment.create(
         type: 'FD', amount: 1000, interest: 5, icon: Icons.account_balance, color: Colors.blue,
         compoundingFrequency: 'quarterly'
       );
@@ -256,7 +256,7 @@ void main() {
 
     test('Maturity status matured path', () {
       final startDate = DateTime.now().subtract(const Duration(days: 380));
-      final inv = Investment(
+      final inv = Investment.create(
         type: 'FD', amount: 1000, interest: 5, icon: Icons.account_balance, color: Colors.blue,
         startDate: startDate, durationInMonths: 12, compoundingFrequency: 'quarterly'
       );
@@ -264,7 +264,7 @@ void main() {
     });
 
     test('ReturnsPercentage recurring 0 duration months', () {
-      final inv = Investment(
+      final inv = Investment.create(
         type: 'RD', amount: 500, interest: 7, icon: Icons.account_balance, color: Colors.blue,
         startDate: DateTime.now(), durationInMonths: 0, isRecurring: true, compoundingFrequency: 'quarterly'
       );
@@ -273,7 +273,7 @@ void main() {
 
     test('Current balance recurring deposit early months', () {
       final startDate = DateTime.now().subtract(const Duration(days: 45)); // ~1.5 months
-      final rd = Investment(
+      final rd = Investment.create(
         type: 'RD', amount: 1000, interest: 8, icon: Icons.account_balance, color: Colors.blue,
         startDate: startDate, durationInMonths: 12, isRecurring: true, compoundingFrequency: 'quarterly'
       );
