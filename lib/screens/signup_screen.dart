@@ -1,12 +1,152 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:saver/constants/app_constants.dart';
+import 'package:file_picker/file_picker.dart';
 import '../config/route_config.dart';
 import '../constants/ui_constants.dart';
 import '../widgets/common/app_scaffold.dart';
 import '../utils/theme_helper.dart';
+import '../services/data_import_service.dart';
 
-class SignupScreen extends StatelessWidget {
+class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
+
+  @override
+  State<SignupScreen> createState() => _SignupScreenState();
+}
+
+class _SignupScreenState extends State<SignupScreen> {
+  bool _isImporting = false;
+
+  Future<void> _handleImportData() async {
+    try {
+      setState(() => _isImporting = true);
+
+      // Pick file
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+        allowMultiple: false,
+      );
+
+      if (result == null || result.files.isEmpty) {
+        setState(() => _isImporting = false);
+        return;
+      }
+
+      final file = result.files.first;
+      String jsonContent;
+
+      if (file.bytes != null) {
+        // Web platform
+        jsonContent = String.fromCharCodes(file.bytes!);
+      } else if (file.path != null) {
+        // Mobile/Desktop platform
+        jsonContent = await File(file.path!).readAsString();
+      } else {
+        throw Exception('Unable to read file');
+      }
+
+      // Validate file first
+      final validation = await DataImportService.validateImportFile(jsonContent);
+      
+      if (!validation.isValid) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(validation.error ?? 'Invalid export file'),
+            backgroundColor: UIConstants.errorColor,
+          ),
+        );
+        setState(() => _isImporting = false);
+        return;
+      }
+
+      // Show confirmation dialog
+      if (!mounted) return;
+      final confirmed = await _showImportConfirmation(validation);
+      
+      if (!confirmed) {
+        setState(() => _isImporting = false);
+        return;
+      }
+
+      // Import data
+      final importResult = await DataImportService.importFromJson(jsonContent);
+
+      if (!importResult.success) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(importResult.error ?? 'Import failed'),
+            backgroundColor: UIConstants.errorColor,
+          ),
+        );
+        setState(() => _isImporting = false);
+        return;
+      }
+
+      setState(() => _isImporting = false);
+
+      if (!mounted) return;
+
+      // Navigate to registration with imported data
+      Navigator.pushReplacementNamed(
+        context,
+        RouteConfig.registration,
+        arguments: importResult, // Pass the import result to registration
+      );
+
+    } catch (e) {
+      setState(() => _isImporting = false);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Import failed: $e'),
+          backgroundColor: UIConstants.errorColor,
+        ),
+      );
+    }
+  }
+
+  Future<bool> _showImportConfirmation(ValidationResult validation) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Import Data?'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('This will import:'),
+            const SizedBox(height: 12),
+            if (validation.userName != null)
+              Text('• User: ${validation.userName}'),
+            if (validation.email != null)
+              Text('• Email: ${validation.email}'),
+            if (validation.investmentCount != null && validation.investmentCount! > 0)
+              Text('• ${validation.investmentCount} investments'),
+            const SizedBox(height: 12),
+            const Text(
+              'You will only need to set a password to complete registration.',
+              style: TextStyle(fontStyle: FontStyle.italic),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Import'),
+          ),
+        ],
+      ),
+    );
+    return result ?? false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,6 +249,28 @@ class SignupScreen extends StatelessWidget {
             onPressed: () {
               Navigator.pushReplacementNamed(context, RouteConfig.registration);
             },
+          ),
+          const SizedBox(height: UIConstants.spacing16),
+
+          // Import Data Button
+          OutlinedButton.icon(
+            icon: _isImporting
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.upload_file),
+            label: const Text('Import Existing Data'),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size(double.infinity, 50),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              side: BorderSide(color: Theme.of(context).colorScheme.primary),
+              textStyle: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+            onPressed: _isImporting ? null : _handleImportData,
           ),
           const SizedBox(height: UIConstants.spacing16),
         ],

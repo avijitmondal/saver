@@ -271,7 +271,7 @@ class _RegistrationFormScreenState extends State<RegistrationFormScreen> {
                     children: <Widget>[
                       Text(
                         'Please select your date of birth',
-                        style: Theme.of(context).textTheme.bodyText2,
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       const SizedBox(height: 16),
                       GestureDetector(

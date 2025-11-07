@@ -84,7 +84,7 @@ class _AddEPFScreenState extends State<AddEPFScreen> {
 
   void _saveInvestment() {
     if (_formKey.currentState!.validate()) {
-      final investment = Investment(
+      final investment = Investment.create(
         type: InvestmentConstants.epf.name,
         amount: double.parse(_amountController.text),
         interest: double.parse(_interestController.text),

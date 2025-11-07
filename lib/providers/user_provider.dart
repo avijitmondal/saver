@@ -4,27 +4,26 @@ import 'dart:convert';
 import '../services/local_storage_service.dart';
 import '../constants/app_constants.dart';
 import '../constants/sample_user_data.dart';
+import '../models/user.dart';
 
 class UserProvider extends ChangeNotifier {
-  Map<String, dynamic> _userData = {};
+  User? _user;
   LocalStorageService? _storageService;
   bool _isLoaded = false;
 
   // Getters
   bool get isLoaded => _isLoaded;
-  bool get isLoggedIn => _userData.isNotEmpty;
-  String get firstName => _userData['firstName'] ?? '';
-  String get lastName => _userData['lastName'] ?? '';
-  String get fullName => '$firstName $lastName'.trim();
-  String get email => _userData['email'] ?? '';
-  String get phone => _userData['phone'] ?? '';
-  String get address => _userData['address'] ?? '';
-  DateTime get dateOfBirth => _userData['dateOfBirth'] != null 
-      ? DateTime.fromMillisecondsSinceEpoch(_userData['dateOfBirth'])
-      : DateTime.now();
+  bool get isLoggedIn => _user != null;
+  String get firstName => _user?.firstName ?? '';
+  String get lastName => _user?.lastName ?? '';
+  String get fullName => _user?.fullName ?? '';
+  String get email => _user?.email ?? '';
+  String get phone => _user?.phone ?? '';
+  String get address => _user?.address ?? '';
+  DateTime get dateOfBirth => _user?.dateOfBirth ?? DateTime.now();
   
   // Theme mode getter - returns string representation
-  String get themeMode => _userData['themeMode'] ?? 'system';
+  String get themeMode => _user?.themeMode ?? 'system';
   
   // Convert string to ThemeMode enum
   ThemeMode get themeModeEnum {
@@ -51,13 +50,15 @@ class UserProvider extends ChangeNotifier {
   // Load user data from storage
   Future<void> _loadUserData() async {
     try {
-      final userData = await _storageService!.loadUserData();
-      if (userData != null) {
-        _userData = userData;
-  } else if (AppConstants.sampleData) {
-        // Load sample user if sampleData enabled and no user data exists
-        _userData = Map<String, dynamic>.from(SampleUserData.sampleUser);
-        await _saveUserData();
+      if (AppConstants.sampleData) {
+        // Use sample data (in-memory only, not persisted)
+        _user = User.fromMap(SampleUserData.sampleUser);
+      } else {
+        // Load from persistent storage
+        final userData = await _storageService!.loadUserData();
+        if (userData != null) {
+          _user = User.fromMap(userData);
+        }
       }
     } catch (e) {
       print('Error loading user data: $e');
@@ -67,7 +68,11 @@ class UserProvider extends ChangeNotifier {
   // Save user data to storage
   Future<void> _saveUserData() async {
     try {
-      await _storageService?.saveUserData(_userData);
+      // Only persist to storage if not using sample data
+      if (!AppConstants.sampleData) {
+        await _storageService?.saveUserData(_user?.toMap() ?? {});
+      }
+      // If sampleData is true, data stays in-memory only
     } catch (e) {
       print('Error saving user data: $e');
     }
@@ -88,15 +93,15 @@ class UserProvider extends ChangeNotifier {
       await initialize();
     }
 
-    _userData = {
-      'firstName': firstName,
-      'lastName': lastName,
-      'email': email,
-      'phone': phone,
-      'address': address,
-      'dateOfBirth': dateOfBirth.millisecondsSinceEpoch,
-      'passwordHash': _hashPassword(password),
-    };
+    _user = User.create(
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      phone: phone,
+      address: address,
+      dateOfBirth: dateOfBirth,
+      passwordHash: _hashPassword(password),
+    );
     
     await _saveUserData();
     notifyListeners();
@@ -115,11 +120,15 @@ class UserProvider extends ChangeNotifier {
       await initialize();
     }
 
-    if (firstName != null) _userData['firstName'] = firstName;
-    if (lastName != null) _userData['lastName'] = lastName;
-    if (email != null) _userData['email'] = email;
-    if (phone != null) _userData['phone'] = phone;
-    if (address != null) _userData['address'] = address;
+    if (_user == null) return;
+
+    _user = _user!.copyWith(
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      phone: phone,
+      address: address,
+    );
     
     await _saveUserData();
     notifyListeners();
@@ -132,7 +141,9 @@ class UserProvider extends ChangeNotifier {
       await initialize();
     }
 
-    _userData['dateOfBirth'] = dateOfBirth.millisecondsSinceEpoch;
+    if (_user == null) return;
+
+    _user = _user!.copyWith(dateOfBirth: dateOfBirth);
     await _saveUserData();
     notifyListeners();
   }
@@ -144,7 +155,9 @@ class UserProvider extends ChangeNotifier {
       await initialize();
     }
 
-    _userData['passwordHash'] = _hashPassword(password);
+    if (_user == null) return;
+
+    _user = _user!.copyWith(passwordHash: _hashPassword(password));
     await _saveUserData();
     notifyListeners();
   }
@@ -156,33 +169,35 @@ class UserProvider extends ChangeNotifier {
       await initialize();
     }
 
+    if (_user == null) return;
+
     // Validate mode is one of: 'system', 'light', 'dark'
     if (!['system', 'light', 'dark'].contains(mode)) {
       mode = 'system';
     }
 
-    _userData['themeMode'] = mode;
+    _user = _user!.copyWith(themeMode: mode);
     await _saveUserData();
     notifyListeners();
   }
 
   // Validate password
   bool validatePassword(String password) {
-    final storedHash = _userData['passwordHash'];
+    final storedHash = _user?.passwordHash;
     if (storedHash == null) return false;
     return storedHash == _hashPassword(password);
   }
 
   // Clear user data (including storage)
   Future<void> clearUserData() async {
-    _userData.clear();
+    _user = null;
     await _storageService?.clearAllData();
     notifyListeners();
   }
 
   // Logout
   Future<void> logout() async {
-    _userData.clear();
+    _user = null;
     await _storageService?.clearAllData();
     notifyListeners();
   }

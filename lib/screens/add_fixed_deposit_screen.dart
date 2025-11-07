@@ -72,7 +72,7 @@ class _AddFixedDepositScreenState extends State<AddFixedDepositScreen> {
 
       final portfolio = context.read<PortfolioProvider>();
 
-      final newDeposit = Investment(
+      final newDeposit = Investment.create(
         type: 'Fixed Deposit',
         amount: double.parse(_amountController.text),
         interest: double.parse(_interestController.text),

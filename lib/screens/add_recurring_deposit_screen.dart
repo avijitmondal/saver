@@ -73,7 +73,7 @@ class _AddRecurringDepositScreenState extends State<AddRecurringDepositScreen> {
 
       final portfolio = context.read<PortfolioProvider>();
 
-      final newDeposit = Investment(
+      final newDeposit = Investment.create(
         type: 'Recurring Deposit',
         amount: double.parse(_monthlyAmountController.text),
         interest: double.parse(_interestController.text),

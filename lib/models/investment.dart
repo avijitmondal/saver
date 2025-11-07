@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'package:uuid/uuid.dart';
 import '../services/investment_calculator.dart';
 
 class Investment {
+  final String id;
   final String type;
   final double amount;
   final double interest;
@@ -16,6 +18,7 @@ class Investment {
   final String compoundingFrequency; // 'quarterly', 'half-yearly', 'yearly'
 
   const Investment({
+    required this.id,
     required this.type,
     required this.amount,
     required this.interest,
@@ -28,6 +31,36 @@ class Investment {
     this.notes,
     this.compoundingFrequency = 'quarterly',
   });
+
+  // Factory constructor to create investment with auto-generated ID
+  factory Investment.create({
+    required String type,
+    required double amount,
+    required double interest,
+    required IconData icon,
+    required Color color,
+    DateTime? startDate,
+    int? durationInMonths,
+    String? bank,
+    bool isRecurring = false,
+    String? notes,
+    String compoundingFrequency = 'quarterly',
+  }) {
+    return Investment(
+      id: const Uuid().v4(),
+      type: type,
+      amount: amount,
+      interest: interest,
+      icon: icon,
+      color: color,
+      startDate: startDate,
+      durationInMonths: durationInMonths,
+      bank: bank,
+      isRecurring: isRecurring,
+      notes: notes,
+      compoundingFrequency: compoundingFrequency,
+    );
+  }
 
   double get returns {
     try {
@@ -159,6 +192,7 @@ class Investment {
   // Serialization methods
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'type': type,
       'amount': amount,
       'interest': interest,
@@ -175,6 +209,7 @@ class Investment {
 
   static Investment fromMap(Map<String, dynamic> map) {
     return Investment(
+      id: map['id'] ?? const Uuid().v4(), // Generate new ID if missing (for backward compatibility)
       type: map['type'] ?? '',
       amount: (map['amount'] ?? 0.0).toDouble(),
       interest: (map['interest'] ?? 0.0).toDouble(),

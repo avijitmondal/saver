@@ -11,7 +11,7 @@ class SampleInvestments {
 
     return [
       // Fixed Deposits - Long Term (3+ years)
-      Investment(
+      Investment.create(
         type: InvestmentConstants.fixedDeposit.name,
         amount: 100000.0,
         interest: 8.00,
@@ -21,7 +21,7 @@ class SampleInvestments {
         durationInMonths: 36,
         bank: 'HDFC',
       ),
-      Investment(
+      Investment.create(
         type: InvestmentConstants.fixedDeposit.name,
         amount: 200000.0,
         interest: 7.80,
@@ -31,7 +31,7 @@ class SampleInvestments {
         durationInMonths: 48,
         bank: 'ICICI',
       ),
-      Investment(
+      Investment.create(
         type: InvestmentConstants.fixedDeposit.name,
         amount: 300000.0,
         interest: 7.50,
@@ -41,7 +41,7 @@ class SampleInvestments {
         durationInMonths: 60,
         bank: 'SBI',
       ),
-      Investment(
+      Investment.create(
         type: InvestmentConstants.fixedDeposit.name,
         amount: 150000.0,
         interest: 7.00,
@@ -52,7 +52,7 @@ class SampleInvestments {
         bank: 'Axis',
         notes: 'Tax-saving FD under Section 80C',
       ),
-      Investment(
+      Investment.create(
         type: InvestmentConstants.fixedDeposit.name,
         amount: 50000.0,
         interest: 7.40,
@@ -62,7 +62,7 @@ class SampleInvestments {
         durationInMonths: 18,
         bank: 'HDFC',
       ),
-      Investment(
+      Investment.create(
         type: InvestmentConstants.fixedDeposit.name,
         amount: 75000.0,
         interest: 7.20,
@@ -72,7 +72,7 @@ class SampleInvestments {
         durationInMonths: 15,
         bank: 'ICICI',
       ),
-      Investment(
+      Investment.create(
         type: InvestmentConstants.fixedDeposit.name,
         amount: 150000.0,
         interest: 7.60,
@@ -82,7 +82,7 @@ class SampleInvestments {
         durationInMonths: 15,
         bank: 'SBI',
       ),
-      Investment(
+      Investment.create(
         type: InvestmentConstants.fixedDeposit.name,
         amount: 100000.0,
         interest: 8.50,
@@ -93,7 +93,7 @@ class SampleInvestments {
         bank: 'Bajaj Finance',
         notes: 'Corporate FD with higher interest rate',
       ),
-      Investment(
+      Investment.create(
         type: InvestmentConstants.fixedDeposit.name,
         amount: 25000.0,
         interest: 7.20,
@@ -103,7 +103,7 @@ class SampleInvestments {
         durationInMonths: 12,
         bank: 'SBI',
       ),
-      Investment(
+      Investment.create(
         type: InvestmentConstants.fixedDeposit.name,
         amount: 30000.0,
         interest: 7.00,
@@ -113,7 +113,7 @@ class SampleInvestments {
         durationInMonths: 6,
         bank: 'ICICI',
       ),
-      Investment(
+      Investment.create(
         type: InvestmentConstants.fixedDeposit.name,
         amount: 40000.0,
         interest: 6.80,
@@ -123,7 +123,7 @@ class SampleInvestments {
         durationInMonths: 3,
         bank: 'HDFC',
       ),
-      Investment(
+      Investment.create(
         type: InvestmentConstants.fixedDeposit.name,
         amount: 50000.0,
         interest: 6.50,
@@ -134,7 +134,7 @@ class SampleInvestments {
         bank: 'Kotak Mahindra',
         notes: 'Flexible FD with partial withdrawal option',
       ),
-      Investment(
+      Investment.create(
         type: InvestmentConstants.recurringDeposit.name,
         amount: 5000.0,
         interest: 7.00,
@@ -145,7 +145,7 @@ class SampleInvestments {
         bank: 'SBI',
         isRecurring: true,
       ),
-      Investment(
+      Investment.create(
         type: InvestmentConstants.recurringDeposit.name,
         amount: 10000.0,
         interest: 7.20,
@@ -157,7 +157,7 @@ class SampleInvestments {
         isRecurring: true,
       ),
       // New Senior Citizen RD
-      Investment(
+      Investment.create(
         type: InvestmentConstants.recurringDeposit.name,
         amount: 15000.0,
         interest: 7.75,
@@ -171,7 +171,7 @@ class SampleInvestments {
       ),
 
       // Recurring Deposits - Medium Term (1-2 years)
-      Investment(
+      Investment.create(
         type: InvestmentConstants.recurringDeposit.name,
         amount: 3000.0,
         interest: 6.80,
@@ -182,7 +182,7 @@ class SampleInvestments {
         bank: 'ICICI',
         isRecurring: true,
       ),
-      Investment(
+      Investment.create(
         type: InvestmentConstants.recurringDeposit.name,
         amount: 2000.0,
         interest: 6.50,
@@ -194,7 +194,7 @@ class SampleInvestments {
         isRecurring: true,
       ),
       // New Education RD
-      Investment(
+      Investment.create(
         type: InvestmentConstants.recurringDeposit.name,
         amount: 5000.0,
         interest: 7.10,
@@ -208,7 +208,7 @@ class SampleInvestments {
       ),
 
       // Recurring Deposits - Short Term (< 1 year)
-      Investment(
+      Investment.create(
         type: InvestmentConstants.recurringDeposit.name,
         amount: 1000.0,
         interest: 6.20,
@@ -220,7 +220,7 @@ class SampleInvestments {
         isRecurring: true,
       ),
       // New Flexible RD
-      Investment(
+      Investment.create(
         type: InvestmentConstants.recurringDeposit.name,
         amount: 2500.0,
         interest: 6.00,
@@ -233,7 +233,7 @@ class SampleInvestments {
         notes: 'Flexible RD with variable monthly deposits',
       ),
       // PPF Account
-      Investment(
+      Investment.create(
         type: InvestmentConstants.ppf.name,
         amount: 150000.0,
         interest: 7.10,
@@ -244,7 +244,7 @@ class SampleInvestments {
         bank: 'SBI',
       ),
       // New PPF Account
-      Investment(
+      Investment.create(
         type: InvestmentConstants.ppf.name,
         amount: 100000.0,
         interest: 7.10,
@@ -256,7 +256,7 @@ class SampleInvestments {
         notes: 'PPF account for tax benefits',
       ),
       // EPF Contributions
-      Investment(
+      Investment.create(
         type: InvestmentConstants.epf.name,
         amount: 3500.0, // Monthly contribution amount
         interest: 8.15, // Current EPF interest rate for 2023-24
@@ -267,7 +267,7 @@ class SampleInvestments {
         bank: 'EPFO', // Employee Provident Fund Organisation
         isRecurring: true, // Monthly contributions
       ),
-      Investment(
+      Investment.create(
         type: InvestmentConstants.epf.name,
         amount: 7000.0, // Monthly contribution amount (including VPF)
         interest: 8.15, // Current EPF interest rate for 2023-24

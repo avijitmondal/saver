@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../models/investment.dart';
 import '../providers/user_provider.dart';
+import '../providers/portfolio_provider.dart';
 import '../widgets/common/password_form_widget.dart';
 import '../constants/ui_constants.dart';
 import '../utils/validators.dart';
+import '../services/data_import_service.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -25,6 +28,19 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   int _currentStep = 0;
   bool _isLoading = false;
+  List<Investment>? _importedInvestments;
+
+  @override
+  void initState() {
+    super.initState();
+    // Check if we have imported data passed as argument
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final importResult = ModalRoute.of(context)?.settings.arguments as ImportResult?;
+      if (importResult != null && importResult.success) {
+        _prefillFromImport(importResult);
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -36,6 +52,34 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  void _prefillFromImport(ImportResult importResult) {
+    if (importResult.user != null) {
+      setState(() {
+        _firstNameController.text = importResult.user!.firstName;
+        _lastNameController.text = importResult.user!.lastName;
+        _emailController.text = importResult.user!.email;
+        _phoneController.text = importResult.user!.phone;
+        _addressController.text = importResult.user!.address;
+        _selectedDate = importResult.user!.dateOfBirth;
+      });
+    }
+
+    // Store investments temporarily for after registration
+    if (importResult.investments != null && importResult.investments!.isNotEmpty) {
+      _importedInvestments = importResult.investments!;
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Data imported successfully! ${importResult.investments!.length} investments will be added after you set your password.',
+          ),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    }
   }
 
   void _nextStep() {
@@ -119,6 +163,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
         // Simulate registration delay
         await Future.delayed(const Duration(seconds: 1));
+
+        // Add imported investments if any
+        if (_importedInvestments != null && _importedInvestments!.isNotEmpty) {
+          final portfolioProvider = Provider.of<PortfolioProvider>(context, listen: false);
+          for (final investment in _importedInvestments!) {
+            portfolioProvider.addInvestment(investment);
+          }
+        }
 
         if (!mounted) return;
 
@@ -273,6 +325,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
+                      const Text(
+                        'Fill in your details to get started',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      const SizedBox(height: 16),
                       const Text(
                         'Please fill in your personal information',
                         style: TextStyle(

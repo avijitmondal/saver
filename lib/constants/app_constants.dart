@@ -18,7 +18,7 @@ class AppConstants {
   //   flutter build appbundle --release --dart-define=SAMPLE_DATA=false --dart-define=DEVELOPER_MODE=false
   // Defaults: SAMPLE_DATA=true (for local convenience), DEVELOPER_MODE=false (hidden advanced UI)
   static const bool developerMode = bool.fromEnvironment('DEVELOPER_MODE', defaultValue: false);
-  static const bool sampleData = bool.fromEnvironment('SAMPLE_DATA', defaultValue: true);
+  static const bool sampleData = bool.fromEnvironment('SAMPLE_DATA', defaultValue: false);
 
   // Feature Flags
   // Set this to false to disable sample user and go to welcome screen

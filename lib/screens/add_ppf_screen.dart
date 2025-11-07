@@ -52,7 +52,7 @@ class _AddPPFScreenState extends State<AddPPFScreen> {
   void _submitForm() {
     if (_formKey.currentState!.validate() && _startDate != null) {
       final portfolio = context.read<PortfolioProvider>();
-      final investment = Investment(
+      final investment = Investment.create(
         type: InvestmentConstants.ppf.name,
         amount: double.parse(_amountController.text),
         interest: double.parse(_interestController.text),

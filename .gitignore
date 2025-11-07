@@ -53,3 +53,27 @@ android/app/keystore.jks
 coverage/*
 !coverage/README.md
 *.lcov
+
+# iOS specific (auto-generated)
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/ephemeral/
+**/ios/ServiceDefinitions.json
+**/ios/Runner/GeneratedPluginRegistrant.*
+
+# Android Gradle
+**/.gradle/
+**/local.properties
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Firebase config (add when needed)
+# android/app/google-services.json
+# ios/Runner/GoogleService-Info.plist
+# ios/firebase_app_id_file.json
