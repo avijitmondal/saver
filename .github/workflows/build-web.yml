@@ -20,6 +20,16 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Cache Dart build outputs
+        uses: actions/cache@v3
+        with:
+          path: |
+            .dart_tool
+            build
+          key: ${{ runner.os }}-dart-build-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-dart-build-
+
       - name: Install dependencies
         run: flutter pub get
 
@@ -32,8 +42,12 @@ jobs:
             --dart-define=SAMPLE_DATA=false \
             --dart-define=DEVELOPER_MODE=false
 
+      - name: Get app version
+        id: version
+        run: echo "version=$(grep '^version:' pubspec.yaml | awk '{print $2}')" >> $GITHUB_OUTPUT
+
       - name: Upload Web Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: saver-web-build
+          name: saver-${{ steps.version.outputs.version }}
           path: build/web

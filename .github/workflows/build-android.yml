@@ -26,7 +26,28 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Cache Dart build outputs
+        uses: actions/cache@v3
+        with:
+          path: |
+            .dart_tool
+            build
+          key: ${{ runner.os }}-dart-build-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-dart-build-
+
       - name: Decode and setup keystore
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         env:
           KEYSTORE_BASE64: ${{ secrets.SAVER_UPLOAD_STORE_FILE }}
         run: |
@@ -49,8 +70,12 @@ jobs:
             --dart-define=SAMPLE_DATA=false \
             --dart-define=DEVELOPER_MODE=false
 
+      - name: Get app version
+        id: version
+        run: echo "version=$(grep '^version:' pubspec.yaml | awk '{print $2}')" >> $GITHUB_OUTPUT
+
       - name: Upload AAB artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-release.aab
+          name: saver-${{ steps.version.outputs.version }}.aab
           path: build/app/outputs/bundle/release/app-release.aab

@@ -20,6 +20,26 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Cache CocoaPods
+        uses: actions/cache@v3
+        with:
+          path: |
+            ios/Pods
+            ~/Library/Caches/CocoaPods
+          key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Cache Dart build outputs
+        uses: actions/cache@v3
+        with:
+          path: |
+            .dart_tool
+            build
+          key: ${{ runner.os }}-dart-build-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-dart-build-
+
       - name: Install dependencies
         run: flutter pub get
 
@@ -46,8 +66,12 @@ jobs:
           zip -r app-development.ipa Payload
           cd ../../..
 
+      - name: Get app version
+        id: version
+        run: echo "version=$(grep '^version:' pubspec.yaml | awk '{print $2}')" >> $GITHUB_OUTPUT
+
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-development.ipa
+          name: saver-${{ steps.version.outputs.version }}-dev.ipa
           path: build/ios/Release-iphoneos/app-development.ipa
