@@ -1,0 +1,53 @@
+name: Saver iOS Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run tests
+        run: flutter test --dart-define=SAMPLE_DATA=false --dart-define=DEVELOPER_MODE=false
+
+      - name: Install CocoaPods dependencies
+        run: |
+          cd ios
+          pod install
+          cd ..
+
+      - name: Build iOS development build
+        run: |
+          flutter build ios --release --no-tree-shake-icons --no-codesign \
+            --dart-define=SAMPLE_DATA=false \
+            --dart-define=DEVELOPER_MODE=false
+
+      - name: Create IPA from development build
+        run: |
+          cd build/ios/Release-iphoneos
+          mkdir -p Payload
+          cp -r Runner.app Payload/
+          zip -r app-development.ipa Payload
+          cd ../../..
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-development.ipa
+          path: build/ios/Release-iphoneos/app-development.ipa

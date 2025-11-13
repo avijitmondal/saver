@@ -16,6 +16,9 @@ jobs:
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
 
       - name: Install dependencies
         run: flutter pub get
@@ -32,5 +35,5 @@ jobs:
       - name: Upload Web Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: flutter-web-build
+          name: saver-web-build
           path: build/web
