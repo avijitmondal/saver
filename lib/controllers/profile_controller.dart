@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../providers/user_provider.dart';
+import '../providers/portfolio_provider.dart';
 import '../services/account_manager.dart';
+import '../services/data_export_service.dart';
+import '../services/service_locator.dart';
 import '../config/route_config.dart';
 import '../services/dialog_service.dart';
 import '../widgets/profile/delete_account_dialog.dart';
+import '../constants/app_constants.dart';
+import '../constants/ui_constants.dart';
+import '../utils/download_helper.dart';
+import '../models/user.dart';
 
 /// Controller class for managing profile-related operations
 class ProfileController {
@@ -20,6 +28,10 @@ class ProfileController {
   
   // Security settings
   bool isTwoFactorEnabled = false;
+  bool _isExporting = false;
+  
+  // Get export service from service locator
+  late final DataExportService _exportService = locator<DataExportService>();
 
   ProfileController({
     required this.userProvider,
@@ -168,9 +180,160 @@ class ProfileController {
     Navigator.of(context).pushNamed(RouteConfig.changePassword);
   }
 
-  void exportData() {
-    accountManager.exportData(context);
+  Future<void> exportData() async {
+    _showExportPreview();
   }
+
+  Future<void> _handleExport() async {
+    _isExporting = true;
+
+    try {
+      final portfolioProvider = Provider.of<PortfolioProvider>(context, listen: false);
+
+      // Create User object from UserProvider data
+      final user = User.create(
+        firstName: userProvider.firstName,
+        lastName: userProvider.lastName,
+        email: userProvider.email,
+        phone: userProvider.phone,
+        address: userProvider.address,
+        dateOfBirth: userProvider.dateOfBirth,
+      );
+
+      // Generate export data
+      final exportData = _exportService.exportUserData(
+        user: user,
+        investments: portfolioProvider.investments,
+        featureFlags: AppConstants.featureFlags,
+      );
+
+      // Convert to JSON string
+      final jsonString = _exportService.generateJsonString(exportData, pretty: true);
+
+      // Generate filename
+      final filename = _exportService.generateFilename();
+
+      // Download file
+      final result = await DownloadHelper.downloadFile(
+        content: jsonString,
+        filename: filename,
+        context: context,
+      );
+
+      if (result != null) {
+        DownloadHelper.showDownloadSuccess(
+          context,
+          result,
+        );
+      }
+    } catch (e) {
+      // Don't show error if user cancelled
+      if (!e.toString().contains('cancelled')) {
+        DownloadHelper.showDownloadError(
+          context,
+          e.toString(),
+        );
+      }
+    } finally {
+      _isExporting = false;
+    }
+  }
+
+  void _showExportPreview() {
+    final portfolioProvider = Provider.of<PortfolioProvider>(context, listen: false);
+
+    // Create User object from UserProvider data
+    final user = User.create(
+      firstName: userProvider.firstName,
+      lastName: userProvider.lastName,
+      email: userProvider.email,
+      phone: userProvider.phone,
+      address: userProvider.address,
+      dateOfBirth: userProvider.dateOfBirth,
+    );
+
+    final preview = _exportService.getExportPreview(
+      user: user,
+      investments: portfolioProvider.investments,
+      featureFlags: AppConstants.featureFlags,
+    );
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Export Preview'),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildPreviewItem('User', preview['userName'] ?? 'Unknown'),
+              _buildPreviewItem('Email', preview['email'] ?? 'N/A'),
+              const SizedBox(height: UIConstants.spacing16),
+              _buildPreviewItem(
+                'Total Investments',
+                '${preview['totalInvestments']}',
+              ),
+              if (preview['investmentTypes'] != null)
+                _buildPreviewItem(
+                  'Investment Types',
+                  (preview['investmentTypes'] as List).join(', '),
+                ),
+              const SizedBox(height: UIConstants.spacing16),
+              const Text(
+                'This will export all your investment data including:\n'
+                '• Personal information\n'
+                '• All investment records\n'
+                '• Calculated values and returns\n'
+                '• Summary statistics',
+                style: TextStyle(fontSize: 13, color: Colors.grey),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          FilledButton.icon(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _handleExport();
+            },
+            icon: const Icon(Icons.download, size: 20),
+            label: const Text('Export'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPreviewItem(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 120,
+            child: Text(
+              '$label:',
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(color: Colors.grey),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool get isExporting => _isExporting;
 
   void deleteAccount() {
     DeleteAccountDialog.show(

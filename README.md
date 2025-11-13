@@ -1,56 +1,64 @@
-# Saver
+# Saver - Personal Investment Tracker 💰
 
-A modern, cross-platform personal finance and investment tracking app built with Flutter. Saver helps you manage, monitor, and grow your wealth by tracking investments, analyzing returns, and visualizing your financial portfolio—all in one place.
+A modern, intuitive investment tracking app that helps you monitor and grow your wealth. Built with Flutter for a seamless cross-platform experience.
 
 ![Version](https://img.shields.io/badge/version-1.0.3-blue.svg)
 ![Flutter](https://img.shields.io/badge/Flutter-%3E%3D3.10.0-02569B?logo=flutter)
-![Dart](https://img.shields.io/badge/Dart-%3E%3D3.0.0-0175C2?logo=dart)
+![Platform](https://img.shields.io/badge/platform-Android%20%7C%20iOS%20%7C%20Web-lightgrey)
 
 ---
 
-## Features
+## ✨ Features
 
-### Investment Management
-- **Multiple Investment Types**: 
-  - ✅ **Fixed Deposits (FD)**: Fully supported with maturity calculations
-  - ✅ **Recurring Deposits (RD)**: Track monthly contributions and returns
-  - 🚧 *Coming Soon*: PPF, EPF, Mutual Funds, Stocks, Gold, Real Estate, and Cryptocurrency
-- **Comprehensive Details**: Record principal, interest rates, tenure, compounding frequency, and maturity dates
-- **Real-Time Calculations**: Automatic computation of returns, current balance, and maturity amounts
-- **Payment History**: Track contributions and payments over time for recurring investments
-- **Swipe to Delete**: Quick removal of investments from the list with a left swipe gesture
+### 📊 Investment Management
+Track multiple types of investments in one place:
 
-### Analytics & Insights
-- **Portfolio Distribution**: Visual breakdown of investments by type with interactive pie charts
-- **Return Analysis**: Monitor gains/losses across all investments
-- **Bank-Wise Tracking**: View investments grouped by financial institution
-- **Maturity Timeline**: See upcoming maturities and plan accordingly
+**Currently Supported:**
+- ✅ **Fixed Deposits (FD)** - Track term deposits with automatic maturity calculations
+- ✅ **Recurring Deposits (RD)** - Monitor monthly contributions and accrued interest
+- ✅ **Public Provident Fund (PPF)** - Long-term savings with tax benefits
+- ✅ **Employee Provident Fund (EPF)** - Track employer and employee contributions
 
-### User Experience
-- **Dark Mode**: System-aware theme switching with persistent user preference
-- **Profile Management**: Secure password-protected profiles with customizable settings
-- **Responsive Design**: Optimized for mobile (Android, iOS) and web
-- **Sample Data**: Built-in demo mode for exploring features (can be disabled for production)
+**Each investment includes:**
+- Principal amount and interest rates
+- Maturity dates and automatic return calculations
+- Payment history for recurring investments
+- Bank/institution details with custom branding
+- Notes and tags for better organization
 
-### Developer Features
-- **Feature Flags**: Toggle experimental features via compile-time flags
-- **Advanced Settings**: Developer mode with debugging tools and configuration options
-- **Test Coverage**: Comprehensive unit tests with ~90% coverage on core models
+### 📈 Portfolio Analytics
+Get insights into your wealth:
+
+- **Portfolio Overview** - See total value at a glance
+- **XIRR Calculations** - Accurate annualized returns for recurring investments
+- **Absolute Returns** - Track total gains/losses
+- **Distribution Charts** - Visual breakdown by investment type
+- **Bank-wise Summary** - Investments grouped by institution
+- **Maturity Timeline** - Upcoming maturities and renewals
+
+### 👤 Profile & Settings
+
+- **Secure Access** - Password-protected user profiles
+- **Data Export** - Download your investment data as JSON
+- **Account Management** - Easy logout and account deletion
+- **Dark Mode** - Automatic theme based on system preference
+- **Personal Information** - Store name, email, phone, and address
+
+### 💾 Data Management
+
+- **Local Storage** - All data stored securely on your device
+- **No Cloud Required** - Complete privacy, no external servers
+- **Export Capability** - Backup your data anytime
+- **Sample Data Mode** - Try the app with demo investments
 
 ---
 
-## Screenshots
-
-_Coming soon_
-
----
-
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
-- Flutter SDK `>=3.10.0`
-- Dart SDK `>=3.0.0`
-- Android, iOS, or Web development environment
+- Flutter SDK (version 3.10.0 or higher)
+- Android Studio / Xcode / VS Code
+- A device or emulator to run the app
 
 ### Installation
 
@@ -67,90 +75,101 @@ _Coming soon_
 
 3. **Run the app**
    ```bash
-   # With sample data (default for development)
    flutter run
-   
-   # Without sample data (production mode)
-   flutter run --dart-define=SAMPLE_DATA=false
-   
-   # With developer tools enabled
-   flutter run --dart-define=DEVELOPER_MODE=true
    ```
 
----
-
-## Building for Production
-
-Saver includes a unified build script that handles all platforms and automatically disables sample data and developer mode for release builds.
-
-### Android (AAB)
-```bash
-./build.sh android
-```
-Output: `build/app/outputs/bundle/release/app-release.aab`
-
-### iOS (App Store/TestFlight)
-```bash
-./build.sh ios
-```
-Output: `build/ios/ipa/`
-
-### Web
-```bash
-./build.sh web
-```
-Output: `build/web/`
-
-The build script automatically applies these flags:
-- `--dart-define=SAMPLE_DATA=false`
-- `--dart-define=DEVELOPER_MODE=false`
+That's it! The app will launch with sample data so you can explore features immediately.
 
 ---
 
-## Configuration
+## 📱 How to Use
 
-### Environment Flags
+### Adding Your First Investment
 
-Saver uses compile-time environment flags to prevent accidental shipping of demo data or debug features.
+1. **Create Your Profile**
+   - Open the app and navigate to Profile
+   - Enter your personal information
+   - Set a secure password
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `SAMPLE_DATA` | `true` | Loads sample user profile and investments for testing UI |
-| `DEVELOPER_MODE` | `false` | Shows advanced settings and developer tools in profile |
+2. **Add an Investment**
+   - Go to the Investments tab
+   - Tap the "+" button
+   - Choose investment type (FD/RD/PPF/EPF)
+   - Fill in details:
+     - Bank/Institution name
+     - Principal amount
+     - Interest rate
+     - Start date and tenure
+     - Compounding frequency
 
-**Example: Production-like local run**
-```bash
-flutter run \
-  --dart-define=SAMPLE_DATA=false \
-  --dart-define=DEVELOPER_MODE=false
-```
+3. **Track Returns**
+   - View your portfolio on the Overview screen
+   - See XIRR and absolute returns
+   - Check individual investment details
+   - Monitor payment history for RDs
 
-**Example: Full development mode**
-```bash
-flutter run \
-  --dart-define=SAMPLE_DATA=true \
-  --dart-define=DEVELOPER_MODE=true
-```
+### Exporting Your Data
 
-### Feature Flags
+1. Go to Profile → Account Actions
+2. Tap "Export Data"
+3. Review the export preview
+4. Choose where to save the JSON file
+5. Your complete investment data is backed up!
 
-Runtime feature toggles are defined in `lib/constants/app_constants.dart`:
-```dart
-static final Map<String, bool> featureFlags = {
-  'notifications': false,
-  'comingSoonScreen': false,
-  'fixedDepositInvestment': true,
-  'recurringDepositInvestment': true,
-  'publicProvidentFundInvestment': false,
-  // ... more flags
-};
-```
+---
 
-Toggle these to enable/disable specific investment types or experimental features.
+## 🎯 Current Capabilities
 
-### Supported Banks
+### ✅ What Works Great
 
-The app includes pre-configured colors and branding for major Indian banks:
+- **Complete Investment Tracking** for FD, RD, PPF, EPF
+- **Accurate Calculations** - XIRR, compound interest, maturity values
+- **Beautiful UI** - Material Design 3 with smooth animations
+- **Offline First** - Works completely without internet
+- **Fast Performance** - Instant calculations and updates
+- **Data Privacy** - Everything stays on your device
+
+### ⚠️ Current Limitations
+
+- **No Cloud Sync** - Data is device-local only (backup via export)
+- **Single User** - One profile per installation
+- **No Notifications** - Must manually check maturity dates
+- **Limited Investment Types** - Stocks, mutual funds, crypto coming soon
+- **No Tax Calculations** - Manual tax computation needed
+- **No Budget Tracking** - Focus is on investments only
+
+---
+
+## 🔮 Coming Soon
+
+We're actively working on these exciting features:
+
+### 🎯 Short Term (Next Release)
+- [ ] **Investment Reminders** - Notifications for maturity dates and payment due dates
+- [ ] **CSV Export** - Export data in spreadsheet format
+- [ ] **Multiple Profiles** - Switch between family member accounts
+- [ ] **Category Tags** - Organize investments with custom tags
+
+### 🚀 Medium Term (Q1 2026)
+- [ ] **Mutual Funds** - SIP tracking with NAV updates
+- [ ] **Stock Portfolio** - Track equity investments
+- [ ] **Gold Investments** - Digital gold and sovereign gold bonds
+- [ ] **Cloud Backup** - Optional encrypted cloud sync
+- [ ] **Tax Helper** - Calculate tax implications
+
+### 🌟 Long Term Vision
+- [ ] **Cryptocurrency** - Track crypto holdings
+- [ ] **Real Estate** - Property investment tracking
+- [ ] **Goal Tracking** - Set and monitor financial goals
+- [ ] **Budget Integration** - Track expenses alongside investments
+- [ ] **AI Insights** - Smart recommendations
+- [ ] **Multi-currency** - International investment support
+
+---
+
+## 🏦 Supported Banks
+
+Pre-configured with branding for major Indian banks:
 - State Bank of India (SBI)
 - HDFC Bank
 - ICICI Bank
@@ -163,132 +182,56 @@ The app includes pre-configured colors and branding for major Indian banks:
 - IndusInd Bank
 - Yes Bank
 
-Add custom banks via `lib/constants/bank_constants.dart`.
+_Don't see your bank? You can add it manually when creating investments._
 
 ---
 
-## Project Structure
+## 📖 Documentation
 
-```
-lib/
-├── constants/        # App-wide constants and configuration
-├── controllers/      # Business logic controllers
-├── data/            # Sample data and fixtures
-├── models/          # Data models (Investment, User, etc.)
-├── providers/       # State management (Provider pattern)
-├── screens/         # UI screens
-├── services/        # Storage, calculations, and utilities
-├── utils/           # Helper functions
-└── widgets/         # Reusable UI components
-
-test/                # Unit and widget tests
-```
+- **[Engineering Guide](docs/ENGINEERING.md)** - Architecture, code structure, and development setup
+- **[Architecture Guide](docs/ARCHITECTURE_GUIDE.md)** - SOLID principles and design patterns
 
 ---
 
-## Testing
+## 🤝 Contributing
 
-### Run all tests
-```bash
-flutter test
-```
+We welcome contributions! Whether it's bug fixes, new features, or documentation improvements.
 
-### Run tests with coverage
-```bash
-flutter test --coverage
-```
-
-### View coverage report
-```bash
-# Generate HTML report
-genhtml coverage/lcov.info -o coverage/html
-
-# Open in browser (macOS)
-open coverage/html/index.html
-```
-
-Current coverage: **~90%** on core investment models.
-
----
-
-## Architecture
-
-- **State Management**: Provider pattern for reactive UI updates
-- **Storage**: SharedPreferences for local persistence
-- **Calculations**: Compound interest engine with support for multiple compounding frequencies
-- **Routing**: Named routes with custom route configuration
-- **Theming**: Material Design 3 with dynamic light/dark mode
-
----
-
-## Dependencies
-
-| Package | Purpose |
-|---------|---------|
-| `provider` | State management |
-| `shared_preferences` | Local data persistence |
-| `fl_chart` | Portfolio visualization charts |
-| `intl` | Number and date formatting |
-| `crypto` | Secure password hashing |
-| `package_info_plus` | App version information |
-| `get_it` | Service locator / dependency injection |
-
-See [`pubspec.yaml`](pubspec.yaml) for full dependency list.
-
----
-
-## Contributing
-
-Contributions are welcome! Please follow these steps:
-
+**How to Contribute:**
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes with tests
-4. Ensure tests pass (`flutter test`)
-5. Commit your changes (`git commit -m 'Add amazing feature'`)
-6. Push to the branch (`git push origin feature/amazing-feature`)
-7. Open a Pull Request
+4. Ensure all tests pass (`flutter test`)
+5. Submit a Pull Request
 
-### Code Guidelines
-- Follow the existing code style (enforced by `flutter_lints`)
-- Write unit tests for new features
-- Update documentation for API changes
-- Keep commits atomic and well-described
+See [ENGINEERING.md](docs/ENGINEERING.md) for development setup and coding standards.
 
 ---
 
-## Roadmap
-
-- [ ] Cloud sync and backup
-- [ ] Multi-currency support
-- [ ] Export to CSV/PDF
-- [ ] Investment goal tracking
-- [ ] Budget management
-- [ ] Expense tracking integration
-- [ ] Notifications for maturity dates
-- [ ] Tax calculation helpers
-
----
-
-## License
+## 📄 License
 
 This project is private and not currently licensed for public use. For collaboration inquiries, please contact the repository owner.
 
 ---
 
-## Acknowledgments
+## 💬 Support
+
+- **Bug Reports**: [Open an issue](https://github.com/avijitmondal/saver/issues)
+- **Feature Requests**: [Discuss in issues](https://github.com/avijitmondal/saver/issues)
+- **Questions**: Contact [@avijitmondal](https://github.com/avijitmondal)
+
+---
+
+## 🙏 Acknowledgments
 
 Built with ❤️ using [Flutter](https://flutter.dev/)
 
 Special thanks to:
-- [fl_chart](https://github.com/imaNNeo/fl_chart) for beautiful charts
+- [fl_chart](https://github.com/imaNNeo/fl_chart) for beautiful portfolio charts
 - The Flutter community for excellent packages and support
+- All contributors and users providing feedback
 
 ---
 
-## Contact
-
-**Project Maintainer**: [Avijit](https://github.com/avijitmondal)
-
-For bug reports and feature requests, please [open an issue](https://github.com/avijitmondal/saver/issues).
+**Made with Flutter** 🦋
 

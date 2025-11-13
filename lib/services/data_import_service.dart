@@ -1,17 +1,37 @@
-import 'dart:convert';
 import '../models/investment.dart';
 import '../models/user.dart';
+import 'data_transformation_service.dart';
+import 'file_service.dart';
 
+/// Refactored DataImportService following SOLID principles
+/// Now orchestrates specialized services instead of doing everything
 class DataImportService {
+  final DataTransformationService _transformationService;
+  final FileService _fileService;
+
+  DataImportService({
+    DataTransformationService? transformationService,
+    FileService? fileService,
+  })  : _transformationService = transformationService ?? DataTransformationService(),
+        _fileService = fileService ?? FileService();
+
   /// Import data from JSON string
-  static Future<ImportResult> importFromJson(String jsonString) async {
+  Future<ImportResult> importFromJson(String jsonString) async {
     try {
-      final data = jsonDecode(jsonString) as Map<String, dynamic>;
+      final data = _fileService.parseJson(jsonString);
       
+      if (data == null) {
+        return ImportResult(
+          success: false,
+          error: 'Invalid JSON format',
+        );
+      }
+
       // Validate format
-      if (!data.containsKey('metadata') || 
-          !data.containsKey('user') || 
-          !data.containsKey('investments')) {
+      if (!_fileService.validateJsonStructure(
+        data,
+        ['metadata', 'user', 'investments'],
+      )) {
         return ImportResult(
           success: false,
           error: 'Invalid export file format',
@@ -21,7 +41,7 @@ class DataImportService {
       // Validate version compatibility
       final metadata = data['metadata'] as Map<String, dynamic>;
       final dataVersion = metadata['dataVersion'] as String?;
-      
+
       if (dataVersion != '1.0') {
         return ImportResult(
           success: false,
@@ -32,17 +52,14 @@ class DataImportService {
       // Parse user data
       User? user;
       if (data['user'] != null) {
-        try {
-          final userData = data['user'] as Map<String, dynamic>;
-          // Convert ISO date string back to DateTime
-          if (userData['dateOfBirth'] != null) {
-            userData['dateOfBirth'] = DateTime.parse(userData['dateOfBirth']).millisecondsSinceEpoch;
-          }
-          user = User.fromMap(userData);
-        } catch (e) {
+        user = _transformationService.importDataToUser(
+          data['user'] as Map<String, dynamic>,
+        );
+        
+        if (user == null) {
           return ImportResult(
             success: false,
-            error: 'Failed to parse user data: $e',
+            error: 'Failed to parse user data',
           );
         }
       }
@@ -52,14 +69,13 @@ class DataImportService {
       try {
         final investmentsList = data['investments'] as List;
         for (var invData in investmentsList) {
-          final invMap = invData as Map<String, dynamic>;
+          final investment = _transformationService.importDataToInvestment(
+            invData as Map<String, dynamic>,
+          );
           
-          // Convert ISO date strings back to milliseconds
-          if (invMap['startDate'] != null) {
-            invMap['startDate'] = DateTime.parse(invMap['startDate']).millisecondsSinceEpoch;
+          if (investment != null) {
+            investments.add(investment);
           }
-          
-          investments.add(Investment.fromMap(invMap));
         }
       } catch (e) {
         return ImportResult(
@@ -73,7 +89,7 @@ class DataImportService {
         user: user,
         investments: investments,
         metadata: ImportMetadata(
-          exportDate: metadata['exportDate'] != null 
+          exportDate: metadata['exportDate'] != null
               ? DateTime.parse(metadata['exportDate'])
               : null,
           appVersion: metadata['appVersion'] as String?,
@@ -88,10 +104,17 @@ class DataImportService {
   }
 
   /// Validate import file before full import
-  static Future<ValidationResult> validateImportFile(String jsonString) async {
+  Future<ValidationResult> validateImportFile(String jsonString) async {
     try {
-      final data = jsonDecode(jsonString) as Map<String, dynamic>;
+      final data = _fileService.parseJson(jsonString);
       
+      if (data == null) {
+        return ValidationResult(
+          isValid: false,
+          error: 'Invalid JSON format',
+        );
+      }
+
       int investmentCount = 0;
       String? userName;
       String? email;

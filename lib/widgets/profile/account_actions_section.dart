@@ -15,20 +15,22 @@ class AccountActionsSection extends StatelessWidget {
     return InfoSection(
       title: 'Account Actions',
       children: [
-        /*InfoListTile(
-          icon: Icons.backup,
-          title: 'Export Data',
-          subtitle: 'Download your account data',
-          trailing: const Icon(Icons.chevron_right),
-          onTap: controller.exportData,
-        ),*/
         _buildActionTile(
+          context: context,
+          icon: Icons.download,
+          title: 'Export Data',
+          subtitle: 'Download your investment data as JSON',
+          onTap: controller.exportData,
+        ),
+        _buildActionTile(
+          context: context,
           icon: Icons.logout,
           title: 'Logout',
           subtitle: 'Sign out of your account',
           onTap: controller.logout,
         ),
         _buildActionTile(
+          context: context,
           icon: Icons.delete_forever,
           title: 'Delete Account',
           subtitle: 'Permanently delete your account',
@@ -41,6 +43,7 @@ class AccountActionsSection extends StatelessWidget {
   }
 
   Widget _buildActionTile({
+    required BuildContext context,
     required IconData icon,
     required String title,
     String? subtitle,
@@ -49,10 +52,13 @@ class AccountActionsSection extends StatelessWidget {
     Color? textColor,
   }) {
     return ListTile(
-      leading: Icon(icon, color: iconColor),
+      leading: Icon(
+        icon,
+        color: iconColor ?? Theme.of(context).colorScheme.primary,
+      ),
       title: Text(title, style: TextStyle(color: textColor)),
       subtitle: subtitle != null ? Text(subtitle) : null,
-      trailing: const Icon(Icons.chevron_right),
+      trailing: const Icon(Icons.chevron_right, size: 16),
       onTap: onTap,
     );
   }

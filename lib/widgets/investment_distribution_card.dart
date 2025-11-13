@@ -186,7 +186,7 @@ class _InvestmentDistributionCardState
                   .where((type) {
                     final flags = Provider.of<FeatureFlagsProvider>(context, listen: false).flags;
                     final portfolio = context.watch<PortfolioProvider>();
-                    final totalBalance = portfolio.getTotalAmountByType(type.name);
+                    final totalBalance = portfolio.getTotalAmountByTypeWithFlags(type.name, flags);
                     
                     // Only show if feature flag is enabled AND there are investments in this category
                     if (type.name == 'Fixed Deposit' && (!(flags['fixedDepositInvestment'] ?? true) || totalBalance <= 0)) return false;
@@ -198,10 +198,12 @@ class _InvestmentDistributionCardState
                     return totalBalance > 0;
                   })
                   .map((type) {
+                    final flags = context.watch<FeatureFlagsProvider>().flags;
                     final portfolio = context.watch<PortfolioProvider>();
-                    final totalBalance = portfolio.getTotalAmountByType(type.name);
-                    final percentage = portfolio.totalInvestment > 0
-                        ? (totalBalance / portfolio.totalInvestment * 100)
+                    final totalBalance = portfolio.getTotalAmountByTypeWithFlags(type.name, flags);
+                    final totalInv = portfolio.totalInvestmentWithFlags(flags);
+                    final percentage = totalInv > 0
+                        ? (totalBalance / totalInv * 100)
                         : 0.0;
 
                     return Row(

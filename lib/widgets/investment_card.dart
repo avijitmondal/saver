@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/investment.dart';
 import '../providers/portfolio_provider.dart';
+import '../providers/feature_flags_provider.dart';
 import '../screens/fixed_deposit_screen.dart';
 import '../screens/recurring_deposit_screen.dart';
 import '../screens/ppf_screen.dart';
@@ -16,22 +17,6 @@ class InvestmentCard extends StatelessWidget {
     required this.investment,
   });
 
-  double _calculateTotalAmount(PortfolioProvider portfolio, String type) {
-    final investments = portfolio.investments.where((inv) => inv.type == type);
-    double total = 0;
-
-    for (var inv in investments) {
-      if (inv.type == 'Recurring Deposit' && inv.isRecurring == true) {
-        // Use current balance (paid so far + accrued interest)
-        total += inv.currentBalance;
-      } else {
-        total += inv.amount;
-      }
-    }
-
-    return total;
-  }
-
   @override
   Widget build(BuildContext context) {
     final bool isFixedDeposit = investment.type == 'Fixed Deposit';
@@ -39,8 +24,10 @@ class InvestmentCard extends StatelessWidget {
     final bool isPPF = investment.type == 'PPF';
     final bool isEPF = investment.type == 'EPF';
     final portfolio = context.watch<PortfolioProvider>();
-    final investmentCount = portfolio.getInvestmentCount(investment.type);
-    final totalAmount = _calculateTotalAmount(portfolio, investment.type);
+    final flags = context.watch<FeatureFlagsProvider>().flags;
+    
+    final investmentCount = portfolio.getInvestmentCountWithFlags(investment.type, flags);
+    final totalAmount = portfolio.getTotalAmountByTypeWithFlags(investment.type, flags);
 
     return Card(
       elevation: 4,

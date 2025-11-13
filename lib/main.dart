@@ -59,11 +59,14 @@ Future<void> _initializeApp() async {
     minLevel: kDebugMode ? LogLevel.debug : LogLevel.warning,
   );
 
-  // Initialize service locator
+  // Initialize service locator (sync setup)
   setupLocator();
   
-  // Pre-initialize storage services
+  // Pre-initialize storage services and async dependencies
   await _initializeStorageServices();
+  
+  // Complete async service locator setup
+  await setupLocatorAsync();
 }
 
 Future<void> _initializeStorageServices() async {

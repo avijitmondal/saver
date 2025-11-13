@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/portfolio_provider.dart';
+import '../providers/feature_flags_provider.dart';
 import '../utils/number_formatter.dart';
 
 class PortfolioSummaryCard extends StatelessWidget {
@@ -9,8 +10,10 @@ class PortfolioSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final portfolio = context.watch<PortfolioProvider>();
-    final xirrValue = portfolio.xirr;
-    final absoluteValue = portfolio.absoluteReturns;
+    final flags = context.watch<FeatureFlagsProvider>().flags;
+    
+    final xirrValue = portfolio.xirrWithFlags(flags);
+    final absoluteValue = portfolio.absoluteReturnsWithFlags(flags);
     final isXirrPositive = xirrValue >= 0;
     final isAbsolutePositive = absoluteValue >= 0;
 
@@ -71,7 +74,7 @@ class PortfolioSummaryCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  NumberFormatter.formatAmount(portfolio.totalInvestment),
+                  NumberFormatter.formatAmount(portfolio.totalInvestmentWithFlags(flags)),
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,

@@ -1,15 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:crypto/crypto.dart';
-import 'dart:convert';
-import '../services/local_storage_service.dart';
+import '../models/user.dart';
+import '../repositories/user_repository.dart';
+import '../services/authentication_service.dart';
 import '../constants/app_constants.dart';
 import '../constants/sample_user_data.dart';
-import '../models/user.dart';
 
+/// Refactored UserProvider following SOLID principles
+/// - Single Responsibility: Only manages user state
+/// - Dependency Inversion: Depends on UserRepository abstraction
+/// - Removed business logic (moved to services)
 class UserProvider extends ChangeNotifier {
+  final UserRepository _repository;
+  final AuthenticationService _authService;
+  
   User? _user;
-  LocalStorageService? _storageService;
   bool _isLoaded = false;
+
+  UserProvider({
+    required UserRepository repository,
+    required AuthenticationService authService,
+  })  : _repository = repository,
+        _authService = authService;
 
   // Getters
   bool get isLoaded => _isLoaded;
@@ -21,10 +32,8 @@ class UserProvider extends ChangeNotifier {
   String get phone => _user?.phone ?? '';
   String get address => _user?.address ?? '';
   DateTime get dateOfBirth => _user?.dateOfBirth ?? DateTime.now();
-  
-  // Theme mode getter - returns string representation
   String get themeMode => _user?.themeMode ?? 'system';
-  
+
   // Convert string to ThemeMode enum
   ThemeMode get themeModeEnum {
     switch (themeMode) {
@@ -37,48 +46,42 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  // Initialize and load user data
+  /// Initialize and load user data
   Future<void> initialize() async {
     if (_isLoaded) return;
-    
-    _storageService = await LocalStorageService.getInstance();
+
     await _loadUserData();
     _isLoaded = true;
     notifyListeners();
   }
 
-  // Load user data from storage
+  /// Load user data from repository
   Future<void> _loadUserData() async {
     try {
       if (AppConstants.sampleData) {
         // Use sample data (in-memory only, not persisted)
         _user = User.fromMap(SampleUserData.sampleUser);
       } else {
-        // Load from persistent storage
-        final userData = await _storageService!.loadUserData();
-        if (userData != null) {
-          _user = User.fromMap(userData);
-        }
+        // Load from persistent storage via repository
+        _user = await _repository.getUser();
       }
     } catch (e) {
       print('Error loading user data: $e');
     }
   }
 
-  // Save user data to storage
+  /// Save user data to repository
   Future<void> _saveUserData() async {
     try {
-      // Only persist to storage if not using sample data
-      if (!AppConstants.sampleData) {
-        await _storageService?.saveUserData(_user?.toMap() ?? {});
+      if (_user != null && !AppConstants.sampleData) {
+        await _repository.saveUser(_user!);
       }
-      // If sampleData is true, data stays in-memory only
     } catch (e) {
       print('Error saving user data: $e');
     }
   }
 
-  // Create new user
+  /// Create new user
   Future<void> createUser({
     required String firstName,
     required String lastName,
@@ -88,11 +91,6 @@ class UserProvider extends ChangeNotifier {
     required DateTime dateOfBirth,
     required String password,
   }) async {
-    // Ensure storage service is initialized
-    if (_storageService == null) {
-      await initialize();
-    }
-
     _user = User.create(
       firstName: firstName,
       lastName: lastName,
@@ -100,14 +98,14 @@ class UserProvider extends ChangeNotifier {
       phone: phone,
       address: address,
       dateOfBirth: dateOfBirth,
-      passwordHash: _hashPassword(password),
+      passwordHash: _authService.hashPassword(password),
     );
-    
+
     await _saveUserData();
     notifyListeners();
   }
 
-  // Update user data
+  /// Update user data
   Future<void> updateUserData({
     String? firstName,
     String? lastName,
@@ -115,11 +113,6 @@ class UserProvider extends ChangeNotifier {
     String? phone,
     String? address,
   }) async {
-    // Ensure storage service is initialized
-    if (_storageService == null) {
-      await initialize();
-    }
-
     if (_user == null) return;
 
     _user = _user!.copyWith(
@@ -129,18 +122,13 @@ class UserProvider extends ChangeNotifier {
       phone: phone,
       address: address,
     );
-    
+
     await _saveUserData();
     notifyListeners();
   }
 
-  // Update date of birth
+  /// Update date of birth
   Future<void> updateDateOfBirth(DateTime dateOfBirth) async {
-    // Ensure storage service is initialized
-    if (_storageService == null) {
-      await initialize();
-    }
-
     if (_user == null) return;
 
     _user = _user!.copyWith(dateOfBirth: dateOfBirth);
@@ -148,27 +136,19 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Set password
+  /// Set password
   Future<void> setPassword(String password) async {
-    // Ensure storage service is initialized
-    if (_storageService == null) {
-      await initialize();
-    }
-
     if (_user == null) return;
 
-    _user = _user!.copyWith(passwordHash: _hashPassword(password));
+    _user = _user!.copyWith(
+      passwordHash: _authService.hashPassword(password),
+    );
     await _saveUserData();
     notifyListeners();
   }
 
-  // Update theme mode
+  /// Update theme mode
   Future<void> updateThemeMode(String mode) async {
-    // Ensure storage service is initialized
-    if (_storageService == null) {
-      await initialize();
-    }
-
     if (_user == null) return;
 
     // Validate mode is one of: 'system', 'light', 'dark'
@@ -181,31 +161,24 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Validate password
+  /// Validate password
   bool validatePassword(String password) {
     final storedHash = _user?.passwordHash;
     if (storedHash == null) return false;
-    return storedHash == _hashPassword(password);
+    return _authService.validatePassword(password, storedHash);
   }
 
-  // Clear user data (including storage)
+  /// Clear user data (including storage)
   Future<void> clearUserData() async {
     _user = null;
-    await _storageService?.clearAllData();
+    await _repository.deleteUser();
     notifyListeners();
   }
 
-  // Logout
+  /// Logout
   Future<void> logout() async {
     _user = null;
-    await _storageService?.clearAllData();
+    await _repository.deleteUser();
     notifyListeners();
   }
-
-  String _hashPassword(String password) {
-    final bytes = utf8.encode(password);
-    final digest = sha256.convert(bytes);
-    return digest.toString();
-  }
 }
-

@@ -8,7 +8,6 @@ import '../widgets/profile/personal_info_section.dart';
 import '../widgets/profile/security_section.dart';
 import '../widgets/profile/theme_section.dart';
 import '../widgets/profile/account_actions_section.dart';
-import '../widgets/profile/export_data_section.dart';
 import '../widgets/common/app_scaffold.dart';
 import '../constants/ui_constants.dart';
 import '../widgets/profile/about_section.dart';
@@ -79,9 +78,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               // Appearance Section
               ThemeSection(),
-
-              // Data Export Section
-              ExportDataSection(),
 
               // Account Actions Section
               AccountActionsSection(controller: _controller),

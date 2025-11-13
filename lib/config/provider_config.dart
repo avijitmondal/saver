@@ -4,29 +4,15 @@ import '../providers/user_provider.dart';
 import '../providers/notifications_provider.dart';
 import '../providers/portfolio_provider.dart';
 import '../providers/feature_flags_provider.dart';
+import '../services/service_locator.dart';
 
 class ProviderConfig {
-  static List<ChangeNotifierProvider> get providers => [
-        ChangeNotifierProvider<UserProvider>(
-          create: (_) => UserProvider(),
-        ),
-        ChangeNotifierProvider<NotificationsProvider>(
-          create: (_) => NotificationsProvider(),
-        ),
-        ChangeNotifierProvider<PortfolioProvider>(
-          create: (_) => PortfolioProvider(),
-        ),
-        ChangeNotifierProvider<FeatureFlagsProvider>(
-          create: (_) => FeatureFlagsProvider(),
-        ),
-      ];
-
   static Widget wrapWithProviders(Widget child) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
           create: (context) {
-            final userProvider = UserProvider();
+            final userProvider = locator<UserProvider>();
             // Initialize the provider immediately
             userProvider.initialize();
             return userProvider;
@@ -34,7 +20,7 @@ class ProviderConfig {
         ),
         ChangeNotifierProvider(
           create: (context) {
-            final portfolioProvider = PortfolioProvider();
+            final portfolioProvider = locator<PortfolioProvider>();
             // Initialize the provider immediately
             portfolioProvider.initialize();
             return portfolioProvider;
@@ -44,7 +30,7 @@ class ProviderConfig {
           create: (context) => FeatureFlagsProvider(),
         ),
         ChangeNotifierProvider(
-          create: (context) => NotificationsProvider(),
+          create: (context) => locator<NotificationsProvider>(),
         ),
       ],
       child: child,

@@ -7,6 +7,7 @@ import '../constants/ui_constants.dart';
 import '../widgets/common/app_scaffold.dart';
 import '../utils/theme_helper.dart';
 import '../services/data_import_service.dart';
+import '../services/service_locator.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -17,6 +18,9 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   bool _isImporting = false;
+  
+  // Get import service from service locator
+  late final DataImportService _importService = locator<DataImportService>();
 
   Future<void> _handleImportData() async {
     try {
@@ -48,7 +52,7 @@ class _SignupScreenState extends State<SignupScreen> {
       }
 
       // Validate file first
-      final validation = await DataImportService.validateImportFile(jsonContent);
+      final validation = await _importService.validateImportFile(jsonContent);
       
       if (!validation.isValid) {
         if (!mounted) return;
@@ -72,7 +76,7 @@ class _SignupScreenState extends State<SignupScreen> {
       }
 
       // Import data
-      final importResult = await DataImportService.importFromJson(jsonContent);
+      final importResult = await _importService.importFromJson(jsonContent);
 
       if (!importResult.success) {
         if (!mounted) return;
