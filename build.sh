@@ -45,6 +45,30 @@ else
   rm pubspec.yaml.bak
 fi
 
+# Update README.md version badge (version only, without build number)
+VERSION_ONLY=$(echo "$NEW_VERSION" | cut -d'+' -f1)
+echo "📝 Updating README.md version badge to $VERSION_ONLY ..."
+
+# Primary attempt: BSD-compatible sed (no -E needed because we use basic regex with \+)
+sed -i.bak "s/version-[0-9]\+\.[0-9]\+\.[0-9]\+-blue\.svg/version-$VERSION_ONLY-blue.svg/" README.md || true
+rm -f README.md.bak
+
+# Verify replacement; if failed, fallback to awk line rewrite
+if ! grep -q "version-$VERSION_ONLY-blue.svg" README.md; then
+  echo "⚠️ Sed replacement did not match; applying fallback rewrite."
+  awk 'BEGIN{updated=0} {
+    if ($0 ~ /^!\[Version\]\(https:\/\/img\.shields\.io\/badge\/version-[0-9]+\.[0-9]+\.[0-9]+-blue\.svg\)/) {
+      print "![Version](https://img.shields.io/badge/version-'"$VERSION_ONLY"'-blue.svg)"; updated=1;
+    } else { print }
+  } END { if(updated==0) { exit 1 } }' README.md > README.md.tmp && mv README.md.tmp README.md || echo "⚠️ Fallback rewrite could not locate Version badge line."
+fi
+
+if grep -q "version-$VERSION_ONLY-blue.svg" README.md; then
+  echo "✅ README version badge updated to $VERSION_ONLY"
+else
+  echo "❌ Failed to update README version badge. Please check script patterns."
+fi
+
 if [[ "$PLATFORM" == "android" ]]; then
   # ===== Android Build =====
   BUILD_GRADLE="$APP_DIR/android/app/build.gradle.kts"

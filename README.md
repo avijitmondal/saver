@@ -2,7 +2,8 @@
 
 A modern, intuitive investment tracking app that helps you monitor and grow your wealth. Built with Flutter for a seamless cross-platform experience.
 
-![Version](https://img.shields.io/badge/version-1.0.3-blue.svg)
+[![Get it on Google Play](https://img.shields.io/badge/Google_Play-Download-414141?logo=google-play)](https://play.google.com/store/apps/details?id=com.avijitmondal.saver)
+![Version](https://img.shields.io/badge/version-1.0.5-blue.svg)
 ![Flutter](https://img.shields.io/badge/Flutter-%3E%3D3.10.0-02569B?logo=flutter)
 ![Platform](https://img.shields.io/badge/platform-Android%20%7C%20iOS%20%7C%20Web-lightgrey)
 
