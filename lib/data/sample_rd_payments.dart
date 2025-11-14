@@ -59,7 +59,7 @@ class SampleRDPayments {
       date: DateTime.now(),
       amount: 5000,
       isCompleted: false,
-      status: PaymentStatus.pending,
+      status: PaymentStatus.upcoming,
     ),
     RDPayment(
       date: DateTime.now().add(const Duration(days: 30)),
@@ -117,7 +117,7 @@ class SampleRDPayments {
       date: DateTime.now(),
       amount: 3000,
       isCompleted: false,
-      status: PaymentStatus.pending,
+      status: PaymentStatus.upcoming,
     ),
   ];
 
@@ -155,7 +155,7 @@ class SampleRDPayments {
       date: DateTime.now(),
       amount: 2000,
       isCompleted: false,
-      status: PaymentStatus.pending,
+      status: PaymentStatus.upcoming,
     ),
   ];
 
@@ -186,7 +186,7 @@ class SampleRDPayments {
       date: DateTime.now(),
       amount: 10000,
       isCompleted: false,
-      status: PaymentStatus.pending,
+      status: PaymentStatus.upcoming,
     ),
   ];
 
@@ -217,7 +217,7 @@ class SampleRDPayments {
       date: DateTime.now(),
       amount: 1000,
       isCompleted: false,
-      status: PaymentStatus.pending,
+      status: PaymentStatus.upcoming,
     ),
   ];
 } 

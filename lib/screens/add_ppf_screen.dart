@@ -52,6 +52,19 @@ class _AddPPFScreenState extends State<AddPPFScreen> {
   void _submitForm() {
     if (_formKey.currentState!.validate() && _startDate != null) {
       final portfolio = context.read<PortfolioProvider>();
+      
+      // Check if PPF account already exists
+      final hasPPFAccount = portfolio.investments.any((inv) => inv.type == 'PPF');
+      if (hasPPFAccount) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('You can only have one PPF account'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+      
       final investment = Investment.create(
         type: InvestmentConstants.ppf.name,
         amount: double.parse(_amountController.text),

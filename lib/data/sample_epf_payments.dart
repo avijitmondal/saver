@@ -103,11 +103,11 @@ class SampleEPFPayments {
         referenceNumber: 'EPF-2024-03',
       ),
       
-      // Pending and upcoming payments
+      // Upcoming payments
       EPFPayment(
         date: DateTime(2024, 4, 1),
         amount: 3500.0,
-        status: 'Pending',
+        status: 'Upcoming',
         notes: 'Upcoming monthly contribution',
       ),
       EPFPayment(

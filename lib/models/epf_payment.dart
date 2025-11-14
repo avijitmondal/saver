@@ -7,7 +7,7 @@ class EPFPayment {
   /// The amount of the payment
   final double amount;
   
-  /// The status of the payment (e.g., 'Completed', 'Pending')
+  /// The status of the payment (e.g., 'Completed', 'Upcoming')
   final String status;
   
   /// Optional reference number for the payment
@@ -50,8 +50,8 @@ class EPFPayment {
   /// Check if the payment is completed
   bool get isCompleted => status == 'Completed';
 
-  /// Check if the payment is pending
-  bool get isPending => status == 'Pending';
+  /// Check if the payment is upcoming
+  bool get isUpcoming => status == 'Upcoming';
 
   /// Create a copy of this EPFPayment with some fields replaced
   EPFPayment copyWith({

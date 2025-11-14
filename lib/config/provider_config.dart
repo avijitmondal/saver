@@ -3,8 +3,9 @@ import 'package:provider/provider.dart';
 import '../providers/user_provider.dart';
 import '../providers/notifications_provider.dart';
 import '../providers/portfolio_provider.dart';
+import '../providers/ppf_payment_provider.dart';
 import '../providers/feature_flags_provider.dart';
-import '../services/service_locator.dart';
+import '../config/service_locator.dart';
 
 class ProviderConfig {
   static Widget wrapWithProviders(Widget child) {
@@ -12,7 +13,7 @@ class ProviderConfig {
       providers: [
         ChangeNotifierProvider(
           create: (context) {
-            final userProvider = locator<UserProvider>();
+            final userProvider = serviceLocator.userProvider;
             // Initialize the provider immediately
             userProvider.initialize();
             return userProvider;
@@ -20,17 +21,20 @@ class ProviderConfig {
         ),
         ChangeNotifierProvider(
           create: (context) {
-            final portfolioProvider = locator<PortfolioProvider>();
+            final portfolioProvider = serviceLocator.portfolioProvider;
             // Initialize the provider immediately
             portfolioProvider.initialize();
             return portfolioProvider;
           },
         ),
         ChangeNotifierProvider(
+          create: (context) => serviceLocator.ppfPaymentProvider,
+        ),
+        ChangeNotifierProvider(
           create: (context) => FeatureFlagsProvider(),
         ),
         ChangeNotifierProvider(
-          create: (context) => locator<NotificationsProvider>(),
+          create: (context) => NotificationsProvider(),
         ),
       ],
       child: child,

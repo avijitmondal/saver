@@ -5,6 +5,10 @@ class AppConstants {
   // Default Values
   static const int defaultAnimationDuration = 300; // milliseconds
 
+  // Payment History Display Limits
+  static const int maxCompletedPaymentsToShow = 12;
+  static const int maxUpcomingPaymentsToShow = 3;
+
   // Password validation constants
   static const int minPasswordLength = 8;
   static const String passwordUppercasePattern = r'[A-Z]';
@@ -18,7 +22,7 @@ class AppConstants {
   //   flutter build appbundle --release --dart-define=SAMPLE_DATA=false --dart-define=DEVELOPER_MODE=false
   // Defaults: SAMPLE_DATA=true (for local convenience), DEVELOPER_MODE=false (hidden advanced UI)
   static const bool developerMode = bool.fromEnvironment('DEVELOPER_MODE', defaultValue: false);
-  static const bool sampleData = bool.fromEnvironment('SAMPLE_DATA', defaultValue: false);
+  static const bool sampleData = bool.fromEnvironment('SAMPLE_DATA', defaultValue: true);
 
   // Feature Flags
   // Set this to false to disable sample user and go to welcome screen
@@ -26,13 +30,13 @@ class AppConstants {
     // Toggle in-app notifications
     'notifications': false,
     // Set this to false to disable coming soon screen
-    'comingSoonScreen': true,
+    'comingSoonScreen': false,
     // Set this to false to disable fixed deposit investment
     'fixedDepositInvestment': true,
     // Set this to false to disable recurring deposit investment
     'recurringDepositInvestment': true,
     // Set this to false to disable public provident fund investment
-    'publicProvidentFundInvestment': false,
+    'publicProvidentFundInvestment': true,
     // Set this to false to disable employee provident fund investment
     'employeeProvidentFundInvestment': false,
     // Set this to false to disable mutual fund investment

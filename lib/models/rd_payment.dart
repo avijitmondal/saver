@@ -19,18 +19,26 @@ class RDPayment {
 
   // Factory constructor to create a payment from a map
   factory RDPayment.fromMap(Map<String, dynamic> map) {
+    PaymentStatus status = PaymentStatus.completed;
+    
+    if (map['status'] != null) {
+      final statusString = map['status'] as String;
+      // Backward compatibility: convert old 'pending' to 'upcoming'
+      final normalizedStatus = statusString == 'pending' ? 'upcoming' : statusString;
+      
+      status = PaymentStatus.values.firstWhere(
+        (e) => e.toString() == 'PaymentStatus.$normalizedStatus',
+        orElse: () => PaymentStatus.completed,
+      );
+    }
+    
     return RDPayment(
       date: map['date'],
       amount: map['amount'],
       isCompleted: map['isCompleted'] ?? true,
       referenceNumber: map['referenceNumber'],
       notes: map['notes'],
-      status: map['status'] != null
-          ? PaymentStatus.values.firstWhere(
-              (e) => e.toString() == 'PaymentStatus.${map['status']}',
-              orElse: () => PaymentStatus.completed,
-            )
-          : PaymentStatus.completed,
+      status: status,
     );
   }
 
@@ -68,7 +76,7 @@ class RDPayment {
 
 enum PaymentStatus {
   completed,
-  pending,
+  upcoming,
   failed,
   scheduled,
 }
@@ -78,8 +86,8 @@ extension PaymentStatusExtension on PaymentStatus {
     switch (this) {
       case PaymentStatus.completed:
         return 'Completed';
-      case PaymentStatus.pending:
-        return 'Pending';
+      case PaymentStatus.upcoming:
+        return 'Upcoming';
       case PaymentStatus.failed:
         return 'Failed';
       case PaymentStatus.scheduled:
@@ -91,7 +99,7 @@ extension PaymentStatusExtension on PaymentStatus {
     switch (this) {
       case PaymentStatus.completed:
         return Colors.green;
-      case PaymentStatus.pending:
+      case PaymentStatus.upcoming:
         return Colors.orange;
       case PaymentStatus.failed:
         return Colors.red;
@@ -104,12 +112,12 @@ extension PaymentStatusExtension on PaymentStatus {
     switch (this) {
       case PaymentStatus.completed:
         return Icons.check_circle;
-      case PaymentStatus.pending:
-        return Icons.pending;
+      case PaymentStatus.upcoming:
+        return Icons.schedule;
       case PaymentStatus.failed:
         return Icons.error;
       case PaymentStatus.scheduled:
-        return Icons.schedule;
+        return Icons.calendar_today;
     }
   }
 } 

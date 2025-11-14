@@ -26,6 +26,9 @@ class InvestmentsScreen extends StatelessWidget {
 
   void _showAddInvestmentDialog(BuildContext context) {
     final flags = Provider.of<FeatureFlagsProvider>(context, listen: false).flags;
+    final portfolio = Provider.of<PortfolioProvider>(context, listen: false);
+    final hasPPFAccount = portfolio.investments.any((inv) => inv.type == 'PPF');
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -43,16 +46,33 @@ class InvestmentsScreen extends StatelessWidget {
                   (type.name != 'EPF' ||
                       (flags['employeeProvidentFundInvestment'] ?? true)))
               .map((type) {
+            final isPPF = type.name == 'PPF';
+            final isDisabled = isPPF && hasPPFAccount;
+            
             return ListTile(
+              enabled: !isDisabled,
               leading: Icon(
                 type.icon,
-                color: type.color,
+                color: isDisabled ? Colors.grey : type.color,
               ),
-              title: Text(type.name),
-              onTap: () {
-                Navigator.pop(context);
-                _navigateToAddScreen(context, type);
-              },
+              title: Text(
+                type.name,
+                style: TextStyle(
+                  color: isDisabled ? Colors.grey : null,
+                ),
+              ),
+              subtitle: isDisabled
+                  ? const Text(
+                      'Account already exists',
+                      style: TextStyle(color: Colors.red, fontSize: 12),
+                    )
+                  : null,
+              onTap: isDisabled
+                  ? null
+                  : () {
+                      Navigator.pop(context);
+                      _navigateToAddScreen(context, type);
+                    },
             );
           }).toList(),
         ),
@@ -67,6 +87,22 @@ class InvestmentsScreen extends StatelessWidget {
   }
 
   void _navigateToAddScreen(BuildContext context, InvestmentType type) {
+    // Check if PPF account already exists
+    if (type.name == 'PPF') {
+      final portfolio = Provider.of<PortfolioProvider>(context, listen: false);
+      final hasPPFAccount = portfolio.investments.any((inv) => inv.type == 'PPF');
+      
+      if (hasPPFAccount) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('You can only have one PPF account'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+    }
+    
     Widget screen;
     switch (type.name) {
       case 'Fixed Deposit':

@@ -25,6 +25,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   DateTime? _selectedDate;
+  String? _selectedGender;
 
   int _currentStep = 0;
   bool _isLoading = false;
@@ -63,6 +64,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         _phoneController.text = importResult.user!.phone;
         _addressController.text = importResult.user!.address;
         _selectedDate = importResult.user!.dateOfBirth;
+        _selectedGender = importResult.user!.gender;
       });
     }
 
@@ -95,6 +97,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             Validators.validateIndianPhone(_phoneController.text) == null &&
             _addressController.text.isNotEmpty &&
             _selectedDate != null &&
+            _selectedGender != null &&
             Validators.validateAge(_selectedDate) == null;
       }
 
@@ -111,6 +114,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           }
         } else if (_selectedDate == null) {
           errorMessage = 'Please select your date of birth';
+        } else if (_selectedGender == null) {
+          errorMessage = 'Please select your gender';
         }
         
         ScaffoldMessenger.of(context).showSnackBar(
@@ -159,6 +164,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           address: _addressController.text,
           dateOfBirth: _selectedDate!,
           password: _passwordController.text,
+          gender: _selectedGender!,
         );
 
         // Simulate registration delay
@@ -414,6 +420,39 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           ),
                           child: Text(_formatDate(_selectedDate)),
                         ),
+                      ),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<String>(
+                        value: _selectedGender,
+                        decoration: InputDecoration(
+                          labelText: 'Gender',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          prefixIcon: const Icon(Icons.person_outline),
+                        ),
+                        hint: const Text('Select Gender'),
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'male',
+                            child: Text('Male'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'female',
+                            child: Text('Female'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'other',
+                            child: Text('Other / Prefer not to say'),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) {
+                            setState(() {
+                              _selectedGender = value;
+                            });
+                          }
+                        },
                       ),
                     ],
                   ),

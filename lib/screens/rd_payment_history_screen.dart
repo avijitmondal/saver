@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../constants/app_constants.dart';
 import '../models/investment.dart';
 import '../models/rd_payment.dart';
 import '../utils/number_formatter.dart';
@@ -17,38 +18,53 @@ class RDPaymentHistoryScreen extends StatelessWidget {
       return [];
     }
 
-    final List<RDPayment> payments = [];
+    final List<RDPayment> allPayments = [];
     final now = DateTime.now();
     final startDate = recurringDeposit.startDate!;
     
-  // Calculate how many months have elapsed since start date
-  // Add 1 because the first payment is made on the start date itself
-  final monthsElapsed = ((now.difference(startDate).inDays / 30).floor()) + 1;
-    
-    // Generate payments only for elapsed months (payments that should have been made)
-    final paymentsToGenerate = monthsElapsed < recurringDeposit.durationInMonths! 
-        ? monthsElapsed 
-        : recurringDeposit.durationInMonths!;
-    
-    for (int i = 0; i < paymentsToGenerate; i++) {
-      // Each payment is made at the start of each month
+    // Generate all payments for the entire RD duration
+    for (int i = 0; i < recurringDeposit.durationInMonths!; i++) {
       final paymentDate = DateTime(
         startDate.year,
         startDate.month + i,
         startDate.day,
       );
       
-      payments.add(RDPayment(
+      // Determine if payment is completed or upcoming
+      final isCompleted = paymentDate.isBefore(now) || 
+                         paymentDate.isAtSameMomentAs(now);
+      
+      allPayments.add(RDPayment(
         date: paymentDate,
         amount: recurringDeposit.amount,
-        isCompleted: true,
-        referenceNumber: 'RD${recurringDeposit.bank ?? 'XXX'}${i + 1}'.replaceAll(' ', ''),
-        status: PaymentStatus.completed,
-        notes: 'Monthly deposit #${i + 1}',
+        isCompleted: isCompleted,
+        referenceNumber: isCompleted 
+            ? 'RD${recurringDeposit.bank ?? 'XXX'}${i + 1}'.replaceAll(' ', '')
+            : null,
+        status: isCompleted ? PaymentStatus.completed : PaymentStatus.upcoming,
+        notes: isCompleted ? 'Monthly deposit #${i + 1}' : 'Scheduled monthly deposit #${i + 1}',
       ));
     }
     
-    return payments;
+    // Separate completed and upcoming payments
+    final completedPayments = allPayments
+        .where((p) => p.status == PaymentStatus.completed)
+        .toList()
+      ..sort((a, b) => a.date.compareTo(b.date)); // Oldest first
+    
+    final upcomingPayments = allPayments
+        .where((p) => p.status == PaymentStatus.upcoming)
+        .toList()
+      ..sort((a, b) => a.date.compareTo(b.date)); // Nearest first
+    
+    // Get last N completed payments and next N upcoming payments
+    final limitedCompletedPayments = completedPayments.length > AppConstants.maxCompletedPaymentsToShow
+        ? completedPayments.sublist(completedPayments.length - AppConstants.maxCompletedPaymentsToShow)
+        : completedPayments;
+    
+    final limitedUpcomingPayments = upcomingPayments.take(AppConstants.maxUpcomingPaymentsToShow).toList();
+    
+    return [...limitedCompletedPayments, ...limitedUpcomingPayments];
   }
 
   @override
@@ -222,10 +238,10 @@ class RDPaymentHistoryScreen extends StatelessWidget {
                             horizontal: 16, vertical: 4),
                         child: ListTile(
                           leading: CircleAvatar(
-                            backgroundColor: Colors.green.withOpacity(0.1),
-                            child: const Icon(
-                              Icons.check_circle,
-                              color: Colors.green,
+                            backgroundColor: payment.status.color.withOpacity(0.1),
+                            child: Icon(
+                              payment.status.icon,
+                              color: payment.status.color,
                             ),
                           ),
                           title: Text(
@@ -256,12 +272,22 @@ class RDPaymentHistoryScreen extends StatelessWidget {
                                 ),
                             ],
                           ),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.receipt_long,
-                                color: Colors.grey),
-                            onPressed: () {
-                              _showReceiptDetails(context, payment);
-                            },
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Chip(
+                                label: Text(
+                                  payment.status.displayName,
+                                  style: TextStyle(
+                                    color: payment.status.color,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                backgroundColor: payment.status.color.withOpacity(0.1),
+                                side: BorderSide.none,
+                              ),
+                            ],
                           ),
                         ),
                       );
@@ -371,71 +397,6 @@ class RDPaymentHistoryScreen extends StatelessWidget {
             style: TextButton.styleFrom(
               foregroundColor: Colors.green,
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showReceiptDetails(BuildContext context, RDPayment payment) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Payment Receipt'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildReceiptRow('Amount', NumberFormatter.formatAmount(payment.amount)),
-            _buildReceiptRow('Date', DateFormatter.formatDate(payment.date)),
-            if (payment.referenceNumber != null)
-              _buildReceiptRow('Reference', payment.referenceNumber!),
-            _buildReceiptRow('Status', payment.status.displayName),
-            if (payment.notes != null) _buildReceiptRow('Notes', payment.notes!),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('CLOSE'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Download feature coming soon'),
-                  backgroundColor: Colors.blue,
-                ),
-              );
-            },
-            child: const Text('DOWNLOAD'),
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.blue,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildReceiptRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 100,
-            child: Text(
-              '$label:',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Text(value),
           ),
         ],
       ),

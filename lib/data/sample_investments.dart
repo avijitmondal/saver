@@ -239,21 +239,10 @@ class SampleInvestments {
         interest: 7.10,
         icon: InvestmentConstants.ppf.icon,
         color: InvestmentConstants.ppf.color,
-        startDate: DateTime(2023, 4, 1),
-        durationInMonths: 180, // 15 years
-        bank: 'SBI',
-      ),
-      // New PPF Account
-      Investment.create(
-        type: InvestmentConstants.ppf.name,
-        amount: 100000.0,
-        interest: 7.10,
-        icon: InvestmentConstants.ppf.icon,
-        color: InvestmentConstants.ppf.color,
         startDate: DateTime(2022, 4, 1),
         durationInMonths: 180, // 15 years
-        bank: 'Indian Bank',
-        notes: 'PPF account for tax benefits',
+        bank: 'SBI',
+        notes: 'PPF account for tax benefits under Section 80C',
       ),
       // EPF Contributions
       Investment.create(

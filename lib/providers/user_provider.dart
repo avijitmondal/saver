@@ -33,6 +33,7 @@ class UserProvider extends ChangeNotifier {
   String get address => _user?.address ?? '';
   DateTime get dateOfBirth => _user?.dateOfBirth ?? DateTime.now();
   String get themeMode => _user?.themeMode ?? 'system';
+  String get gender => _user?.gender ?? '';
 
   // Convert string to ThemeMode enum
   ThemeMode get themeModeEnum {
@@ -90,6 +91,7 @@ class UserProvider extends ChangeNotifier {
     required String address,
     required DateTime dateOfBirth,
     required String password,
+    required String gender,
   }) async {
     _user = User.create(
       firstName: firstName,
@@ -99,6 +101,7 @@ class UserProvider extends ChangeNotifier {
       address: address,
       dateOfBirth: dateOfBirth,
       passwordHash: _authService.hashPassword(password),
+      gender: gender,
     );
 
     await _saveUserData();

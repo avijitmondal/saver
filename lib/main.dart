@@ -7,10 +7,8 @@ import 'constants/app_constants.dart';
 import 'config/theme_config.dart';
 import 'config/route_config.dart';
 import 'config/provider_config.dart';
+import 'config/service_locator.dart';
 import 'providers/user_provider.dart';
-import 'services/navigation_service.dart';
-import 'services/service_locator.dart';
-import 'services/local_storage_service.dart';
 import 'utils/logger.dart';
 
 void main() async {
@@ -59,24 +57,10 @@ Future<void> _initializeApp() async {
     minLevel: kDebugMode ? LogLevel.debug : LogLevel.warning,
   );
 
-  // Initialize service locator (sync setup)
-  setupLocator();
+  // Initialize service locator
+  await serviceLocator.initialize();
   
-  // Pre-initialize storage services and async dependencies
-  await _initializeStorageServices();
-  
-  // Complete async service locator setup
-  await setupLocatorAsync();
-}
-
-Future<void> _initializeStorageServices() async {
-  try {
-    // Pre-load storage service
-    await LocalStorageService.getInstance();
-    Logger.instance.debug('Storage services initialized');
-  } catch (e) {
-    Logger.instance.error('Failed to initialize storage services: $e');
-  }
+  Logger.instance.debug('Service locator initialized');
 }
 
 class SaverApp extends StatelessWidget {
@@ -88,7 +72,7 @@ class SaverApp extends StatelessWidget {
       Consumer<UserProvider>(
         builder: (context, userProvider, child) {
           return MaterialApp(
-            navigatorKey: locator<NavigationService>().navigatorKey,
+            navigatorKey: serviceLocator.navigationService.navigatorKey,
             title: AppConstants.appName,
             theme: ThemeConfig.lightTheme,
             darkTheme: ThemeConfig.darkTheme,

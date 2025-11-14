@@ -13,6 +13,7 @@ class SampleUserData {
     'dateOfBirth': DateTime(1990, 5, 15).millisecondsSinceEpoch,
     'passwordHash': _hashPassword('password123'),
     'themeMode': 'system',
+    'gender': 'male',
   };
 
   // Helper method to hash passwords

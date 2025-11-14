@@ -11,6 +11,7 @@ class User {
   final DateTime dateOfBirth;
   final String? passwordHash;
   final String themeMode;
+  final String gender; // 'male', 'female', or 'other' - required
 
   const User({
     required this.id,
@@ -22,6 +23,7 @@ class User {
     required this.dateOfBirth,
     this.passwordHash,
     this.themeMode = 'system',
+    required this.gender,
   });
 
   // Factory constructor to create user with auto-generated ID
@@ -34,6 +36,7 @@ class User {
     required DateTime dateOfBirth,
     String? passwordHash,
     String themeMode = 'system',
+    required String gender,
   }) {
     return User(
       id: const Uuid().v4(),
@@ -45,6 +48,7 @@ class User {
       dateOfBirth: dateOfBirth,
       passwordHash: passwordHash,
       themeMode: themeMode,
+      gender: gender,
     );
   }
 
@@ -63,6 +67,7 @@ class User {
       'dateOfBirth': dateOfBirth.millisecondsSinceEpoch,
       'passwordHash': passwordHash,
       'themeMode': themeMode,
+      'gender': gender,
     };
   }
 
@@ -77,6 +82,7 @@ class User {
       dateOfBirth: DateTime.fromMillisecondsSinceEpoch(map['dateOfBirth'] ?? 0),
       passwordHash: map['passwordHash'],
       themeMode: map['themeMode'] ?? 'system',
+      gender: map['gender'] ?? '', // Empty string if not set for backward compatibility
     );
   }
 
@@ -98,6 +104,7 @@ class User {
     DateTime? dateOfBirth,
     String? passwordHash,
     String? themeMode,
+    String? gender,
   }) {
     return User(
       id: id ?? this.id,
@@ -109,6 +116,7 @@ class User {
       dateOfBirth: dateOfBirth ?? this.dateOfBirth,
       passwordHash: passwordHash ?? this.passwordHash,
       themeMode: themeMode ?? this.themeMode,
+      gender: gender ?? this.gender,
     );
   }
 }

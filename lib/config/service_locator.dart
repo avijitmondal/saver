@@ -2,8 +2,12 @@ import '../repositories/user_repository.dart';
 import '../repositories/user_repository_impl.dart';
 import '../repositories/investment_repository.dart';
 import '../repositories/investment_repository_impl.dart';
+import '../repositories/ppf_payment_repository.dart';
+import '../repositories/ppf_payment_repository_impl.dart';
 import '../services/local_storage_service.dart';
 import '../services/investment_storage_factory.dart';
+import '../services/ppf_payment_storage_service.dart';
+import '../services/navigation_service.dart';
 import '../services/authentication_service.dart';
 import '../services/investment_filter_service.dart';
 import '../services/data_transformation_service.dart';
@@ -12,6 +16,7 @@ import '../services/data_export_service.dart';
 import '../services/data_import_service.dart';
 import '../providers/user_provider.dart';
 import '../providers/portfolio_provider.dart';
+import '../providers/ppf_payment_provider.dart';
 
 /// Dependency Injection Container
 /// Centralized place to create and manage dependencies
@@ -22,6 +27,7 @@ class ServiceLocator {
   ServiceLocator._internal();
 
   // Services (singletons)
+  late final NavigationService navigationService;
   late final AuthenticationService authService;
   late final InvestmentFilterService filterService;
   late final DataTransformationService transformationService;
@@ -32,10 +38,12 @@ class ServiceLocator {
   // Repositories (singletons)
   late final UserRepository userRepository;
   late final InvestmentRepository investmentRepository;
+  late final PPFPaymentRepository ppfPaymentRepository;
 
   // Providers (singletons)
   late final UserProvider userProvider;
   late final PortfolioProvider portfolioProvider;
+  late final PPFPaymentProvider ppfPaymentProvider;
 
   bool _initialized = false;
 
@@ -44,6 +52,7 @@ class ServiceLocator {
     if (_initialized) return;
 
     // Initialize services (stateless, can be created immediately)
+    navigationService = NavigationService();
     authService = AuthenticationService();
     filterService = InvestmentFilterService();
     transformationService = DataTransformationService();
@@ -63,10 +72,12 @@ class ServiceLocator {
     // Initialize storage services
     final localStorage = await LocalStorageService.getInstance();
     final investmentStorage = await InvestmentStorageFactory.create();
+    final ppfPaymentStorage = await PPFPaymentStorageFactory.create();
 
     // Initialize repositories
     userRepository = UserRepositoryImpl(localStorage);
     investmentRepository = InvestmentRepositoryImpl(investmentStorage);
+    ppfPaymentRepository = PPFPaymentRepositoryImpl(ppfPaymentStorage);
 
     // Initialize providers
     userProvider = UserProvider(
@@ -77,6 +88,10 @@ class ServiceLocator {
     portfolioProvider = PortfolioProvider(
       repository: investmentRepository,
       filterService: filterService,
+    );
+
+    ppfPaymentProvider = PPFPaymentProvider(
+      repository: ppfPaymentRepository,
     );
 
     _initialized = true;

@@ -66,6 +66,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: ProfileHeader(
                   name: '${userProvider.firstName} ${userProvider.lastName}',
                   email: userProvider.email,
+                  gender: userProvider.gender,
                   onEditPressed: null,
                 ),
               ),

@@ -7,7 +7,7 @@ class PPFPayment {
   /// The amount of the payment
   final double amount;
   
-  /// The status of the payment (e.g., 'Completed', 'Pending')
+  /// The status of the payment (e.g., 'Completed', 'Upcoming')
   final String status;
   
   /// Optional reference number for the payment
@@ -15,6 +15,12 @@ class PPFPayment {
   
   /// Optional notes about the payment
   final String? notes;
+  
+  /// Whether this is a recurring payment
+  final bool isRecurring;
+  
+  /// Frequency of recurring payment (e.g., 'Monthly', 'Quarterly', 'Yearly')
+  final String? recurringFrequency;
 
   /// Constructor for PPFPayment
   const PPFPayment({
@@ -23,6 +29,8 @@ class PPFPayment {
     required this.status,
     this.referenceNumber,
     this.notes,
+    this.isRecurring = false,
+    this.recurringFrequency,
   });
 
   /// Create a PPFPayment from a map
@@ -33,6 +41,8 @@ class PPFPayment {
       status: map['status'] as String,
       referenceNumber: map['referenceNumber'] as String?,
       notes: map['notes'] as String?,
+      isRecurring: map['isRecurring'] as bool? ?? false,
+      recurringFrequency: map['recurringFrequency'] as String?,
     );
   }
 
@@ -44,14 +54,16 @@ class PPFPayment {
       'status': status,
       'referenceNumber': referenceNumber,
       'notes': notes,
+      'isRecurring': isRecurring,
+      'recurringFrequency': recurringFrequency,
     };
   }
 
   /// Check if the payment is completed
   bool get isCompleted => status == 'Completed';
 
-  /// Check if the payment is pending
-  bool get isPending => status == 'Pending';
+  /// Check if the payment is upcoming
+  bool get isUpcoming => status == 'Upcoming';
 
   /// Create a copy of this PPFPayment with some fields replaced
   PPFPayment copyWith({
@@ -60,6 +72,8 @@ class PPFPayment {
     String? status,
     String? referenceNumber,
     String? notes,
+    bool? isRecurring,
+    String? recurringFrequency,
   }) {
     return PPFPayment(
       date: date ?? this.date,
@@ -67,6 +81,8 @@ class PPFPayment {
       status: status ?? this.status,
       referenceNumber: referenceNumber ?? this.referenceNumber,
       notes: notes ?? this.notes,
+      isRecurring: isRecurring ?? this.isRecurring,
+      recurringFrequency: recurringFrequency ?? this.recurringFrequency,
     );
   }
 } 

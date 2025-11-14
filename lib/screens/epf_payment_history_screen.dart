@@ -116,7 +116,7 @@ class EPFPaymentHistoryScreen extends StatelessWidget {
                           ? Colors.blue.withOpacity(0.1)
                           : Colors.orange.withOpacity(0.1),
                       child: Icon(
-                        isCompleted ? Icons.check : Icons.pending,
+                        isCompleted ? Icons.check : Icons.schedule,
                         color: isCompleted ? Colors.blue : Colors.orange,
                       ),
                     ),

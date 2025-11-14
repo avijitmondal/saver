@@ -69,6 +69,33 @@ else
   echo "❌ Failed to update README version badge. Please check script patterns."
 fi
 
+# Update Flutter SDK badge in README based on pubspec environment constraint
+FLUTTER_MIN=$(grep '  flutter: "' pubspec.yaml | sed 's/.*">=//' | sed 's/".*//')
+if [ -n "$FLUTTER_MIN" ]; then
+  echo "📝 Updating Flutter badge to >=$FLUTTER_MIN ..."
+  # Encode >= as %3E%3D
+  ENCODED="%3E%3D$FLUTTER_MIN"
+  # Primary sed replacement (handles existing encoded badge)
+  sed -i.bak "s/Flutter-%3E%3D[0-9]\+\.[0-9]\+\.[0-9]\+-02569B/Flutter-$ENCODED-02569B/" README.md || true
+  rm -f README.md.bak
+  # Verify or fallback via awk
+  if ! grep -q "Flutter-$ENCODED-02569B" README.md; then
+    echo "⚠️ Sed did not match Flutter badge; attempting fallback rewrite."
+    awk -v ver="$ENCODED" 'BEGIN{updated=0} {
+      if ($0 ~ /!\[Flutter\]\(https:\/\/img\.shields\.io\/badge\/Flutter-%3E%3D[0-9]+\.[0-9]+\.[0-9]+-02569B\?logo=flutter\)/) {
+        print "![Flutter](https://img.shields.io/badge/Flutter-" ver "-02569B?logo=flutter)"; updated=1;
+      } else { print }
+    } END { if(updated==0) exit 1 }' README.md > README.md.tmp && mv README.md.tmp README.md || echo "⚠️ Fallback could not locate Flutter badge line."
+  fi
+  if grep -q "Flutter-$ENCODED-02569B" README.md; then
+    echo "✅ Flutter badge updated to >=$FLUTTER_MIN"
+  else
+    echo "❌ Failed to update Flutter badge. Please check script patterns."
+  fi
+else
+  echo "ℹ️ Could not determine Flutter min version from pubspec.yaml; skipped Flutter badge update."
+fi
+
 if [[ "$PLATFORM" == "android" ]]; then
   # ===== Android Build =====
   BUILD_GRADLE="$APP_DIR/android/app/build.gradle.kts"

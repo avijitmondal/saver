@@ -198,6 +198,7 @@ class ProfileController {
         phone: userProvider.phone,
         address: userProvider.address,
         dateOfBirth: userProvider.dateOfBirth,
+        gender: userProvider.gender,
       );
 
       // Generate export data
@@ -250,6 +251,7 @@ class ProfileController {
       phone: userProvider.phone,
       address: userProvider.address,
       dateOfBirth: userProvider.dateOfBirth,
+      gender: userProvider.gender,
     );
 
     final preview = _exportService.getExportPreview(
