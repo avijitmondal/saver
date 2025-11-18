@@ -11,6 +11,7 @@ void main() {
         phone: '1234567890',
         address: '123 Main St',
         dateOfBirth: DateTime(1990, 1, 1),
+        gender: 'male',
       );
 
       expect(user.id, isNotEmpty);
@@ -31,6 +32,7 @@ void main() {
         phone: '9876543210',
         address: '456 Oak Ave',
         dateOfBirth: DateTime(1995, 6, 15),
+        gender: 'female',
       );
 
       expect(user.fullName, 'Jane Smith');
@@ -46,6 +48,7 @@ void main() {
         dateOfBirth: DateTime(1988, 3, 20),
         passwordHash: 'hashed_password',
         themeMode: 'dark',
+        gender: 'female',
       );
 
       final map = user.toMap();
@@ -133,6 +136,7 @@ void main() {
         dateOfBirth: DateTime(1993, 4, 18),
         passwordHash: 'my_secure_hash',
         themeMode: 'dark',
+        gender: 'female',
       );
 
       final json = originalUser.toJson();
@@ -157,6 +161,7 @@ void main() {
         phone: '3334445555',
         address: '258 Spruce Blvd',
         dateOfBirth: DateTime(1987, 9, 12),
+        gender: 'male',
       );
 
       final updated = original.copyWith(
@@ -187,6 +192,7 @@ void main() {
         address: '369 Walnut Ave',
         dateOfBirth: DateTime(1991, 2, 28),
         themeMode: 'dark',
+        gender: 'female',
       );
 
       final copied = original.copyWith();
@@ -209,6 +215,7 @@ void main() {
         phone: '1111111111',
         address: 'Address 1',
         dateOfBirth: DateTime(1990, 1, 1),
+        gender: 'other',
       );
 
       final user2 = User.create(
@@ -218,6 +225,7 @@ void main() {
         phone: '2222222222',
         address: 'Address 2',
         dateOfBirth: DateTime(1990, 1, 1),
+        gender: 'male',
       );
 
       expect(user1.id, isNot(equals(user2.id)));

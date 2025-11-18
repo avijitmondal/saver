@@ -246,6 +246,7 @@ void main() {
         address: '123 Main St',
         dateOfBirth: DateTime(1990, 1, 1),
         passwordHash: 'secret_hash_should_not_export',
+        gender: 'male',
       );
 
       final exportData = exportService.exportUserData(
