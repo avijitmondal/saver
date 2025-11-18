@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Saver - Track your investments across different categories and manage your portfolio efficiently. Available on Google Play Store.">
+    <meta name="keywords" content="investment tracking, portfolio management, fixed deposit, recurring deposit, PPF, financial planning">
+    <title>Saver - Track your investments. Manage your future.</title>
+    <link rel="icon" type="image/png" sizes="192x192" href="favicon.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="favicon-512.png">
+    <link rel="apple-touch-icon" href="favicon-512.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="container">
+                <div class="nav-content">
+                    <div class="logo">
+                        <img src="logo.png" alt="Saver Logo" class="logo-img">
+                        <span class="logo-text">Saver</span>
+                    </div>
+                    <ul class="nav-menu">
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#screenshots">Screenshots</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="privacy-policy.html">Privacy</a></li>
+                        <li><a href="#download" class="btn-primary">Download</a></li>
+                    </ul>
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">Track your investments. Manage your future.<br>Manage Your Future.</h1>
+                    <p class="hero-description">
+                        Monitor your investments across various categories including Fixed Deposits, 
+                        Recurring Deposits, and PPF accounts. Get insights into your investment 
+                        performance with real-time analytics.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="https://play.google.com/store/apps/details?id=com.avijitmondal.saver" 
+                           target="_blank" 
+                           class="btn-download">
+                            <svg class="play-icon" viewBox="0 0 24 24">
+                                <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
+                            </svg>
+                            Get it on Google Play
+                        </a>
+                    </div>
+                    <div class="app-stats">
+                        <div class="stat">
+                            <span class="stat-value">Secure</span>
+                            <span class="stat-label">Your data stays on your device</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value">Free</span>
+                            <span class="stat-label">No hidden charges</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="screenshots/hero-phone.png" alt="Saver App Screenshot" class="phone-mockup">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Powerful Features</h2>
+                <p class="section-description">Everything you need to manage your investments efficiently</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M11,16.5L18,9.5L16.59,8.09L11,13.67L7.91,10.59L6.5,12L11,16.5Z"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Track Investments</h3>
+                    <p class="feature-description">Monitor your investments across Fixed Deposits, Recurring Deposits, and PPF accounts all in one place.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M16,11.78L20.24,4.45L21.97,5.45L16.74,14.5L10.23,10.75L5.46,19H22V21H2V3H4V17.54L9.5,8L16,11.78Z"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Portfolio Analytics</h3>
+                    <p class="feature-description">Get detailed insights into your investment performance with XIRR calculations and visual charts.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Secure & Private</h3>
+                    <p class="feature-description">Your financial data stays on your device. No cloud storage, complete privacy guaranteed.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10M10,22C9.75,22 9.54,21.82 9.5,21.58L9.13,18.93C8.5,18.68 7.96,18.34 7.44,17.94L4.95,18.95C4.73,19.03 4.46,18.95 4.34,18.73L2.34,15.27C2.21,15.05 2.27,14.78 2.46,14.63L4.57,12.97L4.5,12L4.57,11L2.46,9.37C2.27,9.22 2.21,8.95 2.34,8.73L4.34,5.27C4.46,5.05 4.73,4.96 4.95,5.05L7.44,6.05C7.96,5.66 8.5,5.32 9.13,5.07L9.5,2.42C9.54,2.18 9.75,2 10,2H14C14.25,2 14.46,2.18 14.5,2.42L14.87,5.07C15.5,5.32 16.04,5.66 16.56,6.05L19.05,5.05C19.27,4.96 19.54,5.05 19.66,5.27L21.66,8.73C21.79,8.95 21.73,9.22 21.54,9.37L19.43,11L19.5,12L19.43,13L21.54,14.63C21.73,14.78 21.79,15.05 21.66,15.27L19.66,18.73C19.54,18.95 19.27,19.04 19.05,18.95L16.56,17.95C16.04,18.34 15.5,18.68 14.87,18.93L14.5,21.58C14.46,21.82 14.25,22 14,22H10M11.25,4L10.88,6.61C9.68,6.86 8.62,7.5 7.85,8.39L5.44,7.35L4.69,8.65L6.8,10.2C6.4,11.37 6.4,12.64 6.8,13.8L4.68,15.36L5.43,16.66L7.86,15.62C8.63,16.5 9.68,17.14 10.87,17.38L11.24,20H12.76L13.13,17.39C14.32,17.14 15.37,16.5 16.14,15.62L18.57,16.66L19.32,15.36L17.2,13.81C17.6,12.64 17.6,11.37 17.2,10.2L19.31,8.65L18.56,7.35L16.15,8.39C15.38,7.5 14.32,6.86 13.12,6.62L12.75,4H11.25Z"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Manage PPF Payments</h3>
+                    <p class="feature-description">Track your Public Provident Fund payments with detailed payment history and maturity calculations.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M4,1C2.89,1 2,1.89 2,3V7C2,8.11 2.89,9 4,9H1V11H13V9H10C11.11,9 12,8.11 12,7V3C12,1.89 11.11,1 10,1H4M4,3H10V7H4V3M14,13C12.89,13 12,13.89 12,15V19C12,20.11 12.89,21 14,21H11V23H23V21H20C21.11,21 22,20.11 22,19V15C22,13.89 21.11,13 20,13H14M3.88,13.46L2.46,14.88L4.59,17L2.46,19.12L3.88,20.54L6,18.41L8.12,20.54L9.54,19.12L7.41,17L9.54,14.88L8.12,13.46L6,15.59L3.88,13.46M14,15H20V19H14V15Z"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Recurring Deposits</h3>
+                    <p class="feature-description">Monitor multiple recurring deposit accounts with automatic interest calculations and maturity tracking.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M19,12H22L18,8L14,12H17V18H19M2,18H6V16H2M4,11V13H10V11M2,6V8H14V6"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Import & Export</h3>
+                    <p class="feature-description">Easily backup your data and transfer between devices with import/export functionality.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Screenshots Section -->
+    <section id="screenshots" class="screenshots">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">App Screenshots</h2>
+                <p class="section-description">Take a tour of the Saver app</p>
+            </div>
+            <div class="screenshots-carousel">
+                <button class="carousel-btn prev" id="prevBtn">‹</button>
+                <div class="screenshots-wrapper">
+                    <div class="screenshots-track" id="screenshotsTrack">
+                        <div class="screenshot-item">
+                            <img src="screenshots/screenshot1.png" alt="Portfolio Overview">
+                            <p class="screenshot-caption">Portfolio Overview</p>
+                        </div>
+                        <div class="screenshot-item">
+                            <img src="screenshots/screenshot2.png" alt="Investment Categories">
+                            <p class="screenshot-caption">Investment Categories</p>
+                        </div>
+                        <div class="screenshot-item">
+                            <img src="screenshots/screenshot3.png" alt="Profile Management">
+                            <p class="screenshot-caption">Profile Management</p>
+                        </div>
+                        <div class="screenshot-item">
+                            <img src="screenshots/screenshot4.png" alt="Fixed Deposit Details">
+                            <p class="screenshot-caption">Fixed Deposit Details</p>
+                        </div>
+                        <div class="screenshot-item">
+                            <img src="screenshots/screenshot5.png" alt="PPF Account">
+                            <p class="screenshot-caption">PPF Account</p>
+                        </div>
+                        <div class="screenshot-item">
+                            <img src="screenshots/screenshot6.png" alt="Recurring Deposits">
+                            <p class="screenshot-caption">Recurring Deposits</p>
+                        </div>
+                        <div class="screenshot-item">
+                            <img src="screenshots/screenshot7.png" alt="Fixed Deposits List">
+                            <p class="screenshot-caption">Fixed Deposits</p>
+                        </div>
+                        <div class="screenshot-item">
+                            <img src="screenshots/screenshot8.png" alt="Add Investment">
+                            <p class="screenshot-caption">Add New Investment</p>
+                        </div>
+                        <div class="screenshot-item">
+                            <img src="screenshots/screenshot9.png" alt="PPF Payment History">
+                            <p class="screenshot-caption">PPF Payment History</p>
+                        </div>
+                        <div class="screenshot-item">
+                            <img src="screenshots/screenshot10.png" alt="Login Screen">
+                            <p class="screenshot-caption">Secure Login</p>
+                        </div>
+                        <div class="screenshot-item">
+                            <img src="screenshots/screenshot11.png" alt="Registration">
+                            <p class="screenshot-caption">Easy Registration</p>
+                        </div>
+                        <div class="screenshot-item">
+                            <img src="screenshots/screenshot12.png" alt="Welcome Screen">
+                            <p class="screenshot-caption">Welcome</p>
+                        </div>
+                        <div class="screenshot-item">
+                            <img src="screenshots/screenshot13.png" alt="Onboarding">
+                            <p class="screenshot-caption">Get Started</p>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-btn next" id="nextBtn">›</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2 class="section-title">About Saver</h2>
+                    <p class="about-description">
+                        Saver is a comprehensive investment tracking application designed to help you 
+                        manage and monitor your financial investments efficiently. Built with Flutter, 
+                        it provides a seamless experience across Android devices.
+                    </p>
+                    <div class="about-features">
+                        <div class="about-feature">
+                            <svg class="check-icon" viewBox="0 0 24 24">
+                                <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                            </svg>
+                            <span>Track Fixed Deposits with maturity calculations</span>
+                        </div>
+                        <div class="about-feature">
+                            <svg class="check-icon" viewBox="0 0 24 24">
+                                <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                            </svg>
+                            <span>Monitor Recurring Deposit progress and returns</span>
+                        </div>
+                        <div class="about-feature">
+                            <svg class="check-icon" viewBox="0 0 24 24">
+                                <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                            </svg>
+                            <span>Manage PPF accounts and payment schedules</span>
+                        </div>
+                        <div class="about-feature">
+                            <svg class="check-icon" viewBox="0 0 24 24">
+                                <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                            </svg>
+                            <span>View portfolio analytics with XIRR and returns</span>
+                        </div>
+                        <div class="about-feature">
+                            <svg class="check-icon" viewBox="0 0 24 24">
+                                <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                            </svg>
+                            <span>Secure local data storage on your device</span>
+                        </div>
+                        <div class="about-feature">
+                            <svg class="check-icon" viewBox="0 0 24 24">
+                                <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                            </svg>
+                            <span>Import and export data for backup and migration</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-stats">
+                    <div class="stat-card">
+                        <h3 class="stat-number">100%</h3>
+                        <p class="stat-text">Privacy Protected</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 class="stat-number">Free</h3>
+                        <p class="stat-text">No Subscription</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 class="stat-number">3+</h3>
+                        <p class="stat-text">Investment Types</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Download Section -->
+    <section id="download" class="download">
+        <div class="container">
+            <div class="download-content">
+                <h2 class="download-title">Start Tracking Your Investments Today</h2>
+                <p class="download-description">
+                    Download Saver from Google Play Store and take control of your financial portfolio.
+                </p>
+                <a href="https://play.google.com/store/apps/details?id=com.avijitmondal.saver" 
+                   target="_blank" 
+                   class="btn-download-large">
+                    <svg class="play-icon-large" viewBox="0 0 24 24">
+                        <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
+                    </svg>
+                    Get it on Google Play
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <img src="logo.png" alt="Saver Logo" class="logo-img">
+                        <span class="logo-text">Saver</span>
+                    </div>
+                    <p class="footer-tagline">Track your investments. Manage your future.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Product</h4>
+                        <ul>
+                            <li><a href="#features">Features</a></li>
+                            <li><a href="#screenshots">Screenshots</a></li>
+                            <li><a href="#download">Download</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Legal</h4>
+                        <ul>
+                            <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                            <li><a href="https://github.com/avijitmondal/saver" target="_blank">GitHub</a></li>
+                            <li><a href="https://github.com/avijitmondal/saver/issues" target="_blank">Report Issues</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Saver. All rights reserved.</p>
+                <p>Developed by Avijit</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
