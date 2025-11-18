@@ -5,7 +5,7 @@ import '../../utils/theme_helper.dart';
 class ProfileHeader extends StatelessWidget {
   final String name;
   final String email;
-  final String gender; // 'male', 'female', or 'other'
+  final String gender; // 'male', 'female', 'other', or 'prefer_not_to_say'
   final double avatarRadius;
   final double iconSize;
   final VoidCallback? onEditPressed;
@@ -79,6 +79,7 @@ class ProfileHeader extends StatelessWidget {
         painter = _MaleSilhouettePainter(color);
         break;
       case 'other':
+      case 'prefer_not_to_say':
       default:
         painter = _OtherSilhouettePainter(color);
     }

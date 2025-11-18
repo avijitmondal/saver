@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/user_provider.dart';
 import '../providers/notifications_provider.dart';
-import '../providers/portfolio_provider.dart';
-import '../providers/ppf_payment_provider.dart';
 import '../providers/feature_flags_provider.dart';
 import '../config/service_locator.dart';
 

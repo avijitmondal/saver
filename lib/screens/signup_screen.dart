@@ -173,14 +173,25 @@ class _SignupScreenState extends State<SignupScreen> {
               size: 120,
             ),
           ),
-          // const SizedBox(height: UIConstants.spacing32),
+          const SizedBox(height: UIConstants.spacing24),
           
-          // Signup Text
+          // App Name
           Text(
             AppConstants.appName,
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            style: Theme.of(context).textTheme.displaySmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).colorScheme.primary,
+                ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: UIConstants.spacing8),
+          
+          // Tagline
+          Text(
+            'Track your investments. Manage your future.',
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Colors.grey[700],
+                  fontWeight: FontWeight.w500,
                 ),
             textAlign: TextAlign.center,
           ),
@@ -251,7 +262,7 @@ class _SignupScreenState extends State<SignupScreen> {
               textStyle: const TextStyle(fontWeight: FontWeight.w600),
             ),
             onPressed: () {
-              Navigator.pushReplacementNamed(context, RouteConfig.registration);
+              Navigator.pushNamed(context, RouteConfig.registration);
             },
           ),
           const SizedBox(height: UIConstants.spacing16),

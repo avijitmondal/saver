@@ -433,18 +433,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         ),
                         hint: const Text('Select Gender'),
                         items: const [
-                          DropdownMenuItem(
-                            value: 'male',
-                            child: Text('Male'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'female',
-                            child: Text('Female'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'other',
-                            child: Text('Other / Prefer not to say'),
-                          ),
+                          DropdownMenuItem(value: 'male', child: Text('Male')),
+                          DropdownMenuItem(value: 'female', child: Text('Female')),
+                          DropdownMenuItem(value: 'other', child: Text('Other')),
+                          DropdownMenuItem(value: 'prefer_not_to_say', child: Text('Prefer not to say')),
                         ],
                         onChanged: (value) {
                           if (value != null) {

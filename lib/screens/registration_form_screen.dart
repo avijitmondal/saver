@@ -19,6 +19,7 @@ class _RegistrationFormScreenState extends State<RegistrationFormScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   DateTime? _selectedDate;
+  String? _selectedGender; // Required selection
 
   int _currentStep = 0;
 
@@ -56,6 +57,13 @@ class _RegistrationFormScreenState extends State<RegistrationFormScreen> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
+    // Extra guard for required gender
+    if (_selectedGender == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select your gender')),
+      );
+      return;
+    }
     setState(() {
     });
 
@@ -68,6 +76,7 @@ class _RegistrationFormScreenState extends State<RegistrationFormScreen> {
         address: _addressController.text,
         dateOfBirth: _selectedDate!,
         password: _passwordController.text,
+        gender: _selectedGender!,
       );
 
       if (!mounted) return;
@@ -112,6 +121,7 @@ class _RegistrationFormScreenState extends State<RegistrationFormScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Register with Email'),
+        automaticallyImplyLeading: true,
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -219,6 +229,29 @@ class _RegistrationFormScreenState extends State<RegistrationFormScreen> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your address';
+                          }
+                          return null;
+                        },
+                      ),
+                      DropdownButtonFormField<String>(
+                        value: _selectedGender,
+                        decoration: const InputDecoration(
+                          labelText: 'Gender',
+                        ),
+                        items: const [
+                          DropdownMenuItem(value: 'male', child: Text('Male')),
+                          DropdownMenuItem(value: 'female', child: Text('Female')),
+                          DropdownMenuItem(value: 'other', child: Text('Other')),
+                          DropdownMenuItem(value: 'prefer_not_to_say', child: Text('Prefer not to say')),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedGender = value;
+                          });
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please select your gender';
                           }
                           return null;
                         },
