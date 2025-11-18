@@ -41,10 +41,7 @@ class _SignupScreenState extends State<SignupScreen> {
       final file = result.files.first;
       String jsonContent;
 
-      if (file.bytes != null) {
-        // Web platform
-        jsonContent = String.fromCharCodes(file.bytes!);
-      } else if (file.path != null) {
+      if (file.path != null) {
         // Mobile/Desktop platform
         jsonContent = await File(file.path!).readAsString();
       } else {

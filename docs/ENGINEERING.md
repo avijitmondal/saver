@@ -521,7 +521,7 @@ const bool developerMode = bool.fromEnvironment('DEVELOPER_MODE', defaultValue: 
 
 ```dart
 // lib/constants/app_constants.dart
-static final Map<String, bool> featureFlags = {
+static final Map<string, bool> featureFlags = {
   'fixedDepositInvestment': true,
   'recurringDepositInvestment': true,
   'publicProvidentFundInvestment': true,
@@ -529,7 +529,6 @@ static final Map<String, bool> featureFlags = {
   'mutualFundInvestment': false,      // Coming soon
   'stockInvestment': false,            // Coming soon
   'notifications': false,
-  'comingSoonScreen': false,
 };
 ```
 

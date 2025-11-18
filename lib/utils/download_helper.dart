@@ -1,31 +1,24 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'download_helper_web.dart' if (dart.library.io) 'download_helper_stub.dart' as web_impl;
 
 class DownloadHelper {
-  /// Download file - works on both web and mobile platforms
+  /// Download file - works on mobile and desktop platforms
   static Future<String?> downloadFile({
     required String content,
     required String filename,
     required BuildContext context,
   }) async {
     try {
-      if (kIsWeb) {
-        return web_impl.downloadForWeb(content, filename);
-      } else {
-        return await _downloadForMobile(content, filename, context);
-      }
+      return await _downloadForMobile(content, filename, context);
     } catch (e) {
       debugPrint('Error downloading file: $e');
       rethrow;
     }
   }
 
-  /// Mobile/Desktop download - saves to user-selected location
+  /// Mobile download - saves to user-selected location
   static Future<String> _downloadForMobile(
     String content,
     String filename,
@@ -50,16 +43,8 @@ class DownloadHelper {
         throw Exception('Save cancelled by user');
       }
 
-      // File is already saved by file_picker on mobile
-      // On desktop, we need to write the file ourselves
-      if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
-        // Ensure .json extension for desktop
-        if (!outputPath.endsWith('.json')) {
-          outputPath = '$outputPath.json';
-        }
-        final file = File(outputPath);
-        await file.writeAsString(content);
-      }
+      // File is already saved by file_picker on mobile platforms
+      // No additional file writing needed for Android/iOS
       
       return outputPath;
     } catch (e) {

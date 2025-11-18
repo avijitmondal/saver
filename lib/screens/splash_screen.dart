@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import '../config/route_config.dart';
 import '../providers/user_provider.dart';
 import '../providers/portfolio_provider.dart';
 import '../constants/app_constants.dart';
-import '../screens/coming_soon_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -74,21 +72,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   void _navigateBasedOnUserData() {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-
-    // Check if running on supported platforms (iOS/Android only)
-    final isMobile = defaultTargetPlatform == TargetPlatform.android ||
-        defaultTargetPlatform == TargetPlatform.iOS;
-
-    if ((AppConstants.featureFlags["comingSoonScreen"] ?? false) && !isMobile) {
-      // Show platform not supported screen for web/desktop
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ComingSoonScreen(targetTime: DateTime(2026, 01, 01, 00, 00, 00)),
-        ),
-      );
-      return;
-    }
 
     // Check if user data exists
     if (userProvider.fullName.isNotEmpty) {

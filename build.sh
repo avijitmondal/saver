@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# Usage: ./build_release.sh [android|ios|web] [version] [release|dev]
+# Usage: ./build_release.sh [android|ios] [version] [release|dev]
 
 APP_DIR="$(pwd)"
 PLATFORM="$1"
@@ -13,14 +13,12 @@ if [[ -z "$PLATFORM" ]]; then
   echo "Select platform to build:"
   echo "1) Android"
   echo "2) iOS"
-  echo "3) Web"
-  echo -n "Enter choice [1-3]: "
+  echo -n "Enter choice [1-2]: "
   read -n 1 PLATFORM_CHOICE
   echo
   case $PLATFORM_CHOICE in
     1) PLATFORM="android" ;;
     2) PLATFORM="ios" ;;
-    3) PLATFORM="web" ;;
     *) echo "Invalid choice"; exit 1 ;;
   esac
 fi
@@ -168,18 +166,6 @@ elif [[ "$PLATFORM" == "ios" ]]; then
     echo "❌ Unknown iOS build type: $IOS_BUILD_TYPE"
     exit 1
   fi
-elif [[ "$PLATFORM" == "web" ]]; then
-  # ===== Web Build =====
-  echo "🧹 Cleaning project..."
-  flutter clean
-  echo "🚀 Building Flutter Web release (sampleData & developerMode disabled)..."
-  flutter build web --release --no-tree-shake-icons \
-    --dart-define=SAMPLE_DATA=false \
-    --dart-define=DEVELOPER_MODE=false
-  OUTPUT_PATH="$APP_DIR/build/web"
-  echo "✅ Web build generated!"
-  echo "📁 Location: $OUTPUT_PATH"
-  echo "🎯 App version: $NEW_VERSION"
 else
   echo "❌ Unknown platform: $PLATFORM"
   exit 1

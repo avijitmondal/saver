@@ -29,8 +29,6 @@ class AppConstants {
   static final Map<String, bool> featureFlags = {
     // Toggle in-app notifications
     'notifications': false,
-    // Set this to false to disable coming soon screen
-    'comingSoonScreen': false,
     // Set this to false to disable fixed deposit investment
     'fixedDepositInvestment': true,
     // Set this to false to disable recurring deposit investment

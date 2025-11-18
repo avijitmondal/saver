@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import '../models/investment.dart';
 import '../models/user.dart';
 import 'data_transformation_service.dart';
@@ -81,15 +80,6 @@ class DataExportService {
     final file = File(filePath);
     await file.writeAsString(jsonData);
     return file;
-  }
-
-  /// Trigger download for web platform
-  void downloadForWeb(String jsonData, String filename) {
-    if (kIsWeb) {
-      // Web download will be handled by the UI layer using dart:html
-      // This is a placeholder for the service layer
-      throw UnimplementedError('Use download_service for web downloads');
-    }
   }
 
   Map<String, dynamic> _getDateRange(List<Investment> investments) {
