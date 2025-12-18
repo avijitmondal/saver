@@ -8,7 +8,6 @@ plugins {
 android {
     namespace = "com.avijitmondal.saver"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -28,11 +27,6 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-
-        // Enable debug symbols for native code
-        ndk {
-            debugSymbolLevel = "FULL"
-        }
     }
 
     signingConfigs {
@@ -51,11 +45,6 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("release")
-
-            // Enable debug symbols in release build
-            ndk {
-                debugSymbolLevel = "FULL"
-            }
         }
     }
 }
