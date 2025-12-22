@@ -13,23 +13,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           cache: true
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-          cache: 'pip'
-
-      - name: Install automation dependencies
-        run: pip install -r scripts/requirements.txt
 
       - name: Cache CocoaPods
         uses: actions/cache@v3
@@ -63,10 +52,19 @@ jobs:
           pod install
           cd ..
 
-      - name: Build iOS development build using automation script
+      - name: Build iOS development build
         run: |
-          VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
-          python3 scripts/build.py ios $VERSION --dev
+          flutter build ios --release --no-tree-shake-icons --no-codesign \
+            --dart-define=SAMPLE_DATA=false \
+            --dart-define=DEVELOPER_MODE=false
+
+      - name: Create IPA from development build
+        run: |
+          cd build/ios/Release-iphoneos
+          mkdir -p Payload
+          cp -r Runner.app Payload/
+          zip -r app-development.ipa Payload
+          cd ../../..
 
       - name: Get app version
         id: version

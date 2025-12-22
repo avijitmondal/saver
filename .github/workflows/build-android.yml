@@ -13,8 +13,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -48,15 +46,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-dart-build-
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-          cache: 'pip'
-
-      - name: Install automation dependencies
-        run: pip install -r scripts/requirements.txt
-
       - name: Decode and setup keystore
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         env:
@@ -70,15 +59,16 @@ jobs:
       - name: Run tests
         run: flutter test --dart-define=SAMPLE_DATA=false --dart-define=DEVELOPER_MODE=false
 
-      - name: Build Android App Bundle (AAB) using automation script
+      - name: Build Android App Bundle (AAB)
         env:
           SAVER_UPLOAD_STORE_FILE: ${{ github.workspace }}/android/app/keystore.jks
           SAVER_UPLOAD_KEY_ALIAS: ${{ secrets.SAVER_UPLOAD_KEY_ALIAS }}
           SAVER_UPLOAD_STORE_PASSWORD: ${{ secrets.SAVER_UPLOAD_STORE_PASSWORD }}
           SAVER_UPLOAD_KEY_PASSWORD: ${{ secrets.SAVER_UPLOAD_KEY_PASSWORD }}
         run: |
-          VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
-          python3 scripts/build.py android $VERSION
+          flutter build appbundle --release --no-tree-shake-icons \
+            --dart-define=SAMPLE_DATA=false \
+            --dart-define=DEVELOPER_MODE=false
 
       - name: Get app version
         id: version
