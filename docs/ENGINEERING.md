@@ -162,10 +162,15 @@ saver/
 │   ├── REFACTORING.md             # Refactoring documentation
 │   └── REFACTORING_SUMMARY.md     # Summary of changes
 │
+├── scripts/                      # Build automation (submodule)
+│   ├── build.py                  # Automated build script
+│   ├── deploy.py                 # Deployment automation
+│   └── requirements.txt          # Python dependencies
+│
 ├── android/                       # Android platform code
 ├── ios/                          # iOS platform code
 ├── web/                          # Web platform code
-├── build.sh                      # Build script
+├── AUTOMATION.md                 # Build & deployment guide
 └── pubspec.yaml                  # Dependencies
 ```
 
@@ -184,8 +189,14 @@ saver/
 
 1. **Clone and install dependencies**
    ```bash
-   git clone https://github.com/avijitmondal/saver.git
+   git clone --recurse-submodules https://github.com/avijitmondal/saver.git
    cd saver
+   flutter pub get
+   ```
+   
+   Or if already cloned:
+   ```bash
+   git submodule update --init --recursive
    flutter pub get
    ```
 
@@ -202,6 +213,8 @@ saver/
    # With developer tools
    flutter run --dart-define=DEVELOPER_MODE=true
    ```
+
+> **Note:** The `--recurse-submodules` flag ensures build automation scripts in the `scripts/` directory are included.
 
 ### IDE Setup
 
@@ -502,6 +515,93 @@ Current coverage: **~90%** on core models
 
 ## 🚀 Build & Deployment
 
+### Automated Build System
+
+Saver uses centralized build automation via the [flutter-automation](https://github.com/avijitmondal/flutter-automation) git submodule located at `scripts/`.
+
+#### Setup Requirements
+
+**Install Python dependencies (one-time):**
+```bash
+pip install -r scripts/requirements.txt
+```
+
+**Configure automation (one-time):**
+```bash
+# Copy the template
+cp scripts/config.template.json .flutter-scripts.json
+
+# Edit with your values
+# - Android: package name, service account path
+# - iOS: bundle ID, scheme
+# - Web: S3 bucket, CloudFront distribution
+```
+
+**Important:** Never commit `.flutter-scripts.json` to version control - it contains sensitive credentials.
+
+#### Build Commands
+
+**Android:**
+```bash
+python3 scripts/build.py android 1.0.6+7
+```
+
+**iOS:**
+```bash
+# Development build (no codesign)
+python3 scripts/build.py ios 1.0.6+7 --dev
+
+# App Store / TestFlight
+python3 scripts/build.py ios 1.0.6+7 --release
+```
+
+**Web:**  
+This project uses a static HTML website (`docs/web/`) instead of Flutter web.  
+Web builds are not supported - deploy static content directly (see Deployment section).
+
+#### Deployment
+
+**Web (static site to S3):**
+```bash
+python3 scripts/deploy.py web
+```
+Requires AWS credentials and S3 bucket configuration in `.flutter-scripts.json`.
+
+**Android (to Play Store):**
+```bash
+python3 scripts/deploy.py android --track production
+python3 scripts/deploy.py android --track beta
+python3 scripts/deploy.py android --track internal
+```
+
+**iOS:**  
+Use [Fastlane](https://fastlane.tools/) or Xcode for App Store deployment.
+
+#### CI/CD Integration
+
+GitHub Actions workflows use the automation scripts:
+- [.github/workflows/build-android.yml](../.github/workflows/build-android.yml)
+- [.github/workflows/build-ios.yml](../.github/workflows/build-ios.yml)
+
+Workflows automatically:
+1. Checkout repository with submodules
+2. Set up Flutter, Python, and dependencies
+3. Run tests
+4. Build using automation scripts
+
+#### Updating Automation Scripts
+
+```bash
+cd scripts
+git checkout main
+git pull origin main
+cd ..
+git add scripts
+git commit -m "Update flutter-automation submodule"
+```
+
+For complete automation documentation, see the [Flutter Automation Repository](https://github.com/avijitmondal/flutter-automation).
+
 ### Environment Configuration
 
 #### Compile-Time Flags
@@ -548,19 +648,19 @@ flutter run \
 
 #### Production Builds
 
-**Using build script (recommended):**
+**Using automation scripts (recommended):**
 ```bash
 # Android
-./build.sh android
+python3 scripts/build.py android 1.0.6+7
 
-# iOS
-./build.sh ios
+# iOS (App Store)
+python3 scripts/build.py ios 1.0.6+7 --release
 
-# Web
-./build.sh web
+# iOS (development)
+python3 scripts/build.py ios 1.0.6+7 --dev
 ```
 
-**Manual builds:**
+**Manual builds (legacy):**
 ```bash
 # Android (AAB for Play Store)
 flutter build appbundle \

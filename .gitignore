@@ -73,6 +73,9 @@ coverage/*
 .env.local
 .env.*.local
 
+# Flutter automation config (may contain sensitive credentials)
+.flutter-scripts.json
+
 # Firebase config (add when needed)
 # android/app/google-services.json
 # ios/Runner/GoogleService-Info.plist
