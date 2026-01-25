@@ -75,7 +75,8 @@ coverage/*
 
 # Flutter automation config (may contain sensitive credentials)
 .flutter-scripts.json
-scripts/
+scripts/.flutter-scripts.json
+scripts/config.json
 
 # Firebase config (add when needed)
 # android/app/google-services.json
