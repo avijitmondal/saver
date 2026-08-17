@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:saver/constants/app_constants.dart';
 import 'package:file_picker/file_picker.dart';
@@ -27,26 +27,19 @@ class _SignupScreenState extends State<SignupScreen> {
       setState(() => _isImporting = true);
 
       // Pick file
-      final result = await FilePicker.platform.pickFiles(
+      final files = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['json'],
-        allowMultiple: false,
       );
 
-      if (result == null || result.files.isEmpty) {
+      if (files.isEmpty) {
         setState(() => _isImporting = false);
         return;
       }
 
-      final file = result.files.first;
-      String jsonContent;
-
-      if (file.path != null) {
-        // Mobile/Desktop platform
-        jsonContent = await File(file.path!).readAsString();
-      } else {
-        throw Exception('Unable to read file');
-      }
+      final file = files.first;
+      final bytes = await file.readAsBytes();
+      final jsonContent = utf8.decode(bytes);
 
       // Validate file first
       final validation = await _importService.validateImportFile(jsonContent);

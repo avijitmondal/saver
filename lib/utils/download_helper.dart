@@ -29,22 +29,22 @@ class DownloadHelper {
       final bytes = Uint8List.fromList(utf8.encode(content));
       
       // Let user choose save location and save directly
-      String? outputPath = await FilePicker.platform.saveFile(
+      final resultUri = await FilePicker.saveFile(
         dialogTitle: 'Save Export File',
         fileName: filename,
         type: FileType.custom,
         allowedExtensions: ['json'],
-        lockParentWindow: true,
-        bytes: bytes, // Required for Android/iOS
+        bytes: bytes,
       );
 
-      if (outputPath == null) {
+      if (resultUri == null) {
         // User cancelled the picker
         throw Exception('Save cancelled by user');
       }
 
-      // File is already saved by file_picker on mobile platforms
-      // No additional file writing needed for Android/iOS
+      final outputPath = resultUri.scheme == 'file'
+          ? resultUri.toFilePath()
+          : (resultUri.path.isNotEmpty ? resultUri.path : resultUri.toString());
       
       return outputPath;
     } catch (e) {
