@@ -31,10 +31,10 @@ android {
 
     signingConfigs {
         create("release") {
-            val keystorePath = System.getenv("SAVER_UPLOAD_STORE_FILE") ?: ""
-            val keystorePassword = System.getenv("SAVER_UPLOAD_STORE_PASSWORD") ?: ""
-            val keystoreAlias = System.getenv("SAVER_UPLOAD_KEY_ALIAS") ?: ""
-            val keystoreKeyPassword = System.getenv("SAVER_UPLOAD_KEY_PASSWORD") ?: ""
+            val keystorePath = System.getenv("ANDROID_KEY_STORE_FILE") ?: ""
+            val keystoreAlias = System.getenv("ANDROID_KEY_STORE_ALIAS") ?: ""
+            val keystorePassword = System.getenv("ANDROID_STORE_PASSWORD") ?: ""
+            val keystoreKeyPassword = System.getenv("ANDROID_KEY_PASSWORD") ?: ""
             storeFile = file(keystorePath)
             storePassword = keystorePassword
             keyAlias = keystoreAlias
