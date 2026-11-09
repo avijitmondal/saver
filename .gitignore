@@ -69,15 +69,13 @@ coverage/*
 **/.gradle/
 **/local.properties
 
+# Local deployment config (may contain sensitive values)
+.flutter-scripts.json
+
 # Environment variables
 .env
 .env.local
 .env.*.local
-
-# Flutter automation config (may contain sensitive credentials)
-.flutter-scripts.json
-scripts/.flutter-scripts.json
-scripts/config.json
 
 # Firebase config (add when needed)
 # android/app/google-services.json

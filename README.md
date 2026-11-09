@@ -65,13 +65,8 @@ Get insights into your wealth:
 
 1. **Clone the repository**
    ```bash
-   git clone --recurse-submodules https://github.com/avijitmondal/saver.git
+   git clone https://github.com/avijitmondal/saver.git
    cd saver
-   ```
-   
-   Or if already cloned:
-   ```bash
-   git submodule update --init --recursive
    ```
 
 2. **Install dependencies**
@@ -86,7 +81,7 @@ Get insights into your wealth:
 
 That's it! The app will launch with sample data so you can explore features immediately.
 
-> **Note:** The `--recurse-submodules` flag ensures the build automation scripts are included. For production builds, see [ENGINEERING.md](docs/ENGINEERING.md#-build--deployment).
+> **Note:** For production builds, see [ENGINEERING.md](docs/ENGINEERING.md#-build--deployment).
 
 ---
 
