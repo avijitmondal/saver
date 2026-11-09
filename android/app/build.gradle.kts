@@ -35,16 +35,21 @@ android {
             val keystoreAlias = System.getenv("ANDROID_KEY_STORE_ALIAS") ?: ""
             val keystorePassword = System.getenv("ANDROID_STORE_PASSWORD") ?: ""
             val keystoreKeyPassword = System.getenv("ANDROID_KEY_PASSWORD") ?: ""
-            storeFile = file(keystorePath)
-            storePassword = keystorePassword
-            keyAlias = keystoreAlias
-            keyPassword = keystoreKeyPassword
+            // Only configure signing when credentials are provided (CI / maintainer builds).
+            if (keystorePath.isNotEmpty()) {
+                storeFile = file(keystorePath)
+                storePassword = keystorePassword
+                keyAlias = keystoreAlias
+                keyPassword = keystoreKeyPassword
+            }
         }
     }
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("release")
+            val releaseSigning = signingConfigs.getByName("release")
+            // Fall back to debug signing for contributors without the release keystore.
+            signingConfig = if (releaseSigning.storeFile != null) releaseSigning else signingConfigs.getByName("debug")
         }
     }
 }

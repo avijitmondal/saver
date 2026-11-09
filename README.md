@@ -218,7 +218,9 @@ See [ENGINEERING.md](docs/ENGINEERING.md) for development setup and coding stand
 
 ## 📄 License
 
-This project is private and not currently licensed for public use. For collaboration inquiries, please contact the repository owner.
+This project is licensed under the [MIT License](LICENSE).
+
+The "Saver" name, logo, and app store listing, as well as third-party bank names and logos in `assets/`, are not covered by this license and remain the property of their respective owners.
 
 ---
 
